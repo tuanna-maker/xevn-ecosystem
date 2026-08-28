@@ -191,6 +191,7 @@ Khóa **AC đo được** + **Diễn biến FE (U65)** cho Wave-38 seat **#43** 
 | **AC-PAY-02-ENGINE-SOT** | Footer / design | AC text | Engine = `pay_formula_definitions` · **≠** `salary_components.formula` TEXT SoT | O1 |
 | **AC-PAY-02-≠-DND-GD1** | Requirement doc | Scope | GĐ1 form only · DnD **OUT** GĐ2 | O2 |
 | **AC-PAY-02-AUTHOR-DRAFT** | C&B author | **POST/PUT** formula draft FE | **2xx** · `status=draft` · F5 list shows draft | O2 · J-02 |
+| **AC-PAY-02-AUTHOR-ORPHAN-CHIP** | C&B author | **Xem/Sửa** draft chứa mã component cũ bị xóa | UI builder **PHẢI** fallback hiện chip mã gốc (raw code) thay vì rỗng/sập | O2 · J-02 |
 | **AC-PAY-02-DUAL-403** | Same user author+publish | **POST publish** FE | **403** `HRM-PAY-FORMULA-403-DUAL` | O3 · J-03 |
 | **AC-PAY-02-PUBLISH-2XX** | Publisher ≠ author · vars OK | Publish FE | **2xx** · `status=active` · F5 immutable expression | O3/O11 · J-03 |
 | **AC-PAY-02-VARS-412** | Missing required_vars | submit-publish FE | **412** `HRM-PAY-FORMULA-412-VARS` | O4 · J-03 |

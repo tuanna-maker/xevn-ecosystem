@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @CODE-MEMORY
  * Screen:     HRM · Tiền lương · Dữ liệu → Sản phẩm / Sản lượng
  * WorkItem:   PO-HRM-PAY-DATA-PRODUCT-FE-01
@@ -15,16 +15,10 @@ import { Label } from '@/components/ui/label';
 
 type ProductRecord = { id:string; employee_code:string; employee_name:string; product_type:string; quantity:number; unit:string; unit_price:number; total:number; period:string };
 
-const MOCK: ProductRecord[] = [
-  { id:'1', employee_code:'SX-001', employee_name:'Nguyễn Văn An', product_type:'Lượt tuyến Hà Nội - Việt Trì', quantity:45, unit:'lượt', unit_price:280000, total:12600000, period:'2026-08' },
-  { id:'2', employee_code:'SX-002', employee_name:'Trần Thị Bình', product_type:'Lượt tuyến Hà Nội - Yên Bái', quantity:38, unit:'lượt', unit_price:350000, total:13300000, period:'2026-08' },
-  { id:'3', employee_code:'SX-003', employee_name:'Lê Minh Cường', product_type:'Lượt tuyến Nội Bài - HCM', quantity:12, unit:'lượt', unit_price:1200000, total:14400000, period:'2026-08' },
-];
-
 const fmt = (v: number) => new Intl.NumberFormat('vi-VN').format(v);
 
 export function ProductDataTab() {
-  const [records, setRecords] = useState(MOCK);
+  const [records, setRecords] = useState<ProductRecord[]>([]);
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ employee_code:'', employee_name:'', product_type:'', quantity:'', unit:'lượt', unit_price:'' });

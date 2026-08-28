@@ -272,7 +272,7 @@ function FullscreenPanel({
                     <SelectTrigger className="h-9 font-medium text-blue-700 bg-blue-50/50">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="z-[300]">
+                    <SelectContent>
                       {policyTypes.map(t => (
                         <SelectItem key={t.id} value={t.code}>
                           {t.name}
@@ -315,7 +315,7 @@ function FullscreenPanel({
                     <SelectTrigger className="h-9">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="z-[300]">
+                    <SelectContent>
                       <SelectItem value="draft">Nháp</SelectItem>
                       <SelectItem value="active">Đang áp dụng</SelectItem>
                       <SelectItem value="retired">Đã ngưng</SelectItem>

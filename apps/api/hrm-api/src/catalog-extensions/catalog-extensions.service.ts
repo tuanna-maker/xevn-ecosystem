@@ -40,6 +40,7 @@ import {
 } from '../common/hrm-list-scope';
 import { getVerifiedInternalJwtPayload } from '../common/internal-auth';
 import { HrmDbService } from '../db/hrm-db.service';
+import { CreateBonusPolicyDto } from './dto/bonus-policy.dto';
 
 /** Stable enroll codes — API_DESIGN_HRM_ERP_E3 §13 + D-HDSD-BF-03-BH-400-01. */
 export const HRM_INS_POL_404 = 'HRM-INS-POL-404';
@@ -107,6 +108,10 @@ export class CatalogExtensionsService {
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
+    `);
+    await this.db.query(`
+      ALTER TABLE public.hrm_bonus_policies ADD COLUMN IF NOT EXISTS component_type TEXT;
+      ALTER TABLE public.hrm_bonus_policies ADD COLUMN IF NOT EXISTS extra_data JSONB;
     `);
     await this.db.query(`
       CREATE TABLE IF NOT EXISTS public.hrm_bonus_policy_participants (
@@ -461,7 +466,7 @@ export class CatalogExtensionsService {
   }
 
   async createBonusPolicy(
-    payload: Record<string, unknown>,
+    payload: CreateBonusPolicyDto & { company_id?: string },
     authorization?: string,
   ) {
     await this.ensureSchema();
@@ -472,10 +477,10 @@ export class CatalogExtensionsService {
     const id = randomUUID();
     const res = await this.db.query(
       `INSERT INTO public.hrm_bonus_policies (
-        id, company_id, code, name, type, description, calculation_method, base_value,
-        percentage_base, formula, tiers, conditions, effective_date, expiry_date, status,
+        id, company_id, code, name, type, component_type, description, calculation_method, base_value,
+        percentage_base, formula, tiers, extra_data, conditions, effective_date, expiry_date, status,
         applied_departments, applied_positions
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::jsonb,$12::jsonb,$13::date,$14::date,$15,$16::jsonb,$17::jsonb)
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12::jsonb,$13::jsonb,$14::jsonb,$15::date,$16::date,$17,$18::jsonb,$19::jsonb)
       RETURNING *;`,
       [
         id,
@@ -483,12 +488,14 @@ export class CatalogExtensionsService {
         payload.code,
         payload.name,
         payload.type ?? 'other',
+        payload.component_type ?? null,
         payload.description ?? null,
         payload.calculation_method ?? 'fixed',
         payload.base_value ?? 0,
         payload.percentage_base ?? null,
         payload.formula ?? null,
         JSON.stringify(payload.tiers ?? null),
+        JSON.stringify(payload.extra_data ?? null),
         JSON.stringify(payload.conditions ?? null),
         payload.effective_date,
         payload.expiry_date ?? null,
@@ -503,7 +510,7 @@ export class CatalogExtensionsService {
   async updateBonusPolicy(
     id: string,
     companyId: string,
-    payload: Record<string, unknown>,
+    payload: CreateBonusPolicyDto,
     authorization?: string,
   ) {
     await this.ensureSchema();
@@ -532,8 +539,8 @@ export class CatalogExtensionsService {
     const fields: string[] = [];
     const values: unknown[] = [];
     for (const key of allowed) {
-      if (payload[key] !== undefined) {
-        values.push(payload[key]);
+      if ((payload as Record<string, any>)[key] !== undefined) {
+        values.push((payload as Record<string, any>)[key]);
         fields.push(
           `${key} = $${values.length}${key.includes('date') ? '::date' : ''}`,
         );

@@ -44,6 +44,10 @@ import { CheckInScreen } from '../features/attendance/CheckInScreen';
 
 import { AttendanceHistoryScreen } from '../features/attendance/AttendanceHistoryScreen';
 
+import { CreateOtRequestScreen } from '../features/attendance/CreateOtRequestScreen';
+import { CreateTripRequestScreen } from '../features/attendance/CreateTripRequestScreen';
+import { MyScheduleScreen } from '../features/attendance/MyScheduleScreen';
+
 import { TeamDirectoryScreen } from '../features/team/TeamDirectoryScreen';
 
 import { TeamColleagueDetailScreen } from '../features/team/TeamColleagueDetailScreen';
@@ -79,6 +83,8 @@ import { InAppNotificationsScreen } from '../features/notifications/InAppNotific
 import { SettingsScreen } from '../features/settings/SettingsScreen';
 
 import { JourneyScreen } from '../features/journey/JourneyScreen';
+import { InternalNewsScreen } from '../features/news/InternalNewsScreen';
+import { NewsDetailScreen } from '../features/news/NewsDetailScreen';
 
 import { MAIN_TAB_IA } from './mainTabIa';
 import { useForceHomeTabOnResize } from './useForceHomeTabOnResize';
@@ -157,6 +163,9 @@ function AttendanceStack() {
       <AttStack.Screen name="CheckIn" component={CheckInScreen} options={{ title: vi.attendance }} />
 
       <AttStack.Screen name="AttendanceHistory" component={AttendanceHistoryScreen} options={{ title: vi.history, headerLargeTitle: true }} />
+      <AttStack.Screen name="CreateOtRequest" component={CreateOtRequestScreen} options={{ title: 'Làm thêm giờ' }} />
+      <AttStack.Screen name="CreateTripRequest" component={CreateTripRequestScreen} options={{ title: 'Đơn Công tác' }} />
+      <AttStack.Screen name="MySchedule" component={MyScheduleScreen} options={{ title: 'Lịch của tôi' }} />
 
     </AttStack.Navigator>
 
@@ -227,6 +236,9 @@ function ProfileStackNavigator() {
       <ProfileStack.Screen name="LeaveRequestDetail" component={LeaveRequestDetailScreen} options={{ title: vi.leaveDetail }} />
 
       <ProfileStack.Screen name="Journey" component={JourneyScreen} options={{ title: vi.journey, headerLargeTitle: true }} />
+
+      <ProfileStack.Screen name="InternalNews" component={InternalNewsScreen} options={{ title: 'Tin nội bộ', headerLargeTitle: true }} />
+      <ProfileStack.Screen name="NewsDetail" component={NewsDetailScreen} options={{ title: 'Chi tiết tin' }} />
 
     </ProfileStack.Navigator>
 

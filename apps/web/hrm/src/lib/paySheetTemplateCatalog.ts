@@ -112,7 +112,10 @@ export type PaySheetLineDraft = {
   componentId: string;
   displayLabel: string;
   sortOrder: number;
+  inputMethod: string;
+  systemDataMappingId: string;
   formulaOverrideDefinitionId: string;
+  formulaOverrideJson?: Record<string, unknown> | null;
 };
 
 export function createEmptyPaySheetLineDraft(sortOrder = 0): PaySheetLineDraft {
@@ -121,7 +124,10 @@ export function createEmptyPaySheetLineDraft(sortOrder = 0): PaySheetLineDraft {
     componentId: '',
     displayLabel: '',
     sortOrder,
+    inputMethod: 'FORMULA',
+    systemDataMappingId: '',
     formulaOverrideDefinitionId: '',
+    formulaOverrideJson: null,
   };
 }
 
@@ -171,7 +177,10 @@ export function buildPaySheetTemplateLinesPayload(drafts: PaySheetLineDraft[]): 
     componentId: string;
     displayLabel: string | null;
     sortOrder: number;
+    inputMethod: string;
+    systemDataMappingId: string | null;
     formulaOverrideDefinitionId: string | null;
+    formulaOverrideJson: Record<string, unknown> | null;
   }>;
 } | { ok: false; error: string } {
   const seen = new Set<string>();
@@ -179,7 +188,10 @@ export function buildPaySheetTemplateLinesPayload(drafts: PaySheetLineDraft[]): 
     componentId: string;
     displayLabel: string | null;
     sortOrder: number;
+    inputMethod: string;
+    systemDataMappingId: string | null;
     formulaOverrideDefinitionId: string | null;
+    formulaOverrideJson: Record<string, unknown> | null;
   }> = [];
 
   for (const d of drafts) {
@@ -195,12 +207,14 @@ export function buildPaySheetTemplateLinesPayload(drafts: PaySheetLineDraft[]): 
     if (!Number.isFinite(sortOrder) || sortOrder < 0) {
       return { ok: false, error: 'Thứ tự cột (sort_order) phải là số ≥ 0.' };
     }
-    const defId = d.formulaOverrideDefinitionId.trim();
     lines.push({
-      componentId,
-      displayLabel: d.displayLabel.trim() || null,
-      sortOrder: Math.floor(sortOrder),
-      formulaOverrideDefinitionId: defId || null,
+      componentId: d.componentId,
+      displayLabel: d.displayLabel || undefined,
+      sortOrder: d.sortOrder,
+      inputMethod: d.inputMethod || 'FORMULA',
+      systemDataMappingId: d.systemDataMappingId || undefined,
+      formulaOverrideDefinitionId: d.formulaOverrideDefinitionId || undefined,
+      formulaOverrideJson: d.formulaOverrideJson || undefined,
     });
   }
 

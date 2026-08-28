@@ -14,6 +14,7 @@ import type { PayslipStackParamList } from '../../navigation/types';
 import { formatHrmCurrency } from '../../utils/formatHrm';
 import { resolvePayslipPeriodLabelVi } from '../../utils/payslipDisplayVi';
 import { AutoBlurGuard } from '../../components/ui/AutoBlurGuard';
+import * as LocalAuthentication from 'expo-local-authentication';
 import { LayoutAnimation, Platform, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, layout, spacing, typography, radius } from '../../theme/tokens';
@@ -76,8 +77,31 @@ export function PayslipDetailScreen() {
   const [row, setRow] = useState<Payslip | null>(null);
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    async function authenticate() {
+      const hasHardware = await LocalAuthentication.hasHardwareAsync();
+      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+      if (!hasHardware || !isEnrolled) {
+        setIsAuthenticated(true);
+        return;
+      }
+      const result = await LocalAuthentication.authenticateAsync({
+        promptMessage: 'Xác thực bảo mật để xem Phiếu lương',
+        fallbackLabel: 'Dùng mật mã thiết bị',
+      });
+      if (result.success) {
+        setIsAuthenticated(true);
+      } else {
+        setErr('Xác thực thất bại. Quay lại để thử lại.');
+      }
+    }
+    void authenticate();
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
     void (async () => {
       setLoading(true);
       const cid = auth.getPayrollQueryCompanyId();
@@ -112,7 +136,7 @@ export function PayslipDetailScreen() {
         setLoading(false);
       }
     })();
-  }, [auth, route.params.payslipId]);
+  }, [auth, route.params.payslipId, isAuthenticated]);
 
   const periodTitle = resolvePayslipPeriodLabelVi(
     route.params.periodLabel || row?.period_label,
@@ -134,7 +158,12 @@ export function PayslipDetailScreen() {
         grouped
         scroll
       >
-        {row ? (
+        {!isAuthenticated && !err ? (
+          <View style={{ padding: layout.itemGap, alignItems: 'center', marginTop: layout.itemGap * 2 }}>
+             <Ionicons name="lock-closed-outline" size={48} color={colors.textSecondary} />
+             <Text style={{ marginTop: spacing.sm, color: colors.textSecondary }}>Đang chờ xác thực bảo mật...</Text>
+          </View>
+        ) : row ? (
           <>
             <StatusBadge status={row.status} label={statusLabel(row.status)} />
 

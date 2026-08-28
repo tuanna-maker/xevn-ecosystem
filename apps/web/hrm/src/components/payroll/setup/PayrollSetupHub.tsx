@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @CODE-MEMORY
  * Screen:     HRM Lương → Thiết lập lương · Hub (L1–L6 navigation)
  * UC:         Spine UC-BP-PAY-STP-01..12
@@ -32,7 +32,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { resolveHrmSpreadsheetScope } from '@/lib/hrmSpreadsheetScope';
 import { HRM_LIST_DEFAULT_COMPANY_ID, HRM_MASTER_TENANT_ID } from '@/lib/hrmListScope';
-import { PolicyPackSetupScreen } from '../policy-pack/PolicyPackSetupScreen';
+import { PolicyListScreen } from '../policy/PolicyListScreen';
 import { PayrollComponentsSetupScreen } from './PayrollComponentsSetupScreen';
 import { PayrollGradeSetupScreen } from './PayrollGradeSetupScreen';
 import { DecisionTypesSetupScreen } from './DecisionTypesSetupScreen';
@@ -66,16 +66,16 @@ type SetupSection = {
 /** §3 IA layout — thứ tự + nhãn nguyên văn UI-HRM-PAY-STP-HUB.md, không hardcode enum BP. */
 const SETUP_SECTIONS: SetupSection[] = [
   { id: 'policy-pack', label: 'Gói chính sách', testId: 'pay-stp-nav-policy-pack', ready: true },
-  { id: 'components', label: 'Danh mục thành phần', testId: 'pay-stp-nav-components', ready: true },
-  { id: 'templates', label: 'Mẫu bảng', testId: 'pay-stp-nav-templates', ready: true },
-  { id: 'import-profile', label: 'Profile nhập', testId: 'pay-stp-nav-import-profile', ready: true },
-  { id: 'salary-groups', label: 'Nhóm lương (Ngạch bậc)', testId: 'pay-stp-nav-salary-groups', ready: true },
-  { id: 'decision-types', label: 'Loại quyết định', testId: 'pay-stp-nav-decision-types', ready: true },
-  { id: 'contract-employment-types', label: 'Loại HĐ & LHDL', testId: 'pay-stp-nav-contract-employment-types', ready: true },
-  { id: 'insurance-types', label: 'Loại bảo hiểm & Tỷ lệ', testId: 'pay-stp-nav-insurance-types', ready: true },
-  { id: 'overtime-types', label: 'Loại OT & Loại trừ', testId: 'pay-stp-nav-overtime-types', ready: true },
-  { id: 'formula-input-pack', label: 'Biến công thức (Allowlist)', testId: 'pay-stp-nav-formula-input-pack', ready: true },
-  { id: 'resolve-panel', label: 'Gợi ý cấu hình', testId: 'pay-stp-nav-resolve-panel', ready: true },
+  { id: 'components', label: 'Danh mục thành phần', testId: 'pay-stp-nav-components', ready: false },
+  { id: 'templates', label: 'Mẫu bảng', testId: 'pay-stp-nav-templates', ready: false },
+  { id: 'import-profile', label: 'Profile nhập', testId: 'pay-stp-nav-import-profile', ready: false },
+  { id: 'salary-groups', label: 'Nhóm lương (Ngạch bậc)', testId: 'pay-stp-nav-salary-groups', ready: false },
+  { id: 'decision-types', label: 'Loại quyết định', testId: 'pay-stp-nav-decision-types', ready: false },
+  { id: 'contract-employment-types', label: 'Loại HĐ & LHDL', testId: 'pay-stp-nav-contract-employment-types', ready: false },
+  { id: 'insurance-types', label: 'Loại bảo hiểm & Tỷ lệ', testId: 'pay-stp-nav-insurance-types', ready: false },
+  { id: 'overtime-types', label: 'Loại OT & Loại trừ', testId: 'pay-stp-nav-overtime-types', ready: false },
+  { id: 'formula-input-pack', label: 'Biến công thức (Allowlist)', testId: 'pay-stp-nav-formula-input-pack', ready: false },
+  { id: 'resolve-panel', label: 'Gợi ý cấu hình', testId: 'pay-stp-nav-resolve-panel', ready: false },
 ];
 
 const DEFAULT_SECTION: SetupSectionId = 'policy-pack';
@@ -184,7 +184,7 @@ export function PayrollSetupHub() {
         <div className="md:col-span-3">
           {activeMeta.ready ? (
             activeMeta.id === 'policy-pack' ? (
-              <PolicyPackSetupScreen />
+              <PolicyListScreen />
             ) : activeMeta.id === 'components' ? (
               <PayrollComponentsSetupScreen />
             ) : activeMeta.id === 'salary-groups' ? (
@@ -199,6 +199,12 @@ export function PayrollSetupHub() {
               <OvertimeTypesSetupScreen />
             ) : activeMeta.id === 'formula-input-pack' ? (
               <FormulaInputPackSetupScreen />
+            ) : activeMeta.id === 'templates' ? (
+              <SalaryTemplatesSetupScreen />
+            ) : activeMeta.id === 'import-profile' ? (
+              <ImportProfileSetupScreen />
+            ) : activeMeta.id === 'resolve-panel' ? (
+              <ResolveConfigPanel />
             ) : null
           ) : (
             <PlaceholderSection label={activeMeta.label} />

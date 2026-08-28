@@ -74,6 +74,7 @@ export type CatalogSearchPickerProps = {
   /** Inline search stays under picker root (CC parent-portal QA + HDSD). */
   searchPlacement?: 'popover' | 'inline';
   hideEmptyStateBox?: boolean;
+  onCreateClick?: (searchQuery: string) => void;
 };
 
 const UUID_LIKE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -108,6 +109,7 @@ export function CatalogSearchPicker({
   'data-testid': dataTestId,
   searchPlacement = 'popover',
   hideEmptyStateBox,
+  onCreateClick,
 }: CatalogSearchPickerProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -258,8 +260,54 @@ export function CatalogSearchPicker({
           />
           {showInlineList ? (
             <CommandList className="max-h-[240px] border-t border-xevn-border">
-              <CommandEmpty>{emptyText}</CommandEmpty>
+              <CommandEmpty>
+                {onCreateClick && query.trim().length > 0 ? (
+                  <div className="p-2 text-center flex flex-col items-center gap-2">
+                    <span className="text-sm text-muted-foreground">{emptyText}</span>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      className="w-full text-xs font-normal"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onCreateClick(query);
+                      }}
+                      onPointerDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onCreateClick(query);
+                      }}
+                    >
+                      + Thêm nhanh: "{query}"
+                    </Button>
+                  </div>
+                ) : (
+                  emptyText
+                )}
+              </CommandEmpty>
               <CommandGroup>{renderOptionItems()}</CommandGroup>
+              {onCreateClick && (
+                <div className="p-1 border-t border-xevn-border bg-muted/20">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start text-xs font-normal text-primary hover:text-primary hover:bg-muted"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onCreateClick(query);
+                    }}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onCreateClick(query);
+                    }}
+                  >
+                    + Thêm nhanh thành phần mới...
+                  </Button>
+                </div>
+              )}
             </CommandList>
           ) : null}
         </Command>
@@ -285,8 +333,54 @@ export function CatalogSearchPicker({
             data-testid={searchTestId}
           />
           <CommandList>
-            <CommandEmpty>{emptyText}</CommandEmpty>
+            <CommandEmpty>
+              {onCreateClick && query.trim().length > 0 ? (
+                <div className="p-2 text-center flex flex-col items-center gap-2">
+                  <span className="text-sm text-muted-foreground">{emptyText}</span>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className="w-full text-xs font-normal"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onCreateClick(query);
+                    }}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onCreateClick(query);
+                    }}
+                  >
+                    + Thêm nhanh: "{query}"
+                  </Button>
+                </div>
+              ) : (
+                emptyText
+              )}
+            </CommandEmpty>
             <CommandGroup>{renderOptionItems()}</CommandGroup>
+            {onCreateClick && (
+              <div className="p-1 border-t border-xevn-border bg-muted/20">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start text-xs font-normal text-primary hover:text-primary hover:bg-muted"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onCreateClick(query);
+                  }}
+                  onPointerDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onCreateClick(query);
+                  }}
+                >
+                  + Thêm nhanh thành phần mới...
+                </Button>
+              </div>
+            )}
           </CommandList>
         </Command>
       </PopoverContent>

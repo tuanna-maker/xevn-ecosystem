@@ -691,7 +691,7 @@ export class AttendanceService {
         `
           INSERT INTO public.attendance_records (
             id, company_id, employee_id, attendance_date, check_in_at, check_out_at, status, note, created_by
-          ) VALUES ($1, $2::uuid, $3::uuid, $4::date, $5, $6, $7, $8, $9)
+          ) VALUES ($1, $2, $3::uuid, $4::date, $5, $6, $7, $8, $9)
           RETURNING
             id, company_id, employee_id, attendance_date, check_in_at, check_out_at,
             status, note, created_by, created_at, updated_at,
@@ -720,7 +720,7 @@ export class AttendanceService {
           randomUUID(),
           created.id,
           'hrm-api',
-          JSON.stringify({ status: created.status }),
+          JSON.stringify({ status: created.status, latitude: hasFiniteCoords ? Number(payload.latitude) : undefined, longitude: hasFiniteCoords ? Number(payload.longitude) : undefined, check_in_method: checkInMethod || 'manual' }),
         ],
       );
       // Thành công: Diễn biến #7 — khóa bản ghi ngày công.
@@ -974,7 +974,7 @@ export class AttendanceService {
           attendance_date, update_type, current_check_in, current_check_out,
           requested_check_in, requested_check_out, reason, evidence_url, approver_name
         ) VALUES (
-          $1, $2::uuid, $3::uuid, $4, $5, $6, $7,
+          $1, $2, $3::uuid, $4, $5, $6, $7,
           $8::date, $9, $10, $11,
           $12, $13, $14, $15, $16
         )

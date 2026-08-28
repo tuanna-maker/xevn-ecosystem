@@ -279,7 +279,7 @@ export function PolicyGroupEditor({ packType, groups, onChange }: PolicyGroupEdi
                                       <Settings2 className="w-3.5 h-3.5" />
                                     </Button>
                                   </PopoverTrigger>
-                                  <PopoverContent className="w-[260px] p-3 text-sm z-[300]">
+                                  <PopoverContent className="w-[260px] p-3 text-sm">
                                     <Label className="text-xs font-semibold mb-2 block">Map với biến số (Data Field)</Label>
                                     <Select
                                       value={col.mappedField || 'none'}
@@ -288,7 +288,7 @@ export function PolicyGroupEditor({ packType, groups, onChange }: PolicyGroupEdi
                                       <SelectTrigger className="h-8 text-xs">
                                         <SelectValue placeholder="Không map (chỉ hiển thị)" />
                                       </SelectTrigger>
-                                      <SelectContent className="z-[300]">
+                                      <SelectContent>
                                         <SelectItem value="none" className="italic text-muted-foreground">Không map</SelectItem>
                                         {MAPPABLE_FIELDS.map(f => (
                                           <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
@@ -347,7 +347,7 @@ export function PolicyGroupEditor({ packType, groups, onChange }: PolicyGroupEdi
                                       <SelectTrigger className="h-8 text-xs bg-white">
                                         <SelectValue placeholder="Chọn ngạch" />
                                       </SelectTrigger>
-                                      <SelectContent className="z-[300] max-h-[250px]">
+                                      <SelectContent className="max-h-[250px]">
                                         <SelectItem value="none">-- Chọn --</SelectItem>
                                         {SAMPLE_GRADES.map(g => (
                                           <SelectItem key={g.code} value={g.code}>{g.code} - {g.name}</SelectItem>

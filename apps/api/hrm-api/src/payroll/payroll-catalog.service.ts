@@ -54,6 +54,7 @@
 import { HttpStatus, Injectable, Optional } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
+import { getVerifiedInternalJwtPayload } from '../common/internal-auth';
 import {
   assertResourceInHrmScope,
   expandPayrollPeriodCompanyIds,
@@ -112,8 +113,10 @@ export class PayrollCatalogService {
     @Optional() private readonly settingsCatalogs?: SettingsCatalogsService,
   ) {}
 
-  private resolveCatalogTenantId(): string {
-    return masterTenantIdFromEnv() || MASTER_TENANT_ID;
+  private resolveCatalogTenantId(authorization?: string): string {
+    const payload = getVerifiedInternalJwtPayload(authorization);
+    const tenantId = typeof payload?.tenantId === 'string' ? payload.tenantId.trim() : '';
+    return tenantId || masterTenantIdFromEnv() || MASTER_TENANT_ID;
   }
 
   private async ensureSalaryComponentSchema() {
@@ -296,7 +299,7 @@ export class PayrollCatalogService {
           SELECT gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, 'all', TRUE, $9, $10, $11
           WHERE NOT EXISTS (
             SELECT 1 FROM public.salary_components
-            WHERE company_id = $1 AND lower(code) = lower($2) AND archived_at IS NULL
+            WHERE company_id = $1 AND lower(code) = lower($2)
           );
         `,
         [
@@ -415,6 +418,7 @@ export class PayrollCatalogService {
   private async assertPayTypeKey(
     companyId: string,
     componentType: string | null | undefined,
+    authorization?: string,
   ): Promise<string> {
     const code = componentType?.trim() ?? '';
     if (!code) {
@@ -426,7 +430,7 @@ export class PayrollCatalogService {
     }
     if (!this.settingsCatalogs) return code;
     const hit = await this.settingsCatalogs.assertCodeInEffectiveCatalog({
-      tenantId: this.resolveCatalogTenantId(),
+      tenantId: this.resolveCatalogTenantId(authorization),
       companyId,
       catalogKey: 'pay_types',
       code,
@@ -628,6 +632,9 @@ export class PayrollCatalogService {
       authorization,
       String(payload.company_id ?? ''),
     );
+    // Ensure starter pay types are populated for this tenant and company before assertion
+    await this.ensureStarterPayTypes(companyId, authorization);
+
     const code = this.assertComponentCodeFormat(String(payload.code ?? ''));
     const name = String(payload.name ?? '').trim();
     if (!name) {
@@ -640,6 +647,7 @@ export class PayrollCatalogService {
     const componentType = await this.assertPayTypeKey(
       companyId,
       payload.component_type,
+      authorization,
     );
     this.assertNotPcKtDualWrite(componentType);
     await this.assertUniqueComponentCode(companyId, code);
@@ -659,9 +667,10 @@ export class PayrollCatalogService {
         `INSERT INTO public.salary_components (
           id, company_id, code, name, category_id, component_type, nature, value_type,
           is_taxable, is_insurance_base, formula, default_value, min_value, max_value,
-          description, applied_to, is_active, sort_order, default_formula_definition_id
+          description, applied_to, is_active, sort_order, default_formula_definition_id,
+          include_in_gross
         ) VALUES (
-          $1, $2, $3, $4, $5::uuid, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19::uuid
+          $1, $2, $3, $4, $5::uuid, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19::uuid, $20
         ) RETURNING *;`,
         [
           id,
@@ -683,6 +692,7 @@ export class PayrollCatalogService {
           payload.is_active ?? true,
           payload.sort_order ?? 0,
           defaultFormulaId,
+          payload.include_in_gross ?? true,
         ],
       );
       return this.mapSalaryComponentRow(res.rows[0] as SalaryComponentRow);
@@ -743,6 +753,7 @@ export class PayrollCatalogService {
       patch.component_type = await this.assertPayTypeKey(
         persistCompanyId,
         payload.component_type,
+        authorization,
       );
       const prevType = String(peek.rows[0].component_type ?? '');
       if (
@@ -785,6 +796,7 @@ export class PayrollCatalogService {
       'value_type',
       'is_taxable',
       'is_insurance_base',
+      'include_in_gross',
       'formula',
       'default_value',
       'min_value',

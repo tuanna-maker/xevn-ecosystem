@@ -452,20 +452,23 @@ export class SettingsCatalogsService {
     if (status === 'all') return true;
     if (status === 'active') return item.status === 'active';
     if (status === 'draft') return item.status === 'draft';
-    if (activeRaw == null || activeRaw.trim() === '') return true;
-    const a = activeRaw.trim().toLowerCase();
-    if (a === '1' || a === 'true' || a === 'active' || a === 'yes')
-      return item.status === 'active';
-    if (
-      a === '0' ||
-      a === 'false' ||
-      a === 'draft' ||
-      a === 'inactive' ||
-      a === 'no'
-    ) {
-      return item.status !== 'active';
+    if (activeRaw != null && activeRaw.trim() !== '') {
+      const a = activeRaw.trim().toLowerCase();
+      if (a === '1' || a === 'true' || a === 'active' || a === 'yes')
+        return item.status === 'active';
+      if (
+        a === '0' ||
+        a === 'false' ||
+        a === 'draft' ||
+        a === 'inactive' ||
+        a === 'no'
+      ) {
+        return item.status !== 'active';
+      }
+      return true;
     }
-    return true;
+    // Default fallback: if no status or active query parameter is passed, filter to active only
+    return item.status === 'active';
   }
 
   /**

@@ -34,7 +34,11 @@ export async function seedXeDuLichCatalogWorkflow() {
 }
 
 export async function fetchCatalogApprovalInbox(assigneeUserId: string) {
-  const q = new URLSearchParams({ assigneeUserId });
+  const q = new URLSearchParams({ 
+    assigneeUserId,
+    tenantId: MASTER_TENANT_ID,
+    companyId: MASTER_TENANT_ID
+  });
   const res = await fetch(`/api/xbos/catalog-governance/inbox?${q}`, { headers: headers(assigneeUserId) });
   if (!res.ok) throw new Error('inbox load failed');
   const json = await res.json();

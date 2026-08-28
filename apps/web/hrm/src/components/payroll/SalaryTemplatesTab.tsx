@@ -38,11 +38,14 @@ import {
   FileText, 
   Settings2,
   Check,
-  X
+  X,
+  Users
 } from 'lucide-react';
 import { useSalaryTemplates, SalaryTemplate, SalaryTemplateFormData, SalaryTemplateComponent, TemplateComponentFormData } from '@/hooks/useSalaryTemplates';
 import { useSalaryComponents } from '@/hooks/useSalaryComponents';
+import { TemplateAssignmentDialog } from './TemplateAssignmentDialog';
 import { cn } from '@/lib/utils';
+
 
 const initialFormData: SalaryTemplateFormData = {
   code: '',
@@ -62,6 +65,7 @@ export const SalaryTemplatesTab = () => {
     updateTemplate,
     deleteTemplate,
     addTemplateComponent,
+    updateTemplateComponent,
     removeTemplateComponent,
     duplicateTemplate,
     isCreating,
@@ -74,8 +78,8 @@ export const SalaryTemplatesTab = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isComponentDialogOpen, setIsComponentDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<SalaryTemplate | null>(null);
   const [formData, setFormData] = useState<SalaryTemplateFormData>(initialFormData);
   const [templateComponents, setTemplateComponents] = useState<SalaryTemplateComponent[]>([]);
@@ -83,13 +87,13 @@ export const SalaryTemplatesTab = () => {
 
   // Fetch components when template is selected for editing
   useEffect(() => {
-    if (selectedTemplate && isComponentDialogOpen) {
+    if (selectedTemplate && isDialogOpen) {
       setIsLoadingTemplateComponents(true);
       fetchTemplateComponents(selectedTemplate.id)
         .then(setTemplateComponents)
         .finally(() => setIsLoadingTemplateComponents(false));
     }
-  }, [selectedTemplate, isComponentDialogOpen]);
+  }, [selectedTemplate, isDialogOpen]);
 
   const filteredTemplates = templates.filter(template => {
     const matchesSearch = 
@@ -120,6 +124,7 @@ export const SalaryTemplatesTab = () => {
     setIsDialogOpen(false);
     setSelectedTemplate(null);
     setFormData(initialFormData);
+    setTemplateComponents([]);
   };
 
   const handleSubmit = async () => {
@@ -127,11 +132,34 @@ export const SalaryTemplatesTab = () => {
 
     try {
       if (selectedTemplate) {
-        await updateTemplate({ id: selectedTemplate.id, formData });
+        await updateTemplate(selectedTemplate.id, formData);
+        handleCloseDialog();
       } else {
-        await createTemplate(formData);
+        const response = await createTemplate(formData);
+        if (response && response.id) {
+          const mapped = {
+            id: response.id,
+            company_id: response.company_id,
+            code: response.code,
+            name: response.name,
+            description: response.description,
+            is_default: Boolean(response.is_default),
+            status: response.status,
+            created_at: response.created_at,
+            updated_at: response.updated_at,
+          };
+          setSelectedTemplate(mapped);
+          setFormData({
+            code: mapped.code,
+            name: mapped.name,
+            description: mapped.description || '',
+            is_default: mapped.is_default,
+            status: mapped.status,
+          });
+        } else {
+          handleCloseDialog();
+        }
       }
-      handleCloseDialog();
     } catch (error) {
       // Error handled in hook
     }
@@ -156,11 +184,6 @@ export const SalaryTemplatesTab = () => {
     }
   };
 
-  const handleOpenComponentDialog = (template: SalaryTemplate) => {
-    setSelectedTemplate(template);
-    setIsComponentDialogOpen(true);
-  };
-
   const handleAddComponent = async (componentId: string) => {
     if (!selectedTemplate) return;
     
@@ -170,7 +193,7 @@ export const SalaryTemplatesTab = () => {
     try {
       await addTemplateComponent({
         templateId: selectedTemplate.id,
-        componentData: {
+        data: {
           component_id: componentId,
           default_value: component.default_value || 0,
           is_required: true,
@@ -188,10 +211,7 @@ export const SalaryTemplatesTab = () => {
   const handleRemoveComponent = async (componentId: string) => {
     if (!selectedTemplate) return;
     try {
-      await removeTemplateComponent({
-        templateId: selectedTemplate.id,
-        componentId,
-      });
+      await removeTemplateComponent(componentId);
       setTemplateComponents(prev => prev.filter(c => c.id !== componentId));
     } catch (error) {
       // Error handled in hook
@@ -316,9 +336,18 @@ export const SalaryTemplatesTab = () => {
                         <Pencil className="h-4 w-4 mr-2" />
                         {t('common.edit')}
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleOpenComponentDialog(template)}>
+                      <DropdownMenuItem onClick={() => handleOpenDialog(template)}>
                         <Settings2 className="h-4 w-4 mr-2" />
                         {t('salaryTemplate.configComponents')}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => {
+                          setSelectedTemplate(template);
+                          setIsAssignmentDialogOpen(true);
+                        }}
+                      >
+                        <Users className="h-4 w-4 mr-2" />
+                        Gán nhân viên
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleDuplicate(template)}>
                         <Copy className="h-4 w-4 mr-2" />
@@ -347,7 +376,7 @@ export const SalaryTemplatesTab = () => {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    onClick={() => handleOpenComponentDialog(template)}
+                    onClick={() => handleOpenDialog(template)}
                   >
                     <Settings2 className="h-4 w-4 mr-1" />
                     {t('salaryTemplate.components')}
@@ -360,197 +389,315 @@ export const SalaryTemplatesTab = () => {
       )}
 
       {/* Create/Edit Template Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[920px]" data-testid="pay-salary-template-dialog-precision">
-          <DialogHeader>
+      <Dialog open={isDialogOpen} onOpenChange={(open) => (open ? setIsDialogOpen(true) : handleCloseDialog())}>
+        <DialogContent 
+          className={cn(
+            "flex flex-col gap-4 max-h-[96vh] transition-all duration-300",
+            selectedTemplate ? "sm:max-w-[1200px]" : "sm:max-w-[500px]"
+          )}
+          data-testid="pay-salary-template-dialog-precision"
+        >
+          <DialogHeader className="shrink-0">
             <DialogTitle className="text-[20px] font-bold font-display">
               {selectedTemplate ? t('salaryTemplate.editTitle') : t('salaryTemplate.addTitle')}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="code">{t('salaryTemplate.code')} *</Label>
-                <Input
-                  id="code"
-                  value={formData.code}
-                  onChange={(e) => setFormData(prev => ({ ...prev, code: e.target.value }))}
-                  placeholder="VD: TPL001"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="status">Trạng thái</Label>
-                <Select 
-                  value={formData.status} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, status: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Hoạt động</SelectItem>
-                    <SelectItem value="inactive">Không hoạt động</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="name">Tên mẫu *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="VD: Mẫu lương nhân viên văn phòng"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="description">Mô tả</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Mô tả chi tiết về mẫu bảng lương..."
-                rows={3}
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="is_default">Đặt làm mẫu mặc định</Label>
-              <Switch
-                id="is_default"
-                checked={formData.is_default}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_default: checked }))}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={handleCloseDialog}>
-              Hủy
-            </Button>
-            <Button 
-              onClick={handleSubmit}
-              disabled={!formData.code || !formData.name || isCreating || isUpdating}
-            >
-              {isCreating || isUpdating ? 'Đang lưu...' : 'Lưu'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
-      {/* Component Configuration Dialog */}
-      <Dialog open={isComponentDialogOpen} onOpenChange={setIsComponentDialogOpen}>
-        <DialogContent className="sm:max-w-[920px] max-h-[80vh] overflow-y-auto" data-testid="pay-salary-template-components-dialog-precision">
-          <DialogHeader>
-            <DialogTitle className="text-[20px] font-bold font-display">
-              Cấu hình thành phần lương - {selectedTemplate?.name}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            {/* Add Component */}
-            <div className="flex gap-2">
-              <Select onValueChange={handleAddComponent}>
-                <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="Chọn thành phần để thêm..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {isLoadingSalaryComponents ? (
-                    <div className="p-2 text-sm text-muted-foreground text-center">Đang tải Nest…</div>
-                  ) : allComponents.length === 0 ? (
-                    <div
-                      className="p-2 text-xs text-muted-foreground text-center max-w-[280px]"
-                      data-testid="hdsd-pay-salary-tpl-nest-empty"
-                    >
-                      Nest salary_components trống. Tạo TP admin trước — không seed (AC-PLT-PAY-01b).
+          {selectedTemplate ? (
+            <div className="flex h-[60vh] md:h-[70vh] gap-6 overflow-hidden">
+              {/* Left Column: Basic Info (320px) */}
+              <div className="w-[320px] flex-shrink-0 flex flex-col space-y-4 rounded-lg border bg-slate-50/60 p-4 overflow-y-auto">
+                <div className="space-y-2">
+                  <Label htmlFor="code">{t('salaryTemplate.code')} *</Label>
+                  <Input
+                    id="code"
+                    value={formData.code}
+                    onChange={(e) => setFormData(prev => ({ ...prev, code: e.target.value }))}
+                    placeholder="VD: TPL001"
+                    disabled
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="status">Trạng thái</Label>
+                  <Select 
+                    value={formData.status} 
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, status: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Hoạt động</SelectItem>
+                      <SelectItem value="inactive">Không hoạt động</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="name">Tên mẫu *</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="VD: Mẫu lương nhân viên văn phòng"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description">Mô tả</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Mô tả chi tiết về mẫu bảng lương..."
+                    rows={3}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="is_default">Đặt làm mẫu mặc định</Label>
+                  <Switch
+                    id="is_default"
+                    checked={formData.is_default}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_default: checked }))}
+                  />
+                </div>
+                <div className="pt-2 flex flex-col gap-2 mt-auto">
+                  <Button 
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={!formData.code || !formData.name || isUpdating}
+                    className="w-full"
+                  >
+                    {isUpdating ? 'Đang lưu...' : 'Lưu thông tin'}
+                  </Button>
+                  <Button variant="outline" onClick={handleCloseDialog} className="w-full">
+                    Đóng
+                  </Button>
+                </div>
+              </div>
+
+              {/* Right Column: Components list (flex-1) */}
+              <div className="flex-1 overflow-y-auto pr-2 space-y-4 flex flex-col">
+                <div className="flex items-center justify-between border-b pb-2">
+                  <h3 className="text-sm font-semibold text-xevn-text">Thành phần lương trong mẫu</h3>
+                  <div className="w-64">
+                    <Select onValueChange={handleAddComponent}>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Thêm thành phần..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {isLoadingSalaryComponents ? (
+                          <div className="p-2 text-sm text-muted-foreground text-center">Đang tải Nest…</div>
+                        ) : allComponents.length === 0 ? (
+                          <div className="p-2 text-xs text-muted-foreground text-center">
+                            Nest salary_components trống.
+                          </div>
+                        ) : availableComponents.length === 0 ? (
+                          <div className="p-2 text-sm text-muted-foreground text-center">
+                            Không còn thành phần nào
+                          </div>
+                        ) : (
+                          availableComponents.map(component => (
+                            <SelectItem key={component.id} value={component.id}>
+                              <div className="flex items-center gap-2">
+                                <span>{component.name}</span>
+                                <Badge variant="outline" className="text-xs">
+                                  {component.nature === 'income' ? 'Thu nhập' : 'Khấu trừ'}
+                                </Badge>
+                              </div>
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto min-h-[300px]">
+                  {isLoadingTemplateComponents ? (
+                    <div className="space-y-2">
+                      {[1, 2, 3].map(i => (
+                        <div key={i} className="h-12 bg-muted rounded animate-pulse" />
+                      ))}
                     </div>
-                  ) : availableComponents.length === 0 ? (
-                    <div className="p-2 text-sm text-muted-foreground text-center">
-                      Không còn thành phần nào để thêm
+                  ) : templateComponents.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground text-sm">
+                      Chưa có thành phần nào. Chọn thành phần từ danh sách trên để thêm.
                     </div>
                   ) : (
-                    availableComponents.map(component => (
-                      <SelectItem key={component.id} value={component.id}>
-                        <div className="flex items-center gap-2">
-                          <span>{component.name}</span>
-                          <Badge variant="outline" className="text-xs">
-                            {component.nature === 'income' ? 'Thu nhập' : 'Khấu trừ'}
-                          </Badge>
-                        </div>
-                      </SelectItem>
-                    ))
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-16">TT</TableHead>
+                          <TableHead>Thành phần</TableHead>
+                          <TableHead>Loại</TableHead>
+                          <TableHead>Tính chất</TableHead>
+                          <TableHead className="text-right w-[160px]">Giá trị mặc định</TableHead>
+                          <TableHead className="w-12 text-center" />
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {templateComponents
+                          .sort((a, b) => a.sort_order - b.sort_order)
+                          .map(tc => (
+                            <TableRow key={tc.id}>
+                              <TableCell>
+                                <Input
+                                  type="text"
+                                  inputMode="numeric"
+                                  pattern="[0-9]*"
+                                  className="h-8 w-12 text-center p-1 font-mono"
+                                  value={tc.sort_order}
+                                  onChange={async (e) => {
+                                    const val = Number(e.target.value.replace(/\D/g, '')) || 0;
+                                    setTemplateComponents(prev => 
+                                      prev.map(item => item.id === tc.id ? { ...item, sort_order: val } : item)
+                                    );
+                                    await updateTemplateComponent({
+                                      componentRowId: tc.id,
+                                      data: { sort_order: val }
+                                    });
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <div>
+                                  <p className="font-medium text-sm">{tc.component?.name || 'N/A'}</p>
+                                  <p className="text-xs text-muted-foreground">{tc.component?.code || ''}</p>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className="text-xs">
+                                  {tc.component?.component_type === 'fixed' ? 'Cố định' : 
+                                   tc.component?.component_type === 'variable' ? 'Biến đổi' : 'Công thức'}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <Badge className={cn(
+                                  "text-xs",
+                                  tc.component?.nature === 'income' 
+                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                                )}>
+                                  {tc.component?.nature === 'income' ? 'Thu nhập' : 'Khấu trừ'}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <Input
+                                  type="text"
+                                  className="h-8 text-right font-mono text-sm"
+                                  defaultValue={tc.default_value}
+                                  onBlur={async (e) => {
+                                    const rawVal = e.target.value.replace(/\./g, '').replace(/,/g, '');
+                                    const val = Number(rawVal) || 0;
+                                    await updateTemplateComponent({
+                                      componentRowId: tc.id,
+                                      data: { default_value: val }
+                                    });
+                                    const updated = await fetchTemplateComponents(selectedTemplate.id);
+                                    setTemplateComponents(updated);
+                                  }}
+                                  onKeyDown={async (e) => {
+                                    if (e.key === 'Enter') {
+                                      const target = e.target as HTMLInputElement;
+                                      const rawVal = target.value.replace(/\./g, '').replace(/,/g, '');
+                                      const val = Number(rawVal) || 0;
+                                      await updateTemplateComponent({
+                                        componentRowId: tc.id,
+                                        data: { default_value: val }
+                                      });
+                                      const updated = await fetchTemplateComponents(selectedTemplate.id);
+                                      setTemplateComponents(updated);
+                                    }
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell className="text-center">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-destructive hover:text-destructive"
+                                  onClick={() => handleRemoveComponent(tc.id)}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                      </TableBody>
+                    </Table>
                   )}
-                </SelectContent>
-              </Select>
+                </div>
+              </div>
             </div>
-
-            {/* Components List */}
-            {isLoadingTemplateComponents ? (
-              <div className="space-y-2">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="h-12 bg-muted rounded animate-pulse" />
-                ))}
+          ) : (
+            <>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="code">{t('salaryTemplate.code')} *</Label>
+                    <Input
+                      id="code"
+                      value={formData.code}
+                      onChange={(e) => setFormData(prev => ({ ...prev, code: e.target.value }))}
+                      placeholder="VD: TPL001"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="status">Trạng thái</Label>
+                    <Select 
+                      value={formData.status} 
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, status: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">Hoạt động</SelectItem>
+                        <SelectItem value="inactive">Không hoạt động</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="name">Tên mẫu *</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="VD: Mẫu lương nhân viên văn phòng"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description">Mô tả</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Mô tả chi tiết về mẫu bảng lương..."
+                    rows={3}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="is_default">Đặt làm mẫu mặc định</Label>
+                  <Switch
+                    id="is_default"
+                    checked={formData.is_default}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_default: checked }))}
+                  />
+                </div>
               </div>
-            ) : templateComponents.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                Chưa có thành phần nào. Chọn thành phần từ danh sách trên để thêm.
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Thành phần</TableHead>
-                    <TableHead>Loại</TableHead>
-                    <TableHead>Tính chất</TableHead>
-                    <TableHead className="text-right">Giá trị mặc định</TableHead>
-                    <TableHead className="w-20"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {templateComponents.map(tc => (
-                    <TableRow key={tc.id}>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium">{tc.component?.name || 'N/A'}</p>
-                          <p className="text-xs text-muted-foreground">{tc.component?.code || ''}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">
-                          {tc.component?.component_type === 'fixed' ? 'Cố định' : 
-                           tc.component?.component_type === 'variable' ? 'Biến đổi' : 'Công thức'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={cn(
-                          tc.component?.nature === 'income' 
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-                        )}>
-                          {tc.component?.nature === 'income' ? 'Thu nhập' : 'Khấu trừ'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right font-medium">
-                        {tc.default_value?.toLocaleString('vi-VN')} ₫
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-destructive hover:text-destructive"
-                          onClick={() => handleRemoveComponent(tc.id)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </div>
-          <DialogFooter>
-            <Button onClick={() => setIsComponentDialogOpen(false)}>
-              Đóng
-            </Button>
-          </DialogFooter>
+              <DialogFooter className="shrink-0 pt-4">
+                <Button variant="outline" onClick={handleCloseDialog}>
+                  Hủy
+                </Button>
+                <Button 
+                  onClick={handleSubmit}
+                  disabled={!formData.code || !formData.name || isCreating}
+                >
+                  {isCreating ? 'Đang tạo...' : 'Tạo mẫu'}
+                </Button>
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
       </Dialog>
 
@@ -558,24 +705,29 @@ export const SalaryTemplatesTab = () => {
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Xác nhận xóa</AlertDialogTitle>
+            <AlertDialogTitle>{t('common.confirmDelete')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Bạn có chắc chắn muốn xóa mẫu bảng lương "{selectedTemplate?.name}"? 
-              Hành động này không thể hoàn tác.
+              {t('salaryTemplate.deleteConfirmMessage')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Hủy</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              disabled={isDeleting}
-            >
-              {isDeleting ? 'Đang xóa...' : 'Xóa'}
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
+              {isDeleting ? t('common.deleting') : t('common.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <TemplateAssignmentDialog
+        isOpen={isAssignmentDialogOpen}
+        onClose={() => {
+          setIsAssignmentDialogOpen(false);
+          setSelectedTemplate(null);
+        }}
+        templateId={selectedTemplate?.id || null}
+        templateName={selectedTemplate?.name || ''}
+      />
     </div>
   );
 };

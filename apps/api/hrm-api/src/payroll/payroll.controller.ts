@@ -99,6 +99,10 @@ import { VoidPayslipDto } from './dto/void-payslip.dto';
 import { CreateSalaryTemplateDto } from './dto/create-salary-template.dto';
 import { ListSalaryTemplatesQueryDto } from './dto/list-salary-templates.query.dto';
 import { UpdateSalaryTemplateDto } from './dto/update-salary-template.dto';
+import {
+  AssignEmployeesToTemplateDto,
+  UnassignEmployeesFromTemplateDto,
+} from './dto/assign-employee-templates.dto';
 import { CreateAdvanceRequestDto } from './dto/create-advance-request.dto';
 import { CreateAdvanceRequestEmployeeDto } from './dto/create-advance-request-employee.dto';
 import { DecideAdvanceRequestDto } from './dto/decide-advance-request.dto';
@@ -126,6 +130,7 @@ import {
   UpdatePayFormulaDto,
 } from './dto/pay-formula.dto';
 import { PayrollService } from './payroll.service';
+import { PayrollProcessorService } from './engine/payroll-processor.service';
 import { PayrollCatalogService } from './payroll-catalog.service';
 import { PayPayrollGroupService } from './pay-payroll-group.service';
 import { PayFormulaService } from './pay-formula.service';
@@ -159,6 +164,7 @@ import {
 export class PayrollController {
   constructor(
     private readonly payrollService: PayrollService,
+    private readonly payrollProcessorService: PayrollProcessorService,
     private readonly payrollCatalog: PayrollCatalogService,
     private readonly payFormulaService: PayFormulaService,
     private readonly paySheetTemplateService: PaySheetTemplateService,
@@ -177,7 +183,20 @@ export class PayrollController {
         'Unauthorized payroll access',
         HttpStatus.UNAUTHORIZED,
       );
+      }
     }
+
+  @Post('batch')
+  async runPayrollBatch(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') companyId: string | undefined,
+    @Body('period_month') periodMonth: string
+  ) {
+    this.assertBusinessAccess(authorization, internalApiKey);
+    const result = await this.payrollProcessorService.runBatch(tenantId || 'main', companyId || 'main', periodMonth || '2026-08-01');
+    return ok(result, 'HRM-PAY-BATCH-200', 'Payroll batch executed');
   }
 
   @Post('periods')
@@ -1144,6 +1163,63 @@ export class PayrollController {
     return this.payrollService
       .deleteSalaryTemplate(templateId, companyId, authorization)
       .then((data) => ok(data, 'HRM-PAY-200', 'Salary template deleted'));
+  }
+
+  @Post('salary-templates/:templateId/assign-employees')
+  assignEmployees(
+    @Param('templateId', new ParseUUIDPipe()) templateId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Body() body: AssignEmployeesToTemplateDto,
+  ) {
+    this.assertBusinessAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
+    return this.payrollService
+      .assignEmployeesToTemplate(templateId, body.company_id, body.employee_ids, authorization)
+      .then((data) => ok(data, 'HRM-PAY-200', 'Employees assigned to template successfully'));
+  }
+
+  @Post('salary-templates/:templateId/unassign-employees')
+  unassignEmployees(
+    @Param('templateId', new ParseUUIDPipe()) templateId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Body() body: UnassignEmployeesFromTemplateDto,
+  ) {
+    this.assertBusinessAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
+    return this.payrollService
+      .unassignEmployeesFromTemplate(templateId, body.company_id, body.employee_ids, authorization)
+      .then((data) => ok(data, 'HRM-PAY-200', 'Employees unassigned from template successfully'));
+  }
+
+  @Get('salary-templates/:templateId/employees')
+  listTemplateAssignments(
+    @Param('templateId', new ParseUUIDPipe()) templateId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query('company_id') companyId: string,
+  ) {
+    this.assertBusinessAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
+    return this.payrollService
+      .listTemplateAssignments(templateId, companyId, authorization)
+      .then((data) => ok(data, 'HRM-PAY-200', 'Template assignments retrieved'));
   }
 
   // --- AMIS mẫu bảng lương (≠ salary-templates enroll pack) ---

@@ -70,15 +70,17 @@ import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
 import {
   ATT_ATTENDANCE_CODE_KEY_FORMAT,
   HRM_ATT_CODE_KEY_CODE,
+  useAttAttendanceCodesEffective,
+  attAttendanceCodeToPickerOption,
 } from '@/hooks/useAttAttendanceCodesEffective';
 import {
   createAttendanceRecord,
-  HrmAttendanceRecord,
-  HrmAttendanceStatus,
-  HrmEmployeeRecord,
+  deleteAttendanceRecord,
   listAttendanceRecords,
-  listEmployees,
   updateAttendanceStatus,
+  listEffectiveAttendanceCodes,
+  type HrmAttendanceRecord,
+  type HrmAttendanceStatus,
 } from '@/integrations/hrmApi';
 
 export interface AttendanceRecord {
@@ -295,6 +297,7 @@ export function useAttendanceRecords(dateFilter?: string) {
   const { currentCompanyId, user } = useAuth();
   const { toast } = useToast();
   const { t } = useTranslation();
+  const { nestOptions, effectiveCount } = useAttAttendanceCodesEffective();
   const h = (key: string, opts?: any): string => t(`hk.attendance.${key}`, opts) as string;
   const today = new Date().toISOString().split('T')[0];
 
@@ -356,9 +359,62 @@ export function useAttendanceRecords(dateFilter?: string) {
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
       const lateMinutes = Math.max(0, currentMinutes - standardStartTime);
       const explicitStatus = (data.status ?? '').trim();
-      const apiStatus = explicitStatus
-        ? toApiAttendanceStatus(explicitStatus)
-        : toApiAttendanceStatus(lateMinutes > 0 ? 'late' : 'present');
+      let apiStatus = '';
+      if (explicitStatus) {
+        apiStatus = toApiAttendanceStatus(explicitStatus);
+      } else {
+        const rawStatus = lateMinutes > 0 ? 'late' : 'present';
+        apiStatus = toApiAttendanceStatus(rawStatus);
+      }
+
+      // Safe lookup: if nestOptions is empty but currentCompanyId is present,
+      // let's fetch listEffectiveAttendanceCodes directly to make sure we have the latest catalog!
+      let activeOptions = nestOptions;
+      let activeCount = effectiveCount;
+      if (activeCount === 0 && currentCompanyId) {
+        try {
+          const res = await listEffectiveAttendanceCodes({ company_id: currentCompanyId });
+          if (res && res.items) {
+            activeOptions = res.items.map(r => attAttendanceCodeToPickerOption(r)).filter(o => Boolean(o.code));
+            activeCount = res.total ?? activeOptions.length;
+          }
+        } catch (e) {
+          console.error('Failed to pre-fetch effective codes during checkin:', e);
+        }
+      }
+
+      // Dynamic mapping when effective catalog is active
+      if (activeCount > 0) {
+        if (apiStatus === 'present') {
+          const hit = activeOptions.find(
+            (o) =>
+              ['present', 'p'].includes(o.code.toLowerCase()) ||
+              o.symbol?.toLowerCase() === 'p'
+          );
+          if (hit) {
+            apiStatus = hit.code;
+          } else {
+            apiStatus = activeOptions[0]?.code || apiStatus;
+          }
+        } else if (apiStatus === 'late') {
+          const hit = activeOptions.find(
+            (o) =>
+              ['late', 'tk'].includes(o.code.toLowerCase()) ||
+              o.symbol?.toLowerCase() === 'tk' ||
+              o.code.toLowerCase().includes('muon')
+          );
+          if (hit) {
+            apiStatus = hit.code;
+          } else {
+            const pHit = activeOptions.find(
+              (o) =>
+                ['present', 'p'].includes(o.code.toLowerCase()) ||
+                o.symbol?.toLowerCase() === 'p'
+            );
+            apiStatus = pHit?.code || activeOptions[0]?.code || apiStatus;
+          }
+        }
+      }
       const checkInIso = new Date(`${today}T${checkInTime}:00`).toISOString();
       const built = buildAttendanceCheckInApiPayload({
           company_id: currentCompanyId,

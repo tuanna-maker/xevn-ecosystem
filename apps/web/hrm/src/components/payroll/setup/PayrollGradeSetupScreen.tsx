@@ -119,9 +119,9 @@ export function PayrollGradeSetupScreen() {
         </Badge>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {/* Left List: Grade Catalog */}
-        <div className="md:col-span-1 space-y-3">
+        <div className="lg:col-span-1 xl:col-span-1 space-y-3">
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -141,16 +141,16 @@ export function PayrollGradeSetupScreen() {
                   key={g.id}
                   type="button"
                   onClick={() => setSelectedGradeId(g.id)}
-                  className={`w-full text-left p-2.5 rounded-md transition-colors text-sm flex items-center justify-between ${
+                  className={`w-full text-left p-2.5 rounded-md transition-colors text-sm flex items-center justify-between gap-2 ${
                     selectedGradeId === g.id
                       ? 'bg-primary text-primary-foreground font-medium'
                       : 'hover:bg-muted text-foreground'
                   }`}
                   data-testid={`grade-item-${g.code}`}
                 >
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <div className="font-mono font-bold">{g.code}</div>
-                    <div className="text-xs opacity-90 truncate max-w-[180px]">{g.name}</div>
+                    <div className="text-xs opacity-90 truncate">{g.name}</div>
                   </div>
                   <Badge variant="outline" className="text-[10px] font-normal shrink-0">
                     {g.categoryGroup}
@@ -162,7 +162,7 @@ export function PayrollGradeSetupScreen() {
         </div>
 
         {/* Right Details: Steps Breakdown */}
-        <div className="md:col-span-2">
+        <div className="lg:col-span-2 xl:col-span-3">
           <Card>
             <CardContent className="p-4 space-y-4">
               <div className="flex items-start justify-between border-b pb-3">

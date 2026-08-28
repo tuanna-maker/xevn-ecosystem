@@ -1,13 +1,3 @@
-/**
- * @CODE-MEMORY
- * Screen:     HRM Lương → Thiết lập lương → Chức danh & Phòng ban/Chi nhánh (Wave 3)
- * UC:         UC-HRM-DEPT-01, UC-HRM-POS-01
- * SRS:        docs/program/deltas/BA_HRM_POSITION_DEPARTMENT_SRS_01_20260813.md
- * TechSpec:   docs/program/deltas/BA_HRM_POSITION_DEPARTMENT_TECHSPEC_01_20260813.md
- * UI:         docs/hrm/ui-screens/UI-HRM-POSITION-DEPARTMENT-01.md
- * WorkItem:   D-PO-HRM-POS-DEPT-FE-01
- * Coded:      2026-08-13
- */
 import { useState, useMemo } from 'react';
 import { Search, Plus, FolderTree, Building2, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -28,15 +18,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-
-export type DepartmentTreeItem = {
-  id: string;
-  code: string;
-  name: string;
-  regionCode: string;
-  parentId?: string;
-  children?: DepartmentTreeItem[];
-};
+import { useDepartments } from '@/hooks/useDepartments';
+import { usePayPositions, useDepartmentPositions } from '@/hooks/usePayPositions';
+import { useGrades } from '@/hooks/useGrades';
+import { useToast } from '@/hooks/use-toast';
 
 export type PositionItem = {
   id: string;
@@ -44,58 +29,98 @@ export type PositionItem = {
   titleName: string;
   departmentId: string;
   departmentName: string;
-  gradeCode: string; // MUST NOT BE NULL
+  gradeCode: string;
   gradeName: string;
-  status: 'active' | 'archived';
+  status: string;
 };
 
-const SAMPLE_DEPARTMENTS: DepartmentTreeItem[] = [
-  {
-    id: 'd1',
-    code: 'DEPT_HOLDING',
-    name: 'Tập đoàn X.E Việt Nam',
-    regionCode: 'VUNG_1',
-    children: [
-      { id: 'd2', code: 'DEPT_NAM_DINH', name: 'Chi nhánh Nam Định', regionCode: 'VUNG_2', parentId: 'd1' },
-      { id: 'd3', code: 'DEPT_NINH_BINH', name: 'Chi nhánh Ninh Bình', regionCode: 'VUNG_3', parentId: 'd1' },
-      { id: 'd4', code: 'DEPT_THAI_BINH', name: 'Chi nhánh Thái Bình', regionCode: 'VUNG_3', parentId: 'd1' },
-      { id: 'd5', code: 'DEPT_FLEET_OPS', name: 'Phòng Vận tải & Đội xe', regionCode: 'VUNG_1', parentId: 'd1' },
-    ],
-  },
-];
-
-const SAMPLE_POSITIONS: PositionItem[] = [
-  { id: 'p1', code: 'POS_DRIVER_MAIN', titleName: 'Lái xe đường dài', departmentId: 'd5', departmentName: 'Phòng Vận tải & Đội xe', gradeCode: 'E1', gradeName: 'Ngạch E1 - Lái xe đường dài', status: 'active' },
-  { id: 'p2', code: 'POS_LEADER_FLEET', titleName: 'Đội trưởng Đội xe', departmentId: 'd5', departmentName: 'Phòng Vận tải & Đội xe', gradeCode: 'E2', gradeName: 'Ngạch E2 - Lái xe trung tâm / Đội trưởng', status: 'active' },
-  { id: 'p3', code: 'POS_STAFF_ND', titleName: 'Nhân viên kinh doanh Nam Định', departmentId: 'd2', departmentName: 'Chi nhánh Nam Định', gradeCode: 'D1', gradeName: 'Ngạch D1 - Nhân viên nghiệp vụ phổ thông', status: 'active' },
-  { id: 'p4', code: 'POS_SPECIALIST_NB', titleName: 'Chuyên viên điều hành Ninh Bình', departmentId: 'd3', departmentName: 'Chi nhánh Ninh Bình', gradeCode: 'D2', gradeName: 'Ngạch D2 - Chuyên viên sơ cấp', status: 'active' },
-];
-
 export function PositionsDepartmentsSetupScreen() {
-  const [selectedDeptId, setSelectedDeptId] = useState<string>('d1');
+  const { toast } = useToast();
+  const [selectedDeptId, setSelectedDeptId] = useState<string>('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddPosDialogOpen, setIsAddPosDialogOpen] = useState(false);
 
   // Form State
   const [posCode, setPosCode] = useState('');
   const [posTitle, setPosTitle] = useState('');
-  const [posGradeCode, setPosGradeCode] = useState<string>('D1'); // Grade MUST NOT be null
+  const [posGradeCode, setPosGradeCode] = useState<string>('');
 
-  const filteredPositions = useMemo(() => {
-    return SAMPLE_POSITIONS.filter((pos) => {
-      const matchSearch =
-        pos.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        pos.titleName.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchDept = selectedDeptId === 'd1' || pos.departmentId === selectedDeptId;
-      return matchSearch && matchDept;
+  const { departments, isLoading: deptsLoading } = useDepartments();
+  const { positions: allPositions, createPosition, isLoading: posLoading } = usePayPositions();
+  const { departmentPositions, isLoading: deptPosLoading } = useDepartmentPositions(
+    selectedDeptId !== 'ALL' ? selectedDeptId : undefined
+  );
+  const { grades } = useGrades();
+
+  // Build department tree
+  const deptTree = useMemo(() => {
+    const rootNodes = departments.filter(d => !d.parent_id);
+    const getChildren = (parentId: string) => departments.filter(d => d.parent_id === parentId);
+    
+    return rootNodes.map(root => ({
+      ...root,
+      children: getChildren(root.id)
+    }));
+  }, [departments]);
+
+  const displayPositions: PositionItem[] = useMemo(() => {
+    let list: PositionItem[] = [];
+    
+    if (selectedDeptId === 'ALL') {
+      list = allPositions.map(p => ({
+        id: p.id,
+        code: p.code,
+        titleName: p.name,
+        departmentId: 'ALL',
+        departmentName: 'Toàn công ty',
+        gradeCode: p.grade_code,
+        gradeName: 'Ngạch ',
+        status: p.status,
+      }));
+    } else {
+      const selectedDept = departments.find(d => d.id === selectedDeptId);
+      list = departmentPositions.map(p => ({
+        id: p.id,
+        code: p.position_code,
+        titleName: p.effective_name,
+        departmentId: p.department_id,
+        departmentName: selectedDept?.name || 'Phòng ban',
+        gradeCode: p.effective_grade_code,
+        gradeName: 'Ngạch ',
+        status: p.status,
+      }));
+    }
+
+    return list.filter((pos) => {
+      const search = searchTerm.toLowerCase();
+      return (
+        pos.code.toLowerCase().includes(search) ||
+        pos.titleName.toLowerCase().includes(search)
+      );
     });
-  }, [searchTerm, selectedDeptId]);
+  }, [selectedDeptId, allPositions, departmentPositions, searchTerm, departments]);
 
-  const handleCreatePosition = () => {
-    if (!posCode || !posTitle || !posGradeCode) return;
-    setIsAddPosDialogOpen(false);
-    setPosCode('');
-    setPosTitle('');
+  const handleCreatePosition = async () => {
+    if (!posCode || !posTitle || !posGradeCode) {
+      toast({ title: 'Lỗi', description: 'Vui lòng điền đủ mã, tên và ngạch lương', variant: 'destructive' });
+      return;
+    }
+    
+    try {
+      await createPosition.mutateAsync({
+        code: posCode,
+        name: posTitle,
+        grade_code: posGradeCode,
+        position_scope: 'company'
+      });
+      toast({ title: 'Thành công', description: 'Đã tạo chức danh mới' });
+      setIsAddPosDialogOpen(false);
+      setPosCode('');
+      setPosTitle('');
+      setPosGradeCode('');
+    } catch (error: any) {
+      toast({ title: 'Lỗi', description: error.message || 'Không thể tạo chức danh', variant: 'destructive' });
+    }
   };
 
   return (
@@ -111,27 +136,50 @@ export function PositionsDepartmentsSetupScreen() {
 
           <Card>
             <CardContent className="p-2 space-y-1">
-              {SAMPLE_DEPARTMENTS[0].children?.map((dept) => (
-                <button
-                  key={dept.id}
-                  type="button"
-                  onClick={() => setSelectedDeptId(dept.id)}
-                  className={`w-full text-left p-2.5 rounded-md transition-colors text-sm flex items-center justify-between ${
-                    selectedDeptId === dept.id
-                      ? 'bg-primary text-primary-foreground font-medium'
-                      : 'hover:bg-muted text-foreground'
-                  }`}
-                  data-testid={`dept-node-${dept.code}`}
-                >
-                  <div className="flex items-center gap-2 truncate">
-                    <Building2 className="h-4 w-4 shrink-0" />
-                    <span className="truncate">{dept.name}</span>
-                  </div>
-                  <Badge variant="outline" className="text-[10px] shrink-0 font-mono">
-                    {dept.regionCode}
-                  </Badge>
-                </button>
-              ))}
+              {deptsLoading ? (
+                <div className="p-4 text-center text-sm text-muted-foreground">Đang tải...</div>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDeptId('ALL')}
+                    className="w-full text-left p-2.5 rounded-md transition-colors text-sm flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2 truncate">
+                      <Building2 className="h-4 w-4 shrink-0" />
+                      <span className="truncate">Toàn công ty</span>
+                    </div>
+                  </button>
+                  
+                  {deptTree.map((dept) => (
+                    <div key={dept.id} className="space-y-1">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedDeptId(dept.id)}
+                        className="w-full text-left p-2.5 rounded-md transition-colors text-sm flex items-center justify-between"
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <Building2 className="h-4 w-4 shrink-0" />
+                          <span className="truncate">{dept.name}</span>
+                        </div>
+                      </button>
+                      
+                      {dept.children.map(child => (
+                        <button
+                          key={child.id}
+                          type="button"
+                          onClick={() => setSelectedDeptId(child.id)}
+                          className="w-full text-left p-2.5 pl-8 rounded-md transition-colors text-sm flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-2 truncate">
+                            <span className="truncate">{child.name}</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  ))}
+                </>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -174,7 +222,11 @@ export function PositionsDepartmentsSetupScreen() {
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {filteredPositions.map((pos) => (
+                    {(posLoading || deptPosLoading) ? (
+                      <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">Đang tải...</td></tr>
+                    ) : displayPositions.length === 0 ? (
+                      <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">Không có chức danh nào</td></tr>
+                    ) : displayPositions.map((pos) => (
                       <tr key={pos.id} className="hover:bg-muted/50">
                         <td className="px-4 py-3 font-mono font-medium">{pos.code}</td>
                         <td className="px-4 py-3 font-medium text-foreground">{pos.titleName}</td>
@@ -185,8 +237,8 @@ export function PositionsDepartmentsSetupScreen() {
                           </Badge>
                         </td>
                         <td className="px-4 py-3">
-                          <span className="text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                            Hoạt động
+                          <span className="text-xs font-medium px-2 py-0.5 rounded-full border">
+                            {pos.status === 'active' ? 'Hoạt động' : 'Đã đóng'}
                           </span>
                         </td>
                       </tr>
@@ -230,23 +282,22 @@ export function PositionsDepartmentsSetupScreen() {
               </label>
               <Select value={posGradeCode} onValueChange={setPosGradeCode}>
                 <SelectTrigger className="mt-1 font-mono">
-                  <SelectValue />
+                  <SelectValue placeholder="Chọn ngạch lương..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="D1">D1 - Nhân viên nghiệp vụ phổ thông</SelectItem>
-                  <SelectItem value="D2">D2 - Chuyên viên sơ cấp</SelectItem>
-                  <SelectItem value="E1">E1 - Lái xe đường dài</SelectItem>
-                  <SelectItem value="E2">E2 - Lái xe trung tâm / Đội trưởng</SelectItem>
+                  {grades?.map(g => (
+                    <SelectItem key={g.id} value={g.grade_code}>{g.grade_code} - {g.grade_name}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setIsAddPosDialogOpen(false)}>
+            <Button type="button" variant="outline" onClick={() => setIsAddPosDialogOpen(false)} disabled={createPosition.isPending}>
               Hủy
             </Button>
-            <Button type="button" onClick={handleCreatePosition} data-testid="btn-save-position">
-              Lưu chức danh
+            <Button type="button" onClick={handleCreatePosition} disabled={createPosition.isPending} data-testid="btn-save-position">
+              {createPosition.isPending ? 'Đang lưu...' : 'Lưu chức danh'}
             </Button>
           </DialogFooter>
         </DialogContent>

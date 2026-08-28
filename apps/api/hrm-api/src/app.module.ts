@@ -10,12 +10,22 @@ import { EmployeesModule } from './employees/employees.module';
 import { FleetModule } from './fleet/fleet.module';
 import { PayrollController } from './payroll/payroll.controller';
 import { PayrollService } from './payroll/payroll.service';
+import { PayrollProcessorService } from './payroll/engine/payroll-processor.service';
+import { InputHubController } from './payroll/input-hub.controller';
 import { PayrollCatalogService } from './payroll/payroll-catalog.service';
 import { PayFormulaService } from './payroll/pay-formula.service';
 import { PaySheetTemplateService } from './payroll/pay-sheet-template.service';
+import { PayslipTemplateService } from './payroll/payslip-template.service';
+import { PayslipTemplateController } from './payroll/payslip-template.controller';
 import { PayPeriodInputPackService } from './payroll/pay-period-input-pack.service';
 import { PayCnttSetupService } from './payroll/pay-cntt-setup.service';
 import { PayPayrollGroupService } from './payroll/pay-payroll-group.service';
+import { PayPolicyGroupController } from './payroll/pay-policy-groups/pay-policy-group.controller';
+import { PayGradeController } from './payroll/pay-grades/pay-grade.controller';
+import { PayPolicyGroupService } from './payroll/pay-policy-groups/pay-policy-group.service';
+import { PayGradeService } from './payroll/pay-grades/pay-grade.service';
+import { PayStepController } from './payroll/pay-steps/pay-step.controller';
+import { PayStepService } from './payroll/pay-steps/pay-step.service';
 import { AttendanceCatalogService } from './attendance/attendance-catalog.service';
 import { AttendanceConfigService } from './attendance/attendance-config.service';
 import { AttLeaveTypeService } from './attendance/att-leave-type.service';
@@ -86,6 +96,8 @@ import { SettingsTaxParamsService } from './settings/settings-tax-params.service
 import { SettingsPayrollParamsService } from './settings/settings-payroll-params.service';
 import { InsuranceRateCfgController } from './settings/insurance-rate-cfg.controller';
 import { InsuranceRateCfgService } from './settings/insurance-rate-cfg.service';
+import { PaySystemDataController } from './settings/pay-system-data.controller';
+import { PaySystemDataService } from './settings/pay-system-data.service';
 import { InsuranceRateController } from './settings/insurance-rate/insurance-rate.controller';
 import { InsuranceRateService } from './settings/insurance-rate/insurance-rate.service';
 import { PositionCompensationPolicyController } from './settings/position-compensation-policy.controller';
@@ -111,6 +123,7 @@ import { ContractTemplatesModule } from './contract-templates/contract-templates
 import { CompanyScopeModule } from './company-scope/company-scope.module';
 import { InternalNewsController } from './internal-news/internal-news.controller';
 import { InternalNewsService } from './internal-news/internal-news.service';
+import { PolicyModule } from './policy/policy.module';
 
 @Module({
   imports: [
@@ -122,6 +135,7 @@ import { InternalNewsService } from './internal-news/internal-news.service';
     SpreadsheetModule,
     TenantProvisionModule,
     ContractTemplatesModule,
+    PolicyModule,
   ],
   controllers: [
     AppController,
@@ -135,9 +149,15 @@ import { InternalNewsService } from './internal-news/internal-news.service';
     InsuranceRateController,
     PositionCompensationPolicyController,
     PayrollController,
+    PayPolicyGroupController,
+    PayGradeController,
+    PayStepController,
+    InputHubController,
+    PayslipTemplateController,
     AttendanceController,
     RecruitmentController,
     RecruitmentWorkflowController,
+    PaySystemDataController,
     ContractsInsuranceController,
     MergeTokensController,
     DecisionsController,
@@ -169,14 +189,20 @@ import { InternalNewsService } from './internal-news/internal-news.service';
     SettingsPayrollParamsService,
     InsuranceRateCfgService,
     InsuranceRateService,
+    PaySystemDataService,
     PositionCompensationPolicyService,
     PayrollService,
+    PayrollProcessorService,
     PayrollCatalogService,
     PayFormulaService,
     PaySheetTemplateService,
+    PayslipTemplateService,
     PayPeriodInputPackService,
     PayCnttSetupService,
     PayPayrollGroupService,
+    PayPolicyGroupService,
+    PayGradeService,
+    PayStepService,
     AttendanceCatalogService,
     AttendanceSheetSignService,
     AttendanceConfigService,

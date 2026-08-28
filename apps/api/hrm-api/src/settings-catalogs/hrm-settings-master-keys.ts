@@ -147,6 +147,21 @@ const CATALOG_FAMILIES: readonly CatalogFamilyDef[] = [
     storageKey: 'kpi_library',
   },
   {
+    familyId: 'province',
+    aliases: ['provinces', 'province_catalog'],
+    storageKey: 'provinces',
+  },
+  {
+    familyId: 'vehicle_type',
+    aliases: ['vehicle_types', 'vehicles'],
+    storageKey: 'vehicle_types',
+  },
+  {
+    familyId: 'route_type',
+    aliases: ['route_types', 'routes'],
+    storageKey: 'route_types',
+  },
+  {
     familyId: 'allowance_deduction',
     aliases: [
       'allowance_deduction_types',

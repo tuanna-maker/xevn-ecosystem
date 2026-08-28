@@ -68,14 +68,19 @@ import {
 import { HrmListLoadBanner } from '@/components/hrm/HrmListLoadBanner';
 import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
 import { toast } from 'sonner';
+import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import { jobTitleOptionsFromCatalog } from '@/lib/catalogSearchPicker';
+import { useEmployees } from '@/hooks/useEmployees';
+import { MultiCatalogSearchPicker } from '@/components/common/MultiCatalogSearchPicker';
+import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
 
 type GroupFormState = {
   code: string;
   name_vi: string;
   priority: string;
-  departmentIdsText: string;
-  positionKeysText: string;
-  employeeIdsText: string;
+  departmentIds: string[];
+  positionKeys: string[];
+  employeeIds: string[];
   status: 'active' | 'retired';
 };
 
@@ -83,9 +88,9 @@ const emptyForm = (): GroupFormState => ({
   code: '',
   name_vi: '',
   priority: '0',
-  departmentIdsText: '',
-  positionKeysText: '',
-  employeeIdsText: '',
+  departmentIds: [],
+  positionKeys: [],
+  employeeIds: [],
   status: 'active',
 });
 
@@ -95,6 +100,18 @@ export function PayrollGroupsCatalogTab() {
   const companyId = currentCompanyId ? coerceHrmListCompanyId(currentCompanyId) : '';
   const { groups, isLoading, fetchError, refetch, useApiMode } = usePayrollGroups();
   const { createGroup, updateGroup, isCreating, isUpdating } = usePayrollGroupMutations();
+
+  const { catalogs, departmentPickerOptions, isDepartmentLoading } = useSettingsCatalogsOverview();
+  const positionPickerOptions = useMemo(() => jobTitleOptionsFromCatalog(catalogs ?? []), [catalogs]);
+  
+  const employeesQuery = useEmployees(false, companyId);
+  const employeePickerOptions = useMemo(() => {
+    return (employeesQuery.data?.rows ?? []).map(emp => ({
+      value: emp.id,
+      label: emp.full_name,
+      code: emp.employee_code,
+    }));
+  }, [employeesQuery.data?.rows]);
 
   const [search, setSearch] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -128,9 +145,9 @@ export function PayrollGroupsCatalogTab() {
       code: row.code,
       name_vi: row.name_vi,
       priority: String(row.priority ?? 0),
-      departmentIdsText: joinCommaSeparatedIds(row.match_rule_json?.department_ids),
-      positionKeysText: joinCommaSeparatedIds(row.match_rule_json?.position_keys),
-      employeeIdsText: joinCommaSeparatedIds(row.match_rule_json?.employee_ids),
+      departmentIds: row.match_rule_json?.department_ids ?? [],
+      positionKeys: row.match_rule_json?.position_keys ?? [],
+      employeeIds: row.match_rule_json?.employee_ids ?? [],
       status: row.status,
     });
     setDialogOpen(true);
@@ -150,9 +167,9 @@ export function PayrollGroupsCatalogTab() {
     }
     const priority = Number.parseInt(form.priority, 10);
     const match_rule_json = buildMatchRuleFromForm({
-      departmentIdsText: form.departmentIdsText,
-      positionKeysText: form.positionKeysText,
-      employeeIdsText: form.employeeIdsText,
+      departmentIdsText: form.departmentIds.join(','),
+      positionKeysText: form.positionKeys.join(','),
+      employeeIdsText: form.employeeIds.join(','),
     });
 
     if (editingId) {
@@ -316,22 +333,14 @@ export function PayrollGroupsCatalogTab() {
             <div className="flex flex-col sm:flex-row gap-3 sm:items-end">
               <div className="flex-1">
                 <Label>Kỳ lương</Label>
-                <Select
+                <CatalogSearchPicker
+                  options={periodOptions.map(p => ({ value: p.id, label: p.label }))}
                   value={membersPreview.periodId}
-                  onValueChange={membersPreview.setPeriodId}
+                  onValueChange={(v) => membersPreview.setPeriodId(v)}
                   disabled={periodsLoading}
-                >
-                  <SelectTrigger data-testid="pay-group-members-period-select">
-                    <SelectValue placeholder={periodsLoading ? 'Đang tải kỳ…' : 'Chọn kỳ'} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {periodOptions.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder={periodsLoading ? 'Đang tải kỳ…' : 'Chọn kỳ'}
+                  searchPlaceholder="Tìm kiếm kỳ lương..."
+                />
               </div>
               <Button
                 type="button"
@@ -442,27 +451,32 @@ export function PayrollGroupsCatalogTab() {
               </div>
             ) : null}
             <div>
-              <Label>Phòng ban (ID, cách nhau dấu phẩy)</Label>
-              <Textarea
-                value={form.departmentIdsText}
-                onChange={(e) => setForm((f) => ({ ...f, departmentIdsText: e.target.value }))}
-                rows={2}
+              <Label>Phòng ban</Label>
+              <MultiCatalogSearchPicker
+                options={departmentPickerOptions}
+                values={form.departmentIds}
+                onValuesChange={(v) => setForm(f => ({ ...f, departmentIds: v }))}
+                placeholder="Chọn phòng ban..."
+                loading={isDepartmentLoading}
               />
             </div>
             <div>
-              <Label>Chức danh (position_key, cách nhau dấu phẩy)</Label>
-              <Textarea
-                value={form.positionKeysText}
-                onChange={(e) => setForm((f) => ({ ...f, positionKeysText: e.target.value }))}
-                rows={2}
+              <Label>Chức danh</Label>
+              <MultiCatalogSearchPicker
+                options={positionPickerOptions}
+                values={form.positionKeys}
+                onValuesChange={(v) => setForm(f => ({ ...f, positionKeys: v }))}
+                placeholder="Chọn chức danh..."
               />
             </div>
             <div>
-              <Label>Danh sách NV đặc thù (employee_id UUID)</Label>
-              <Textarea
-                value={form.employeeIdsText}
-                onChange={(e) => setForm((f) => ({ ...f, employeeIdsText: e.target.value }))}
-                rows={2}
+              <Label>Danh sách NV đặc thù</Label>
+              <MultiCatalogSearchPicker
+                options={employeePickerOptions}
+                values={form.employeeIds}
+                onValuesChange={(v) => setForm(f => ({ ...f, employeeIds: v }))}
+                placeholder="Chọn nhân viên..."
+                loading={employeesQuery.isLoading}
               />
             </div>
           </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useTenantScope } from '../../contexts/GlobalFilterContext';
-import { withTenantQueryParam } from '../../modules/hrm/paths';
+import { tenantScopedPortalPath } from '../../modules/hrm/paths';
 
 const RouteLoadingFallback: React.FC = () => (
   <div className="flex h-96 items-center justify-center text-slate-500">Đang tải...</div>
@@ -23,9 +23,9 @@ export const TenantLegacyPathRedirect: React.FC = () => {
     return <Navigate to="/login" replace />;
   }
 
-  const target = withTenantQueryParam(
-    `${location.pathname}${location.search}`,
+  const target = tenantScopedPortalPath(
     tenantId,
+    `${location.pathname}${location.search}`
   );
 
   return <Navigate to={`${target}${location.hash}`} replace />;

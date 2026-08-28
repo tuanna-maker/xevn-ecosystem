@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @CODE-MEMORY
  * Screen:     HRM Lương → Thiết lập lương → Mẫu bảng lương
  * UC:         UC-BP-PAY-STP-03
@@ -21,15 +21,8 @@ type SalaryTemplate = {
   appliedTo: string; createdAt: string;
 };
 
-const MOCK: SalaryTemplate[] = [
-  { id:'1', code:'TPL-DRIVER-ROUTE', name:'Lái xe tuyến (lượt)', description:'Lương lượt theo QĐ 206/2026: 6%/8%/10% doanh thu + phụ cấp cố định', componentCount:8, isDefault:false, isLocked:true, appliedTo:'Lái xe tuyến xe khách', createdAt:'2026-01-15' },
-  { id:'2', code:'TPL-DRIVER-FREIGHT', name:'Lái xe tải (khoán)', description:'Lương khoán theo trọng tải + thưởng doanh thu 3 mức', componentCount:6, isDefault:false, isLocked:true, appliedTo:'Lái xe tải 1T–15T, đầu kéo', createdAt:'2026-01-15' },
-  { id:'3', code:'TPL-OFFICE-HN', name:'Văn phòng Hà Nội', description:'Ngạch-bậc + KPI% quỹ zero-sum + phụ cấp tiêu chuẩn', componentCount:7, isDefault:true, isLocked:false, appliedTo:'Nhân viên VP Hà Nội', createdAt:'2026-03-01' },
-  { id:'4', code:'TPL-DISPATCH', name:'Điều phối hàng hoá', description:'Lương cơ bản + % doanh thu giao hàng (QĐ 2024)', componentCount:5, isDefault:false, isLocked:false, appliedTo:'Điều phối hàng hoá', createdAt:'2026-05-10' },
-];
-
 export function SalaryTemplatesSetupScreen() {
-  const [templates, setTemplates] = useState(MOCK);
+  const [templates, setTemplates] = useState<SalaryTemplate[]>([]);
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ code:'', name:'', description:'', appliedTo:'' });
@@ -63,23 +56,23 @@ export function SalaryTemplatesSetupScreen() {
         {filtered.map(t=>(
           <Card key={t.id} className="rounded-card border border-xevn-border hover:border-xevn-primary/50 transition-colors">
             <CardContent className="p-4">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-3 flex-1">
+              <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                <div className="flex items-start gap-3 flex-1 min-w-0">
                   <div className="w-10 h-10 rounded-lg bg-xevn-primary/10 flex items-center justify-center shrink-0 mt-0.5">
                     <FileText className="w-5 h-5 text-xevn-primary"/>
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-mono text-xs text-xevn-primary">{t.code}</span>
-                      {t.isDefault && <Badge className="bg-xevn-primary/10 text-xevn-primary border-xevn-primary/30 text-xs gap-1"><CheckCircle2 className="w-3 h-3"/>Mặc định</Badge>}
-                      {t.isLocked && <Badge variant="outline" className="text-xs gap-1"><Lock className="w-3 h-3"/>Khoá</Badge>}
+                      <span className="font-mono text-xs text-xevn-primary truncate">{t.code}</span>
+                      {t.isDefault && <Badge className="bg-xevn-primary/10 text-xevn-primary border-xevn-primary/30 text-xs gap-1 whitespace-nowrap"><CheckCircle2 className="w-3 h-3"/>Mặc định</Badge>}
+                      {t.isLocked && <Badge variant="outline" className="text-xs gap-1 whitespace-nowrap"><Lock className="w-3 h-3"/>Khoá</Badge>}
                     </div>
-                    <p className="font-semibold text-xevn-text mt-0.5">{t.name}</p>
-                    <p className="text-sm text-xevn-textSecondary mt-0.5">{t.description}</p>
-                    <div className="flex items-center gap-4 mt-2 text-xs text-xevn-textSecondary">
-                      <span>👥 {t.appliedTo}</span>
-                      <span>📦 {t.componentCount} thành phần</span>
-                      <span>📅 {t.createdAt}</span>
+                    <p className="font-semibold text-xevn-text mt-0.5 truncate">{t.name}</p>
+                    <p className="text-sm text-xevn-textSecondary mt-0.5 line-clamp-2">{t.description}</p>
+                    <div className="flex items-center gap-4 mt-2 text-xs text-xevn-textSecondary flex-wrap">
+                      <span className="whitespace-nowrap">👥 {t.appliedTo}</span>
+                      <span className="whitespace-nowrap">📦 {t.componentCount} thành phần</span>
+                      <span className="whitespace-nowrap">📅 {t.createdAt}</span>
                     </div>
                   </div>
                 </div>

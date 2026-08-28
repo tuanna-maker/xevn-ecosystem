@@ -229,9 +229,11 @@ export function AttendanceRecordsTable() {
   const getStatusBadge = (record: AttendanceRecord) => {
     const variantMap: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
       present: 'default',
+      p: 'default',
       late: 'destructive',
       early_leave: 'secondary',
       absent: 'destructive',
+      x: 'destructive',
       on_leave: 'outline',
       leave: 'outline',
       pending: 'secondary',
@@ -240,7 +242,7 @@ export function AttendanceRecordsTable() {
       weekend: 'outline',
     };
     const variant = variantMap[record.status] ?? 'outline';
-    const label = isAttendanceLeaveStatus(record.status)
+    const label = isAttendanceLeaveStatus(record.status, record)
       ? resolveAttendanceLeaveDisplayLabel(record, statusLabel(record.status))
       : record.status_label?.trim() || statusLabel(record.status);
     return (

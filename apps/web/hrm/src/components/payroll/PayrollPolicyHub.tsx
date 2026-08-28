@@ -10,7 +10,6 @@
  */
 import { useState } from "react";
 import { BatchRunnerScreen } from "./batch/BatchRunnerScreen";
-import { GradeManagementScreen } from "./grade/GradeManagementScreen";
 import { InputHubScreen } from "./input/InputHubScreen";
 import { PolicyListScreen } from "./policy/PolicyListScreen";
 
@@ -18,9 +17,9 @@ type Tab = "policy" | "grade" | "input" | "batch";
 
 const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: "policy", label: "Chính sách", icon: "⚙️" },
-  { id: "grade",  label: "Ngạch-Bậc", icon: "🏛️" },
-  { id: "input",  label: "Nhập liệu", icon: "📥" },
-  { id: "batch",  label: "Chạy lương", icon: "🚀" },
+  { id: "grade", label: "Ngạch-Bậc", icon: "🏛️" },
+  { id: "input", label: "Nhập liệu", icon: "📥" },
+  { id: "batch", label: "Chạy lương", icon: "🚀" },
 ];
 
 const S: Record<string, React.CSSProperties> = {
@@ -62,7 +61,7 @@ export function PayrollPolicyHub() {
       </div>
       <div style={S.content}>
         {activeTab === "policy" && <PolicyListScreen />}
-        {activeTab === "grade" && <GradeManagementScreen />}
+        {activeTab === "grade" && <PolicyListScreen defaultGroupCode="CHUNG" />}
         {activeTab === "input" && <InputHubScreen />}
         {activeTab === "batch" && <BatchRunnerScreen />}
       </div>

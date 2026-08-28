@@ -1,136 +1,127 @@
-# 31 — World-standard Test Log (OS)
+# 31 — Test Log chuẩn quốc tế (bắt buộc mỗi lần QA chạy)
 
-**Sponsor lock (2026-08-03 / U78):** Mọi lần test phải có **log test** chuẩn thế giới — không chỉ PASS miệng, screenshot đứng, hoặc HTTP 200.
+**Sponsor (2026-08-03):** Test **phải có log test** — không được chỉ nói PASS/FAIL hoặc screenshot màn đứng. Log theo chuẩn thế giới (lean từ **IEEE 829 Test Log** + **ISO/IEC/IEEE 29119-3** Test execution log / Test result), kèm artifact máy đọc được.
 
-**Ánh xạ chuẩn (research):**
+**Mọi PM** khi dispatch QA/QC: `test_log_required: true`. Thiếu log chuẩn → **INVALID-HANDOFF** / QC NO-GO.
 
-| Standard | Artifact | XeVN maps to |
-|----------|----------|--------------|
-| **IEEE 829-2008** Level Test Log (LTL) | Chronological record of test execution; identity of tester; pass/fail per case; anomalous events → Anomaly Report | `*-test-log.md` steps + `incidents[]` |
-| **IEEE 829** Test Incident / Anomaly Report | Expected vs actual, evidence, impact | `incidents[]` + residual WI |
-| **ISO/IEC/IEEE 29119-3:2021** | Test execution log (id, date/time, description, impact); Actual results; Test result (pass/fail vs expected) | `steps[]` + `cases[]` + `summary` |
-| **Modern CI** | JUnit XML (`testsuite`/`testcase` + failure/skip) | `summary` counts; optional export later |
-| **Allure-style** | Steps + attachments (screenshots, network) | `steps[].attachment` + `attachments[]` |
-
-Sources (public): [IEEE 829 overview / LTL](https://en.wikipedia.org/wiki/Software_test_documentation) · IEEE Std 829-1998/2008 Test Log § · [ISO/IEC/IEEE 29119-3:2021](https://www.iso.org/standard/79429.html) § Test execution log / Test result · [JUnit XML + attachments convention](https://github.com/testmoapp/junitxml) · Allure steps/attachments practice.
+**Liên kết:** `30` (HDSD + case matrix) · `roles/qa.md` · template `templates/TEST_EXECUTION_LOG.md`
 
 ---
 
-## 1. Required deliverables mỗi wave QA / qa-device
+## 1. Tham chiếu chuẩn (không copy nguyên bản trả phí)
 
-| File | Role |
-|------|------|
-| `docs/qa/evidence/<work_item_id-slug>-test-log.md` | Human chronological log (IEEE LTL lean) |
-| `docs/qa/evidence/<work_item_id-slug>-test-log.json` | Machine log — schema **`xevn-test-log/v1`** |
+| Chuẩn | Ý bắt buộc giữ |
+|-------|----------------|
+| **IEEE 829** Level Test Log (LTL) | Nhật ký **theo thời gian**: case nào chạy, thứ tự, ai chạy, pass/fail, incident liên quan |
+| **ISO/IEC/IEEE 29119-3** | **Test execution log** + **Test result** (actual vs expected) + **Incident report** khi lệch |
+| Thực hành CI hiện đại | **JUnit XML** (CI gate) và/hoặc **Allure-style JSON** (step + attachment) |
 
-Narrative evidence (`*-qa-*.md`) **không thay** test-log. Capability E2E evidence cũng phải kèm cặp test-log (xem project pointer).
+XeVN/OS chọn **hai lớp bắt buộc**:
 
-Template: `_vibe-team-os/templates/TEST_EXECUTION_LOG.md` · project copy: `docs/qa/TEST_EXECUTION_LOG_TEMPLATE.md`.
+1. **Human log (Markdown)** — đủ field §2 (đọc được trong PR/evidence).  
+2. **Machine log (JSON)** — schema §3 (script/CI đọc được).
 
----
-
-## 2. Required fields (lean — đủ nghiệm thu)
-
-### Header
-
-- `schema`: `"xevn-test-log/v1"`
-- `log_id`: e.g. `TEL-W1B-04-AUTH-FE-RET2-20260803`
-- `work_item_id`
-- `tester` (role + agent/session id if any)
-- `started_at` / `ended_at` (ISO-8601)
-- `environment`: URL(s), API ports, device/emulator, commit/HEAD if known
-- `hdsd_sot` / `spec_ref` (UC · Diễn biến · FR)
-- `hdsd_align` (boolean — U76)
-- `u65_zero_seed` (boolean)
-- `verdict`: `pass` | `fail` | `blocked` | `partial`
-- `evidence_narrative`: path to main QA evidence md
-
-### Chronological `steps[]`
-
-Mỗi bước:
-
-| Field | Required |
-|-------|----------|
-| `seq` | yes |
-| `at` | yes (ISO-8601) |
-| `action` | yes (HDSD / harness step name) |
-| `expected` | yes |
-| `actual` | yes |
-| `network` | when HTTP involved (`method`, `url`, `status`, `code`) |
-| `result` | `pass` \| `fail` \| `blocked` \| `skipped` |
-| `attachment` | path under `docs/qa/evidence/...` if screenshot/log exists |
-
-### `cases[]` (U76 case matrix)
-
-At least: fail-deep (A) · success HDSD (B) · logic/BR (C) when in scope — status + notes.
-
-### `incidents[]`
-
-Anomaly: `id`, `severity`, `expected`, `actual`, `residual_wi`.
-
-### `summary`
-
-`passed` · `failed` · `blocked` · `skipped` · `ack_status`
+Optional sau: export JUnit XML / Allure từ JSON (DevOps wave).
 
 ---
 
-## 3. JSON schema `xevn-test-log/v1` (normative shape)
+## 2. Human Test Execution Log (mỗi `work_item_id` / session)
+
+File: `docs/qa/evidence/<work_item_id>-test-log.md` **hoặc** section `## Test execution log` trong evidence chính.
+
+| Field | Bắt buộc | Ví dụ |
+|-------|----------|--------|
+| `log_id` | ✅ | `TEL-W1B-EMP-RET3-20260803` |
+| `work_item_id` | ✅ | `W1-B-02-EMP-QA-RET3` |
+| `tester` / role | ✅ | `qa` · agent_id |
+| `started_at` / `ended_at` | ✅ ISO-8601 + TZ | `2026-08-03T20:25:00+07:00` |
+| `environment` | ✅ | URL, port, build/commit, device serial, API health |
+| `hdsd_sot` | ✅ (browser) | path HDSD |
+| `spec_ref` | ✅ | SRS UC · Diễn biến # · FR |
+| **Chronological steps** | ✅ | bảng §2.1 |
+| **Case results** | ✅ | A-fail / B-success / C-logic → pass\|fail\|blocked\|skipped |
+| **Incidents** | ✅ nếu fail | defect id + expected vs actual |
+| `ack_status` | ✅ | PASS_TO_PM / FAIL / BLOCKED |
+
+### 2.1. Bảng bước (IEEE LTL lean)
+
+| seq | time | action (HDSD label) | expected | actual | network/status | result | attachment |
+|-----|------|---------------------|----------|--------|----------------|--------|------------|
+| 1 | 20:25:10 | Mở menu Nhân viên | List load | List OK | GET 200 | pass | `01-list.png` |
+| 2 | 20:25:40 | Lưu thiếu CCCD | Lỗi BR | Toast … | POST 400 | pass | … |
+
+**Cấm:** evidence không có bảng bước theo thời gian.  
+**Cấm:** chỉ 1 screenshot idle.  
+**Cấm:** PASS khi không có `started_at`/`ended_at` và ≥1 bước `result=pass|fail`.
+
+---
+
+## 3. Machine log JSON (bắt buộc cạnh Markdown)
+
+Path: `docs/qa/evidence/<work_item_id>-test-log.json`
+
+Schema tối thiểu (Allure-inspired + 29119):
 
 ```json
 {
   "schema": "xevn-test-log/v1",
   "log_id": "TEL-…",
-  "work_item_id": "W…",
-  "tester": { "role": "qa", "agent": "…" },
-  "started_at": "2026-08-03T13:22:19.942Z",
-  "ended_at": "2026-08-03T13:23:05.936Z",
+  "work_item_id": "…",
+  "tester": "qa",
+  "started_at": "…",
+  "ended_at": "…",
   "environment": {
-    "portal_url": "http://127.0.0.1:5173",
-    "hrm_api": "http://127.0.0.1:28001/api/hrm",
-    "xbos_api": "http://127.0.0.1:28002/api/xbos",
-    "notes": "optional"
+    "base_url": "http://127.0.0.1:5173",
+    "apis": { "hrm": "http://127.0.0.1:28001", "xbos": "http://127.0.0.1:28002" },
+    "device": "emulator-5554|null",
+    "git_sha": "optional"
   },
-  "spec_ref": "FR-UC-…",
-  "hdsd_sot": "path or label",
-  "hdsd_align": true,
-  "u65_zero_seed": true,
-  "evidence_narrative": "docs/qa/evidence/….md",
-  "steps": [],
-  "cases": [],
+  "hdsd_sot": "…",
+  "spec_ref": ["UC-…", "Diễn biến #…"],
+  "cases": [
+    {
+      "id": "A-fail-required",
+      "name": "…",
+      "status": "passed|failed|blocked|skipped",
+      "steps": [
+        {
+          "name": "…",
+          "status": "passed|failed",
+          "start": "…",
+          "stop": "…",
+          "expected": "…",
+          "actual": "…",
+          "attachments": ["docs/qa/evidence/screens/…"]
+        }
+      ]
+    }
+  ],
   "incidents": [],
-  "attachments": [],
-  "summary": {
-    "passed": 0,
-    "failed": 0,
-    "blocked": 0,
-    "skipped": 0,
-    "verdict": "fail",
-    "ack_status": "FAIL"
-  }
+  "summary": { "passed": 0, "failed": 0, "blocked": 0, "skipped": 0 },
+  "ack_status": "PASS_TO_PM|FAIL|BLOCKED"
 }
 ```
 
 ---
 
-## 4. Reject rules (INVALID-HANDOFF / NO-GO QA)
+## 4. Gate
 
-| Reject | Why |
-|--------|-----|
-| PASS/FAIL without chronological steps | Violates IEEE LTL + U78 |
-| MD log without JSON (or vice versa) | Machine log mandatory |
-| Idle screenshot / viewport-only, no clicks + network | Anti-idle + U65 |
-| Seed / API fake then claim UF 🟢 | U65 |
-| Attachment paths that do not exist | Evidence integrity |
-| Invent UF 🟢 from unit/vitest alone | U63/U65 |
+| Role | Hành vi |
+|------|---------|
+| **QA** | Mỗi wave browser/device/API UAT: xuất **cả** `.md` log + `.json` |
+| **QC** | NO-GO nếu thiếu log hoặc log không có bước theo thời gian |
+| **PM** | Task thiếu `test_log_required: true` = lỗi điều phối; handoff thiếu JSON = INVALID |
 
 ---
 
-## 5. PM dispatch (mandatory)
+## 5. Copy-ready PM dispatch
 
 ```text
 test_log_required: true
-test_log_md: docs/qa/evidence/<WI-slug>-test-log.md
-test_log_json: docs/qa/evidence/<WI-slug>-test-log.json
+test_log_md: docs/qa/evidence/<WI>-test-log.md
+test_log_json: docs/qa/evidence/<WI>-test-log.json
+read_first: _vibe-team-os/31-WORLD-STANDARD-TEST-LOG.md · templates/TEST_EXECUTION_LOG.md · 30
+hdsd_align: true
+case_matrix: fail_deep + success_hdsd + logic_br
+anti_idle: true
 ```
-
-Cross-links: OS `30` HDSD-aligned QA · project `docs/qa/WORLD_STANDARD_TEST_LOG.md` · rule `.cursor/rules/qa-world-standard-test-log.mdc`.

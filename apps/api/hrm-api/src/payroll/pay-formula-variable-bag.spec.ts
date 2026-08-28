@@ -273,6 +273,7 @@ describe('loadAttHoursFromClosedLine', () => {
               ot_hours_weighted: '8',
               paid_leave_hours: '8',
               unpaid_leave_hours: '0',
+              work_days: '22',
             },
           ],
         };
@@ -314,6 +315,7 @@ describe('loadAttHoursFromClosedLine', () => {
               ot_hours_weighted: '0',
               paid_leave_hours: '0',
               unpaid_leave_hours: '0',
+              work_days: '22',
             },
           ],
         };
@@ -489,6 +491,7 @@ describe('buildPayFormulaVariableBag', () => {
               ot_hours_weighted: '0',
               paid_leave_hours: '0',
               unpaid_leave_hours: '0',
+              work_days: '22',
             },
           ],
         };
@@ -556,7 +559,11 @@ describe('loadInputPackBag (W10)', () => {
     const db = mockDb((sql, params) => {
       expect(String(sql)).toContain('pay_period_input_lines');
       expect(String(sql)).toContain('archived_at IS NULL');
-      expect(String(sql)).toContain('GROUP BY source_kind');
+      if (String(sql).includes('GROUP BY')) {
+        expect(String(sql)).toContain('GROUP BY source_kind');
+      } else {
+        expect(String(sql)).toContain('component_code');
+      }
       expect(params).toEqual([PERIOD_ID_W10, EMP_ID_W10]);
       return { rows: [] };
     });

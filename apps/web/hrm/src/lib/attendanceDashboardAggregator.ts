@@ -241,14 +241,14 @@ function dayLabelFor(date: Date, t?: (key: string, fallback?: string) => string)
 }
 
 function recordToShift(record: HrmAttendanceRecord): WeeklyShiftCell {
-  if (isAttendanceLeaveStatus(record.status)) {
+  if (isAttendanceLeaveStatus(record.status, record)) {
     return {
       name: resolveAttendanceLeaveDisplayLabel(record),
       type: 'leave',
       status: 'leave',
     };
   }
-  if (record.status === 'absent') {
+  if (record.status === 'absent' || record.status === 'x') {
     return {
       name: record.status_label?.trim() || 'Vắng mặt',
       type: 'leave',
@@ -327,7 +327,7 @@ export function mapAttendanceRecordsToTableRows(
     const checkOut = toTimeLabel(record.check_out_at);
     const time = checkOut ? `${checkIn || '--:--'} - ${checkOut}` : checkIn || '--:--';
 
-    const leaveDisplay = isAttendanceLeaveStatus(record.status)
+    const leaveDisplay = isAttendanceLeaveStatus(record.status, record)
       ? resolveAttendanceLeaveDisplayLabel(record)
       : null;
 

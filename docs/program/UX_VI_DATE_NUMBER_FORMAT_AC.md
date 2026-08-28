@@ -58,7 +58,7 @@ Chuẩn hóa **hiển thị và nhập** ngày / số tiền–số lượng tr�
 
 | Condition | Action | Outcome |
 |-----------|--------|---------|
-| User chọn/nhập ngày trên form | UI hiện `dd/MM/yyyy` | Sau Lưu + F5 vẫn `dd/MM/yyyy` |
+| User chọn/nhập ngày trên form | CẤM dùng `<Input type="date" />` native. **BẮT BUỘC** dùng `<ViDatePickerField />` từ thư viện UI của XeVN | Sau Lưu + F5 vẫn `dd/MM/yyyy`, UI đồng nhất với màn hình Tuyển dụng |
 | API lưu ISO date | FE map ISO ↔ display; Network có thể gửi `YYYY-MM-DD` / ISO | Spec API không đổi; chỉ UX layer |
 
 ### BR-UX-NUM-01 — Thousand grouping (MUST)

@@ -69,6 +69,10 @@ export class CreateSalaryComponentDto {
   @IsBoolean()
   is_insurance_base?: boolean;
 
+  @IsOptional()
+  @IsBoolean()
+  include_in_gross?: boolean;
+
   /** @deprecated Legacy hint only — use default_formula_definition_id for engine bind. */
   @IsOptional()
   @IsString()

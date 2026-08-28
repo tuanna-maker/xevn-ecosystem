@@ -153,9 +153,8 @@ const initialFormData: SalaryComponentFormData = {
   component_type: '',
   nature: 'income',
   value_type: 'currency',
-  is_taxable: true,
+  is_taxable: false,
   is_insurance_base: false,
-  formula: '',
   default_value: 0,
   applied_to: 'all',
   is_active: true,
@@ -179,9 +178,8 @@ function mapZodValuesToFormData(values: SalaryComponentFormValues): SalaryCompon
     component_type: values.componentType,
     nature: values.nature,
     value_type: values.valueType,
-    is_taxable: values.isTaxable,
+    is_taxable: false,
     is_insurance_base: false,
-    formula: values.formula || '',
     default_value: 0,
     description: values.description || undefined,
     applied_to: applied,
@@ -986,36 +984,6 @@ export const SalaryComponentsTab = () => {
                           </SelectItem>
                         </SelectContent>
                       </Select>
-                      <FormField
-                        control={addForm.control}
-                        name="isTaxable"
-                        render={({ field: taxField }) => (
-                          <RadioGroup
-                            value={taxField.value ? 'taxable' : 'nontaxable'}
-                            onValueChange={(value) => taxField.onChange(value === 'taxable')}
-                            className="flex items-center gap-4"
-                          >
-                            <div className="flex items-center gap-2">
-                              <RadioGroupItem value="taxable" id="add-taxable" />
-                              <Label
-                                htmlFor="add-taxable"
-                                className="font-normal cursor-pointer"
-                              >
-                                {t('salaryComponents.form.taxable')}
-                              </Label>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <RadioGroupItem value="nontaxable" id="add-nontaxable" />
-                              <Label
-                                htmlFor="add-nontaxable"
-                                className="font-normal cursor-pointer"
-                              >
-                                {t('salaryComponents.form.nonTaxable')}
-                              </Label>
-                            </div>
-                          </RadioGroup>
-                        )}
-                      />
                     </div>
                   </FormItem>
                 )}
@@ -1054,24 +1022,7 @@ export const SalaryComponentsTab = () => {
                 )}
               />
 
-              <FormField
-                control={addForm.control}
-                name="formula"
-                render={({ field }) => (
-                  <FormItem className="grid grid-cols-[150px_1fr] items-start gap-4 space-y-0">
-                    <Label className="text-right pt-2">
-                      {t('salaryComponents.form.formula')}
-                    </Label>
-                    <PayDataFieldFormulaInput
-                      value={field.value || ''}
-                      onChange={field.onChange}
-                      extraVarHints={formulaPickerOpts.extraVarHints}
-                      salaryComponentHints={formulaPickerOpts.salaryComponents}
-                      placeholder={t('salaryComponents.form.formulaPlaceholder')}
-                    />
-                  </FormItem>
-                )}
-              />
+
 
               <FormField
                 control={addForm.control}
@@ -1203,26 +1154,6 @@ export const SalaryComponentsTab = () => {
                     <SelectItem value="other">{t('salaryComponents.nature.other')}</SelectItem>
                   </SelectContent>
                 </Select>
-                <RadioGroup
-                  value={formData.is_taxable ? 'taxable' : 'nontaxable'}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, is_taxable: value === 'taxable' }))
-                  }
-                  className="flex items-center gap-4"
-                >
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="taxable" id="edit-taxable" />
-                    <Label htmlFor="edit-taxable" className="font-normal cursor-pointer">
-                      {t('salaryComponents.form.taxable')}
-                    </Label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="nontaxable" id="edit-nontaxable" />
-                    <Label htmlFor="edit-nontaxable" className="font-normal cursor-pointer">
-                      {t('salaryComponents.form.nonTaxable')}
-                    </Label>
-                  </div>
-                </RadioGroup>
               </div>
             </div>
 
@@ -1249,16 +1180,7 @@ export const SalaryComponentsTab = () => {
               </Select>
             </div>
 
-            <div className="grid grid-cols-[150px_1fr] items-start gap-4">
-              <Label className="text-right pt-2">{t('salaryComponents.form.formula')}</Label>
-              <PayDataFieldFormulaInput
-                value={formData.formula || ''}
-                onChange={(value) => setFormData((prev) => ({ ...prev, formula: value }))}
-                extraVarHints={formulaPickerOpts.extraVarHints}
-                salaryComponentHints={formulaPickerOpts.salaryComponents}
-                placeholder={t('salaryComponents.form.formulaPlaceholder')}
-              />
-            </div>
+
 
             <div className="grid grid-cols-[150px_1fr] items-start gap-4">
               <Label className="text-right pt-2">

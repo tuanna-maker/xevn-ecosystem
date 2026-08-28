@@ -1199,6 +1199,14 @@ export function assertResourceInHrmScope(
     (typeof resource?.tenant_id === 'string' ? resource.tenant_id.trim() : '');
   const rowTenantNorm = rowTenant.trim().toLowerCase();
 
+  const effectiveTenant =
+    rowTenantNorm ||
+    (companyId === HRM_PILOT_OPERATING_COMPANY_ID && scope.tenantIds?.[0]
+      ? scope.tenantIds[0].trim().toLowerCase()
+      : scope.memberTenantId
+        ? scope.memberTenantId.trim().toLowerCase()
+        : MASTER_TENANT_ID);
+
   if (scope.tenantOnlyMode && scope.tenantIds?.length) {
     const allowedTenants = new Set(
       scope.tenantIds.map((id) => id.trim().toLowerCase()),
@@ -1210,7 +1218,6 @@ export function assertResourceInHrmScope(
           ),
         )
       : new Set<string>();
-    const effectiveTenant = rowTenantNorm || MASTER_TENANT_ID;
     const migratedMatch =
       allowedTenants.has(effectiveTenant) &&
       isMasterTenantPartitionCompanyId(companyId, scope);
@@ -1240,7 +1247,7 @@ export function assertResourceInHrmScope(
 
   if (scope.memberTenantId) {
     const memberTenantNorm = scope.memberTenantId.trim().toLowerCase();
-    if (!rowTenantNorm || rowTenantNorm !== memberTenantNorm) {
+    if (effectiveTenant !== memberTenantNorm) {
       throw new ApiException(
         mismatchCode,
         'Resource tenant_id is outside token scope',
@@ -1250,7 +1257,6 @@ export function assertResourceInHrmScope(
     return;
   }
   if (scope.masterTenantPartition) {
-    const effectiveTenant = rowTenantNorm || MASTER_TENANT_ID;
     if (effectiveTenant !== MASTER_TENANT_ID) {
       const memberRollup = new Set(
         HRM_GROUP_ROLLUP_TENANT_IDS.map((id) => id.trim().toLowerCase()),

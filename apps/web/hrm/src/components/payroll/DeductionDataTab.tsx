@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @CODE-MEMORY
  * Screen:     HRM · Tiền lương · Dữ liệu → Khấu trừ khác
  * WorkItem:   PO-HRM-PAY-DATA-DEDUCTION-FE-01
@@ -15,16 +15,10 @@ import { Label } from '@/components/ui/label';
 
 type DeductionRecord = { id:string; employee_code:string; employee_name:string; type:string; amount:number; reason:string; period:string };
 
-const MOCK: DeductionRecord[] = [
-  { id:'1', employee_code:'LX-002', employee_name:'Trần Thị Bình', type:'Phạt muộn giờ', amount:200000, reason:'Đi trễ 3 lần trong tháng', period:'2026-08' },
-  { id:'2', employee_code:'VP-001', employee_name:'Phạm Thị Dung', type:'Hoàn ứng', amount:1000000, reason:'Hoàn tạm ứng công tác phí', period:'2026-08' },
-  { id:'3', employee_code:'LX-001', employee_name:'Nguyễn Văn An', type:'Phạt vi phạm', amount:500000, reason:'Vi phạm quy định lái xe', period:'2026-08' },
-];
-
 const fmt = (v: number) => new Intl.NumberFormat('vi-VN').format(v);
 
 export function DeductionDataTab() {
-  const [records, setRecords] = useState(MOCK);
+  const [records, setRecords] = useState<DeductionRecord[]>([]);
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ employee_code:'', employee_name:'', type:'', amount:'', reason:'' });

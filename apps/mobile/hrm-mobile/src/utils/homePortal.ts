@@ -8,14 +8,19 @@ import type { MobilePersonaId } from './mobilePersona';
 export type QuickAccessTileId =
   | 'checkin'
   | 'time_off'
+  | 'ot_request'
+  | 'business_trip'
   | 'payroll'
+  | 'schedule'
   | 'approve'
+  | 'news'
   | 'team'
   | 'contracts'
   | 'operations'
   | 'notifications'
   | 'journey'
-  | 'reports';
+  | 'reports'
+  | 'help';
 
 export type QuickAccessTileConfig = {
   id: QuickAccessTileId;
@@ -48,11 +53,32 @@ const HOME_ACTION_TILES: QuickAccessTileConfig[] = [
     iconColor: colors.success,
   },
   {
+    id: 'ot_request',
+    label: 'Làm thêm giờ',
+    icon: 'moon-outline',
+    tileColor: colors.homeTileMerits,
+    iconColor: '#7C3AED',
+  },
+  {
+    id: 'business_trip',
+    label: 'Công tác',
+    icon: 'airplane-outline',
+    tileColor: colors.homeTilePolicies,
+    iconColor: '#DB2777',
+  },
+  {
     id: 'payroll',
-    label: 'Phiếu lương',
+    label: 'Bảng lương',
     icon: 'wallet-outline',
     tileColor: colors.homeTilePayroll,
     iconColor: colors.warning,
+  },
+  {
+    id: 'schedule',
+    label: 'Lịch ca',
+    icon: 'list-outline',
+    tileColor: colors.homeTileCareer,
+    iconColor: '#059669',
   },
   {
     id: 'approve',
@@ -60,50 +86,21 @@ const HOME_ACTION_TILES: QuickAccessTileConfig[] = [
     icon: 'checkmark-circle-outline',
     tileColor: colors.homeTileTasks,
     iconColor: colors.danger,
+    managerOnly: true,
   },
   {
-    id: 'team',
-    label: 'Đội nhóm',
-    icon: 'people-outline',
+    id: 'news',
+    label: 'Tin nội bộ',
+    icon: 'newspaper-outline',
     tileColor: colors.homeTileProfile,
     iconColor: colors.primary,
   },
   {
-    id: 'contracts',
-    label: 'Hợp đồng',
-    icon: 'document-text-outline',
-    tileColor: colors.homeTilePolicies,
-    iconColor: '#DB2777',
-  },
-  {
-    id: 'operations',
-    label: 'Vận hành',
-    icon: 'briefcase-outline',
-    tileColor: colors.homeTileMerits,
-    iconColor: '#4F46E5',
-  },
-  {
-    id: 'notifications',
-    label: 'Thông báo',
-    icon: 'notifications-outline',
-    tileColor: colors.homeTileExpenses,
-    iconColor: colors.warning,
-  },
-  {
-    id: 'journey',
-    label: 'Hành trình',
-    icon: 'map-outline',
-    tileColor: colors.homeTileLetters,
-    iconColor: '#7C3AED',
-  },
-  {
-    id: 'reports',
-    label: 'Báo cáo',
-    icon: 'bar-chart-outline',
-    tileColor: colors.homeTileCareer,
-    iconColor: colors.success,
-    stub: true,
-    managerOnly: true,
+    id: 'help',
+    label: 'Trợ giúp',
+    icon: 'help-circle-outline',
+    tileColor: colors.homeTileProfile,
+    iconColor: colors.textSecondary,
   },
 ];
 

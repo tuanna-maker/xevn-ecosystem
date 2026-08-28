@@ -490,3 +490,24 @@ Tất cả migration **additive** trong `PositionsService.ensureSchema()` — ch
 | FE | `DepartmentPositionConfigDialog.tsx`, `DepartmentManagement.tsx`, `EmployeeFormDialog.tsx` |
 | Spec thiết kế | `docs/program/deltas/BA_HRM_POSITION_DEPARTMENT_DB_DESIGN_01_20260813.md` |
 | Program | `docs/program/PO_HRM_CNTT_PAYROLL_CATALOG_PROGRAM.md` (W3 positions — runtime mới bật) |
+
+---
+
+## Session rollup 2026-08-27 (Antigravity IDE — Khôi phục và Đồng bộ Hóa Giao diện Cấu hình Thuế TNCN)
+
+**Bối cảnh:** Màn hình cấu hình chính sách Lương (Policy Builder) bị mất giao diện khi cấu hình chính sách thuộc nhóm Thuế (`pay_group_code === 'TAX'`), hiển thị text editor JSON thô do thiếu component editor cho `tax_progressive` và `tax_flat`. Sponsor yêu cầu bổ sung giao diện tương thích, đồng nhất thiết kế Apple-style và đảm bảo nguyên lý SOLID không ảnh hưởng đến các chính sách lương ngạch/bậc đã hoạt động ổn định.
+
+**Lesson Learned & Bug Fixes:**
+- **Thiết kế Cấu trúc Component Thuế & Quy tắc Loại hợp đồng:** 
+  - Đã tích hợp các trường cấu hình trực quan vào `ComponentFormBuilder.tsx` cho hai kiểu cấu trúc thuế: Lũy tiến từng phần (`tax_progressive` gồm giảm trừ bản thân, giảm trừ người phụ thuộc, bảng bậc thuế động tiers) và Thuế cố định (`tax_flat` gồm thuế suất toàn phần %, mức tối thiểu khấu trừ).
+  - Sử dụng `ViMoneyInput` để tự động phân tách hàng nghìn khi điền số, tạo sự đồng nhất cao về UI/UX.
+  - Sửa đổi `PolicyBuilderScreen.tsx` để tự động swap các tùy chọn cấu trúc lương sang các cấu trúc thuế tương ứng nếu pay_group_code là `TAX`.
+  - Đồng bộ hóa các thuộc tính component khi lưu đối với chính sách thuế: Đặt `is_deduction = true` và `input_source = 'system'` tương thích với API và DB.
+  - Tích hợp bộ quy tắc áp dụng theo "Loại hợp đồng" (`contract_type`) vào Targeting Rules của màn hình thiết lập, kết nối với API `useSettingsCatalogsOverview` để nạp tự động danh mục loại hợp đồng từ DB lên FE dưới dạng hộp chọn checkbox Popover.
+- **Traceability & Code Memory:**
+  - Bổ sung khối comment `@CODE-MEMORY` chi tiết bằng Tiếng Việt vào đầu hai file logic FE đã chỉnh sửa (`ComponentFormBuilder.tsx` và `PolicyBuilderScreen.tsx`).
+  - Cập nhật tài liệu thiết kế và Task list tuân thủ nghiêm ngặt theo tiêu chuẩn của `_vibe-team-os/30-TASK-CREATION-STANDARDS.md`.
+
+### Traceability
+- **FE:** `apps/web/hrm/src/components/payroll/policy/ComponentFormBuilder.tsx`, `apps/web/hrm/src/components/payroll/policy/PolicyBuilderScreen.tsx`
+- **Spec thiết kế:** `docs/brand-new-documents-20270801/UIUX_SPEC_HRM_POLICY_ENGINE_v1.md`, `docs/brand-new-documents-20270801/implementation_policy_plan.md`

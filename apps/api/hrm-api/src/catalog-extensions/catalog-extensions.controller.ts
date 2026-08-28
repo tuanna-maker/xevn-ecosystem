@@ -23,6 +23,7 @@ import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
 import { resolveScopeContext } from '../common/scope-context';
 import { CatalogExtensionsService } from './catalog-extensions.service';
+import { CreateBonusPolicyDto } from './dto/bonus-policy.dto';
 
 @Controller()
 export class CatalogExtensionsController {
@@ -125,7 +126,7 @@ export class CatalogExtensionsController {
   createBonusPolicy(
     @Headers('authorization') authorization: string | undefined,
     @Headers('x-internal-api-key') internalApiKey: string | undefined,
-    @Body() body: Record<string, unknown>,
+    @Body() body: CreateBonusPolicyDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
     return this.service
@@ -139,7 +140,7 @@ export class CatalogExtensionsController {
     @Headers('authorization') authorization: string | undefined,
     @Headers('x-internal-api-key') internalApiKey: string | undefined,
     @Query('company_id') companyId: string,
-    @Body() body: Record<string, unknown>,
+    @Body() body: CreateBonusPolicyDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
     return this.service

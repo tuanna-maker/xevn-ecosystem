@@ -10,34 +10,19 @@
 
 const HRM_API = (typeof window !== "undefined" && (window as Window & { __HRM_API__?: string }).__HRM_API__)
   || import.meta?.env?.VITE_HRM_API_BASE
-  || "http://localhost:3001/api/hrm";
+  || "/api/hrm";
 
 function getToken(): string {
   return localStorage.getItem("hrm_token") ?? "";
 }
 
 async function apiFetch<T>(path: string, opts: RequestInit = {}): Promise<T> {
-  // MOCK FOR UI DEV
-  if (path.includes('/pay-policies')) {
-    if (opts.method === 'POST') return { policy_id: 'mock-1', status: 'DRAFT' } as any;
-    if (path.includes('/components')) return {} as any;
-    return { data: [
-      { id: '1', name: 'Chính sách Lái xe Tuyến HCM', pay_group_code: 'LX-TUYEN', status: 'ACTIVE', version: 1, effective_from: '2026-01-01', created_at: '2026-01-01' }
-    ]} as any;
-  }
-  if (path.includes('/grades')) return { data: [] } as any;
-  if (path.includes('/payroll-inputs')) {
-    if (path.includes('/rows')) return { data: [], total: 0 } as any;
-    return { data: [] } as any;
-  }
-  if (path.includes('/payroll-batch')) {
-    if (opts.method === 'POST') return { batch_id: 'mock-batch', employee_count: 5, warnings: [] } as any;
-    return { employee_code: 'MOCK', employee_name: 'Mock', period_month: '2026-08', total_income_vnd: '10000', total_deduction_vnd: '0', net_pay_vnd: '10000', status: 'DRAFT', components: [] } as any;
-  }
-
   const tenantId = 
     (typeof localStorage !== 'undefined' ? localStorage.getItem('hrm_current_tenant_id') : null) ||
     "xevn";
+  const companyId = 
+    (typeof localStorage !== 'undefined' ? localStorage.getItem('hrm_current_company_id') : null) ||
+    "company_1";
 
   const res = await fetch(`${HRM_API}${path}`, {
     ...opts,
@@ -45,6 +30,7 @@ async function apiFetch<T>(path: string, opts: RequestInit = {}): Promise<T> {
       "Content-Type": "application/json",
       Authorization: `Bearer ${getToken()}`,
       "x-tenant-id": tenantId,
+      "x-company-id": companyId,
       ...(opts.headers ?? {}),
     },
   });
@@ -151,6 +137,37 @@ export type PayslipComponent = {
   skipped: boolean;
 };
 
+// ─── SETTINGS API ──────────────────────────────────────────────────────────────
+export const SettingsAPI = {
+  getMasterDataFields: () => {
+    // Gọi API Settings/Catalogs để lấy cấu hình động thay vì fix cứng.
+    // Tạm thời endpoint /settings/fields chưa deploy, trả về mock data để tránh lỗi 404 ở console
+    return Promise.resolve([
+        { 
+          value: 'contract_type', label: 'Loại Hợp đồng', type: 'select', 
+          options: [
+            {value: 'Chính thức', label: 'Chính thức'}, 
+            {value: 'Thử việc', label: 'Thử việc'}, 
+            {value: 'Khoán việc', label: 'Khoán việc'}, 
+            {value: 'Xác định thời hạn', label: 'Xác định thời hạn'},
+            {value: 'HĐ Không thời hạn', label: 'HĐ Không thời hạn'},
+            {value: 'HĐ Xác định thời hạn 1-3 năm', label: 'HĐ Xác định thời hạn 1-3 năm'}
+          ] 
+        },
+        { 
+          value: 'resident_status', label: 'Tình trạng cư trú', type: 'select', 
+          options: [
+            {value: 'Cá nhân cư trú', label: 'Cá nhân cư trú'}, 
+            {value: 'Cá nhân không cư trú', label: 'Cá nhân không cư trú'}
+          ] 
+        },
+        { value: 'employee_group', label: 'Nhóm nhân sự', type: 'text' },
+        { value: 'nationality', label: 'Quốc tịch', type: 'text' },
+        { value: 'position', label: 'Vị trí công việc', type: 'text' }
+      ]);
+  }
+};
+
 // ─── POLICY API ──────────────────────────────────────────────────────────────
 
 export const PolicyAPI = {
@@ -163,21 +180,34 @@ export const PolicyAPI = {
   get: (id: string) => apiFetch<Policy>(`/pay-policies/${id}`),
   create: (body: { name: string; pay_group_code: string; effective_from: string; description?: string }) =>
     apiFetch<{ policy_id: string; status: string }>("/pay-policies", { method: "POST", body: JSON.stringify(body) }),
+  update: (id: string, body: { name?: string; effective_from?: string; description?: string }) =>
+    apiFetch<{ success: boolean }>(`/pay-policies/${id}`, { method: "PUT", body: JSON.stringify(body) }),
   addComponent: (policyId: string, body: Omit<PolicyComponent, "id" | "policy_id">) =>
     apiFetch(`/pay-policies/${policyId}/components`, { method: "POST", body: JSON.stringify(body) }),
-  deleteComponent: (policyId: string, compId: string) =>
-    apiFetch(`/pay-policies/${policyId}/components/${compId}`, { method: "DELETE" }),
+  deleteComponent: (policyId: string, componentId: string) =>
+    apiFetch<{ success: boolean }>(`/pay-policies/${policyId}/components/${componentId}`, { method: "DELETE" }),
   reorder: (policyId: string, orderedIds: string[]) =>
     apiFetch(`/pay-policies/${policyId}/components/reorder`, { method: "PUT", body: JSON.stringify({ ordered_ids: orderedIds }) }),
-  activate: (id: string) => apiFetch<{ policy_id: string; status: string }>(`/pay-policies/${id}/activate`, { method: "POST" }),
+  toggleStatus: (id: string) =>
+    apiFetch<{ policy_id: string; status: string }>(`/pay-policies/${id}/toggle-status`, { method: "POST" }),
   clone: (id: string, body: { name: string; effective_from: string }) =>
     apiFetch(`/pay-policies/${id}/clone`, { method: "POST", body: JSON.stringify(body) }),
+  delete: (id: string) =>
+    apiFetch<{ success: boolean }>(`/pay-policies/${id}`, { method: "DELETE" }),
+  assignToTarget: (policyId: string, body: { target_type: 'employee' | 'pay_group' | 'department' | 'position', target_ids: string[], effective_from: string }) =>
+    apiFetch(`/pay-policies/${policyId}/assign`, { method: "POST", body: JSON.stringify(body) }),
+};
+
+export const PolicyGroupAPI = {
+  list: () => apiFetch<{ data: any[] }>("/pay-policy-groups").then((r) => r.data),
 };
 
 // ─── GRADE API ───────────────────────────────────────────────────────────────
 
 export const GradeAPI = {
-  list: () => apiFetch<{ data: Grade[] }>("/grades").then((r) => r.data),
+  list: () => apiFetch<Grade[]>("/payroll/pay-grades").then((r) => (Array.isArray(r) ? r : (r as any).data || []) as Grade[]),
+  upsert: (body: Omit<Grade, 'id'> & { id?: string }) => 
+    apiFetch("/grades", { method: "POST", body: JSON.stringify(body) }),
   listAssignments: (employeeId: string) => apiFetch<{ data: unknown[] }>(`/employees/${employeeId}/grade-history`).then((r) => r.data),
   assign: (employeeId: string, body: { grade_code: string; step_number: number; effective_from: string }) =>
     apiFetch(`/employees/${employeeId}/grade-assignment`, { method: "POST", body: JSON.stringify(body) }),
@@ -209,10 +239,11 @@ export const InputAPI = {
 
 export const BatchAPI = {
   run: (period: string) =>
-    apiFetch<{ batch_id: string; employee_count: number; warnings: string[] }>("/payroll-batch/run", {
+    apiFetch<any>("/payroll/batch", {
       method: "POST", body: JSON.stringify({ period_month: period }),
-    }),
-  approve: (batchId: string) => apiFetch(`/payroll-batch/${batchId}/approve`, { method: "POST" }),
+    }).then((r: any) => (r.data || r) as { batch_id: string; employee_count: number; warnings: string[] }),
+  approve: (batchId: string) =>
+    apiFetch<any>(`/payroll/batch/${batchId}/approve`, { method: "POST" }).then((r: any) => r.data || r),
   getPayslip: (employeeId: string, period: string) =>
-    apiFetch<Payslip>(`/payroll-batch/payslip/${employeeId}?period_month=${period}`),
+    apiFetch<any>(`/payroll/batch/payslip/${employeeId}?period_month=${period}`).then((r: any) => (r.data || r) as Payslip),
 };

@@ -84,13 +84,14 @@ export function stripTenantPrefixFromPathname(pathname: string): string {
   return normalized;
 }
 
-/** Keep tenant in `?tenantId=` — hide `/:tenantId` path prefix in the address bar. */
+/** Keep tenant in `/:tenantId` prefix. */
 export function tenantScopedPortalPath(
   tenantId: string | null | undefined,
   absolutePath: string,
 ): string {
   const path = absolutePath.startsWith('/') ? absolutePath : `/${absolutePath}`;
-  return withTenantQueryParam(path, tenantId);
+  if (!tenantId || tenantId === '__loading__') return path;
+  return `/${tenantId}${path}`.replace(/\/+/g, '/');
 }
 
 export function tenantHrmPortalPath(

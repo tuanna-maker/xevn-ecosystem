@@ -237,24 +237,7 @@ const ExecutiveDashboardPage: React.FC = () => {
 
               {/* Global Filter & Actions */}
               <div className="flex items-center gap-4">
-                <Link
-                  to={`/${tenantId}`}
-                  className="rounded-input border border-xevn-border bg-xevn-surface px-4 py-2.5 text-sm font-semibold text-xevn-textSecondary shadow-sm transition hover:bg-xevn-background"
-                >
-                  Unified Shell
-                </Link>
-                <Link
-                  to={`/${tenantId}/command-center`}
-                  className="rounded-input border border-xevn-primary/30 bg-xevn-surface px-4 py-2.5 text-sm font-semibold text-xevn-primary shadow-sm transition hover:bg-xevn-primary/5"
-                >
-                  Command Center
-                </Link>
-                <Link
-                  to={`/${tenantId}/dashboard/organization`}
-                  className="rounded-xl border border-emerald-200/80 bg-emerald-50/80 px-4 py-2.5 text-sm font-semibold text-emerald-900 shadow-sm transition hover:bg-emerald-100/80"
-                >
-                  Workspace Portal
-                </Link>
+
                 {/* Global Filter */}
                 <div className="relative min-w-0" ref={tenantDropdownRef}>
                   <button

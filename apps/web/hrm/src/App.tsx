@@ -75,6 +75,9 @@ const InternalNews = lazy(() => import("./pages/InternalNews"));
 const PayrollSetupHub = lazy(() =>
   import("./components/payroll/setup/PayrollSetupHub").then((m) => ({ default: m.PayrollSetupHub })),
 );
+const PayrollPolicies = lazy(() => import("./pages/PayrollPolicies"));
+const PolicyBuilderPage = lazy(() => import("./pages/payroll/policies/builder/PolicyBuilderPage"));
+const AttendanceGridPage = lazy(() => import("./pages/attendance/AttendanceGridPage"));
 const HRMChatWidget = lazy(() =>
   import("./components/ai/HRMChatWidget").then((module) => ({ default: module.HRMChatWidget })),
 );
@@ -183,6 +186,9 @@ const App = () => {
                   <Route path="/attendance" element={<PermissionRoute module="attendance">{withSuspense(<Attendance />)}</PermissionRoute>} />
                   <Route path="/payroll" element={<PermissionRoute module="payroll">{withSuspense(<Payroll />)}</PermissionRoute>} />
                   <Route path="/payroll/setup" element={<PermissionRoute module="payroll">{withSuspense(<PayrollSetupHub />)}</PermissionRoute>} />
+                  <Route path="/payroll-policies" element={<PermissionRoute module="payroll">{withSuspense(<PayrollPolicies />)}</PermissionRoute>} />
+                  <Route path="/payroll-policies/builder" element={<PermissionRoute module="payroll">{withSuspense(<PolicyBuilderPage />)}</PermissionRoute>} />
+                  <Route path="/attendance-grid" element={<PermissionRoute module="attendance">{withSuspense(<AttendanceGridPage />)}</PermissionRoute>} />
                   <Route path="/performance" element={withSuspense(<Performance />)} />
                   <Route path="/company" element={<PermissionRoute module="company">{withSuspense(<Company />)}</PermissionRoute>} />
                   <Route path="/reports" element={<PermissionRoute module="reports">{withSuspense(<Reports />)}</PermissionRoute>} />

@@ -136,6 +136,8 @@ type PaySheetTemplateLineRow = {
   is_visible: boolean;
   is_identity_or_total: boolean;
   formula_override_definition_id: string | null;
+  input_method: string | null;
+  system_data_mapping_id: string | null;
   formula_override_json: unknown;
   archived_at: string | null;
   created_at: string;
@@ -150,6 +152,7 @@ export type SheetTemplateSnapshotColumn = {
   sort_order: number;
   formula_definition_id: string | null;
   override_applied: boolean;
+  formula_override_json?: any;
 };
 
 /** Mapped header DTO — SoT type cho resolveForEmployee() candidates/recommended. */
@@ -300,6 +303,8 @@ export class PaySheetTemplateService {
         group_key TEXT NULL,
         is_visible BOOLEAN NOT NULL DEFAULT TRUE,
         is_identity_or_total BOOLEAN NOT NULL DEFAULT FALSE,
+        input_method VARCHAR(50) NOT NULL DEFAULT 'FORMULA',
+        system_data_mapping_id UUID NULL,
         formula_override_definition_id UUID NULL,
         formula_override_json JSONB NULL,
         archived_at TIMESTAMPTZ NULL,
@@ -516,6 +521,8 @@ export class PaySheetTemplateService {
       groupKey: row.group_key,
       isVisible: row.is_visible !== false,
       isIdentityOrTotal: Boolean(row.is_identity_or_total),
+      inputMethod: row.input_method,
+      systemDataMappingId: row.system_data_mapping_id,
       formulaOverrideDefinitionId: row.formula_override_definition_id,
       formulaOverrideJson: row.formula_override_json,
       formulaOverrideCode: row.formula_override_code ?? null,
@@ -649,6 +656,7 @@ export class PaySheetTemplateService {
           l.id, l.template_id, l.company_id, l.component_id, l.component_code,
           l.display_label, l.sort_order, l.group_key, l.is_visible, l.is_identity_or_total,
           l.formula_override_definition_id, l.formula_override_json,
+          l.input_method, l.system_data_mapping_id,
           l.archived_at::text, l.created_at::text, l.updated_at::text
         FROM public.pay_sheet_template_lines l
         WHERE ${filters.join(' AND ')}
@@ -1072,20 +1080,20 @@ export class PaySheetTemplateService {
     values.push(id);
 
     try {
-      const res = await this.db.query<PaySheetTemplateRow>(
+      await this.db.query(
         `
           UPDATE public.pay_sheet_templates
           SET ${fields.join(', ')}
-          WHERE id = $${values.length}::uuid
-          RETURNING ${this.headerSelectSql()};
+          WHERE id = ${values.length}::uuid;
         `,
         values,
       );
-      return this.mapHeader({
-        ...res.rows[0],
-        policy_pack_display_label: null,
-        input_pack_profile_display_label: null,
-      });
+      const updatedRow = await this.loadHeaderInScope(
+        id,
+        existing.company_id,
+        authorization,
+      );
+      return this.mapHeader(updatedRow);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       if (/uq_pay_sheet_templates_company_line_province_active/i.test(msg)) {
@@ -1301,6 +1309,8 @@ export class PaySheetTemplateService {
               is_identity_or_total = $7,
               formula_override_definition_id = $8::uuid,
               formula_override_json = $9::jsonb,
+              input_method = $10,
+              system_data_mapping_id = $11::uuid,
               archived_at = NULL,
               updated_at = NOW()
             WHERE id = $1::uuid;
@@ -1315,6 +1325,8 @@ export class PaySheetTemplateService {
             Boolean(line.isIdentityOrTotal),
             line.formulaOverrideDefinitionId ?? null,
             overrideJson,
+            line.inputMethod ?? 'FORMULA',
+            line.systemDataMappingId ?? null,
           ],
         );
       } else {
@@ -1323,11 +1335,11 @@ export class PaySheetTemplateService {
             INSERT INTO public.pay_sheet_template_lines (
               id, template_id, company_id, component_id, component_code,
               display_label, sort_order, group_key, is_visible, is_identity_or_total,
-              formula_override_definition_id, formula_override_json
+              formula_override_definition_id, formula_override_json, input_method, system_data_mapping_id
             ) VALUES (
               $1::uuid, $2::uuid, $3, $4::uuid, $5,
               $6, $7, $8, $9, $10,
-              $11::uuid, $12::jsonb
+              $11::uuid, $12::jsonb, $13, $14::uuid
             );
           `,
           [
@@ -1343,6 +1355,8 @@ export class PaySheetTemplateService {
             Boolean(line.isIdentityOrTotal),
             line.formulaOverrideDefinitionId ?? null,
             overrideJson,
+            line.inputMethod ?? 'FORMULA',
+            line.systemDataMappingId ?? null,
           ],
         );
       }
@@ -1358,16 +1372,20 @@ export class PaySheetTemplateService {
       return this.mapHeader(existing);
     }
     const actor = this.resolveActorSub(authorization);
-    const res = await this.db.query<PaySheetTemplateRow>(
+    await this.db.query(
       `
         UPDATE public.pay_sheet_templates
         SET archived_at = NOW(), status = 'retired', updated_by = $2, updated_at = NOW()
-        WHERE id = $1::uuid
-        RETURNING ${this.headerSelectSql()};
+        WHERE id = $1::uuid;
       `,
       [id, actor],
     );
-    return this.mapHeader(res.rows[0]);
+    const updatedRow = await this.loadHeaderInScope(
+      id,
+      companyId,
+      authorization,
+    );
+    return this.mapHeader(updatedRow);
   }
 
   async archiveLine(
@@ -1433,7 +1451,8 @@ export class PaySheetTemplateService {
       display_label: l.display_label,
       sort_order: Number(l.sort_order ?? 0),
       formula_definition_id: l.formula_override_definition_id,
-      override_applied: Boolean(l.formula_override_definition_id),
+      override_applied: Boolean(l.formula_override_definition_id) || (l.formula_override_json != null && typeof l.formula_override_json === 'object'),
+      formula_override_json: l.formula_override_json ?? null,
     }));
   }
 

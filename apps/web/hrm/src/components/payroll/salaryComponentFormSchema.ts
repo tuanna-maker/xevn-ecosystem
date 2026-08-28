@@ -81,10 +81,8 @@ export const DEFAULT_SALARY_COMPONENT_FORM_VALUES = {
   componentType: '',
   nature: 'income' as const,
   valueType: 'currency' as const,
-  isTaxable: true,
   quota: '',
   allowExceedQuota: false,
-  formula: '',
   description: '',
 };
 
@@ -113,10 +111,8 @@ export function createSalaryComponentFormSchema(
       componentType: z.string().min(1, messages.typeRequired),
       nature: z.enum(['income', 'deduction', 'other']),
       valueType: z.enum(['currency', 'number', 'percentage']),
-      isTaxable: z.boolean(),
       quota: z.string(),
       allowExceedQuota: z.boolean(),
-      formula: z.string(),
       description: z.string(),
     })
     .superRefine((data, ctx) => {

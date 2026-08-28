@@ -58,7 +58,7 @@ export async function mobileLogin(email: string, password: string): Promise<Mobi
       'Content-Type': 'application/json',
       'x-request-id': safeRandomUuid(),
     },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ identifier: email, password }),
   });
   return parseEnvelope<MobileLoginResult>(res);
 }

@@ -152,16 +152,10 @@ async function parseHrmJson<T>(res: Response): Promise<{ data: T; envelope: HrmE
       details: body.details,
     });
   }
-  if (body.success === true && body.data === undefined) {
-    throw new ApiClientError({
-      status: res.status,
-      code: "HRM-NO-DATA",
-      message: body.message ?? "API returned success without data",
-      details: body.details,
-    });
-  }
+  // Removed HRM-NO-DATA throw to allow endpoints returning just { success: true }
 
-  return { data: (body.data ?? ({} as T)) as T, envelope: body as HrmEnvelope<T> };
+  const responseData = body.data !== undefined ? body.data : body;
+    return { data: (responseData ?? ({} as T)) as T, envelope: body as HrmEnvelope<T> };
 }
 
 const DEFAULT_HRM_FETCH_MS =
@@ -3203,6 +3197,8 @@ export type HrmPaySheetTemplateLine = {
   isVisible?: boolean;
   isIdentityOrTotal?: boolean;
   formulaOverrideDefinitionId: string | null;
+  inputMethod?: string | null;
+  systemDataMappingId?: string | null;
   formulaOverrideJson?: Record<string, unknown> | null;
   formulaOverrideCode?: string | null;
   formulaOverrideVersion?: number | null;
@@ -3263,6 +3259,8 @@ export type PutPaySheetTemplateLineInput = {
   isVisible?: boolean;
   isIdentityOrTotal?: boolean;
   formulaOverrideDefinitionId?: string | null;
+  inputMethod?: string | null;
+  systemDataMappingId?: string | null;
   formulaOverrideJson?: Record<string, unknown> | null;
 };
 
@@ -12030,9 +12028,311 @@ export const hrmApi = {
     requestHrm<T>(path, { ...init, method: 'POST', body: JSON.stringify(body) }),
   put: <T>(path: string, body?: unknown, init?: RequestInit & { headers?: Record<string, string> }) =>
     requestHrm<T>(path, { ...init, method: 'PUT', body: JSON.stringify(body) }),
+  patch: <T>(path: string, body?: unknown, init?: RequestInit & { headers?: Record<string, string> }) =>
+    requestHrm<T>(path, { ...init, method: 'PATCH', body: JSON.stringify(body) }),
   delete: <T>(path: string, init?: RequestInit & { headers?: Record<string, string>; data?: unknown }) =>
     requestHrm<T>(path, { ...init, method: 'DELETE', body: init?.data ? JSON.stringify(init.data) : undefined }),
   resolvePortalParentCompanyId: () => {
     return inferRuntimeScope()?.companyId || 'main';
   },
 };
+export type HrmPaySystemDataRecord = {
+  id: string;
+  company_id: string;
+  code: string;
+  name: string;
+  data_type: string;
+  description?: string;
+  created_at: string;
+  updated_at: string;
+};
+
+/**
+ * @CODE-MEMORY
+ * UC: PO-HRM-PAY-SYSTEM-DATA-SPEC-01
+ * Business Rule: Client fetch danh sách và CRUD định nghĩa Dữ liệu hệ thống (System Data).
+ * Cảnh báo API: Các endpoint phải luôn được đặt trong chuỗi string literal (nháy đơn '')
+ * để tránh bị lỗi Regex syntax trên Vite.
+ */
+export async function listPaySystemData(companyId: string) {
+  return requestHrm<HrmPaySystemDataRecord[]>('/api/hrm/settings/pay-system-data', {
+    method: "GET",
+    headers: { "x-company-id": normalizeHrmApiListCompanyId(companyId) },
+  });
+}
+
+export async function createPaySystemData(companyId: string, payload: { code: string; name: string; data_type?: string; description?: string }) {
+  return requestHrm<HrmPaySystemDataRecord>('/api/hrm/settings/pay-system-data', {
+    method: "POST",
+    headers: { "x-company-id": normalizeHrmApiListCompanyId(companyId) },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updatePaySystemData(id: string, companyId: string, payload: { code?: string; name?: string; data_type?: string; description?: string }) {
+  return requestHrm<HrmPaySystemDataRecord>('/api/hrm/settings/pay-system-data/' + id, {
+    method: "PUT",
+    headers: { "x-company-id": normalizeHrmApiListCompanyId(companyId) },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deletePaySystemData(id: string, companyId: string) {
+  return requestHrm<{ id: string }>('/api/hrm/settings/pay-system-data/' + id, {
+    method: "DELETE",
+    headers: { "x-company-id": normalizeHrmApiListCompanyId(companyId) },
+  });
+}
+
+// ============================================================================
+// PAYSLIP TEMPLATES (Added by Antigravity)
+// ============================================================================
+
+export type HrmPayslipTemplateRow = {
+  id: string;
+  code: string;
+  name: string;
+  pay_sheet_template_id: string | null;
+  pay_sheet_template_name?: string;
+  settings: any;
+  is_active: boolean;
+};
+
+export async function listPayslipTemplates() {
+  return requestHrm<{ data: HrmPayslipTemplateRow[] }>("/api/hrm/settings/payslip-templates", {
+    method: "GET",
+  });
+}
+
+export async function createPayslipTemplate(payload: Partial<HrmPayslipTemplateRow>) {
+  return requestHrm<void>("/api/hrm/settings/payslip-templates", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updatePayslipTemplate(id: string, payload: Partial<HrmPayslipTemplateRow>) {
+  return requestHrm<void>(`/api/hrm/settings/payslip-templates/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deletePayslipTemplate(id: string) {
+  return requestHrm<void>(`/api/hrm/settings/payslip-templates/${id}`, {
+    method: "DELETE",
+  });
+}
+
+// ====== RECRUITMENT CATALOG WRAPPERS ====== //
+
+export type HrmRecSettingsRecord = {
+  code: string;
+  label: string;
+  unit: string | null;
+  status: "active" | "draft";
+  origin: "xbos" | "hrm";
+  updated_at: string;
+};
+
+export async function listRecSettingsCatalog(catalogKey: string, params: { company_id: string; status?: string; include_archived?: boolean; q?: string }) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
+  if (params.status) search.set("status", params.status);
+  if (params.include_archived) search.set("include_archived", "true");
+  if (params.q?.trim()) search.set("q", params.q.trim());
+  const scope = inferRuntimeScope();
+  const res = await requestHrm<{ catalog_key: string; data: HrmRecSettingsRecord[] }>(
+    `/api/hrm/settings-catalogs/${catalogKey}/items?${search.toString()}`,
+    { method: "GET" },
+  );
+  return res.data ?? [];
+}
+
+export type UpsertRecSettingsPayload = {
+  companyId: string;
+  catalogKey: string;
+  code: string;
+  label: string;
+  itemValue?: string;
+  status?: "active" | "draft";
+};
+
+export async function upsertRecSettingsCatalog(payload: UpsertRecSettingsPayload) {
+  const scope = inferRuntimeScope();
+  const res = await fetch(`${HRM_API_ORIGIN}/api/hrm/settings-catalogs/items`, {
+    method: "POST",
+    headers: await headers({ scope }),
+    body: JSON.stringify({
+      companyId: normalizeHrmApiListCompanyId(payload.companyId),
+      catalogKey: payload.catalogKey,
+      code: payload.code.trim(),
+      label: payload.label.trim(),
+      itemValue: payload.itemValue ?? null,
+      status: payload.status ?? "active",
+    }),
+  });
+  const json = await res.json();
+  if (!res.ok) {
+    throw new ApiClientError({
+      status: res.status,
+      code: json.code ?? "HRM-SET-ITEM-UPSERT-FAILED",
+      message: json.message ?? "Không lưu được cấu hình.",
+    });
+  }
+  return json.data as HrmRecSettingsRecord;
+}
+
+export async function retireRecSettingsCatalog(catalogKey: string, companyId: string, code: string) {
+  const scope = inferRuntimeScope();
+  const res = await fetch(`${HRM_API_ORIGIN}/api/hrm/settings-catalogs/items`, {
+    method: "PATCH",
+    headers: await headers({ scope }),
+    body: JSON.stringify({
+      companyId: normalizeHrmApiListCompanyId(companyId),
+      catalogKey: catalogKey,
+      code: code.trim(),
+      status: "draft",
+    }),
+  });
+  const json = await res.json();
+  if (!res.ok) {
+    throw new ApiClientError({
+      status: res.status,
+      code: json.code ?? "HRM-SET-ITEM-ARCHIVE-FAILED",
+      message: json.message ?? "Lỗi xóa/ẩn item.",
+    });
+  }
+  return json.data as HrmRecSettingsRecord;
+}
+
+// ====== PAY POLICY GROUP ====== //
+export type PayPolicyGroupRecord = {
+  id: string;
+  tenant_id: string;
+  company_id: string;
+  code: string;
+  name_vi: string;
+  icon: string | null;
+  color_hex: string | null;
+  sort_order: number;
+  is_platform: boolean;
+  is_active: boolean;
+  description: string | null;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  active_policy_count: number;
+};
+
+export async function listPayPolicyGroups(params?: { is_active?: boolean }) {
+  const search = new URLSearchParams();
+  if (params?.is_active !== undefined) search.set('is_active', String(params.is_active));
+  const qs = search.toString() ? `?${search}` : '';
+  return requestHrm<{ data: PayPolicyGroupRecord[]; meta: { total: number } }>(
+    `/api/hrm/pay-policy-groups${qs}`,
+  );
+}
+
+export async function checkPayPolicyGroupCode(code: string) {
+  return requestHrm<{ available: boolean; reason?: string }>(
+    `/api/hrm/pay-policy-groups/check-code?code=${encodeURIComponent(code)}`,
+  );
+}
+
+export async function createPayPolicyGroup(payload: {
+  code: string;
+  name_vi: string;
+  icon?: string;
+  color_hex?: string;
+  sort_order?: number;
+  description?: string;
+}) {
+  return requestHrm<{ data: PayPolicyGroupRecord }>(`/api/hrm/pay-policy-groups`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updatePayPolicyGroup(
+  id: string,
+  payload: {
+    name_vi?: string;
+    icon?: string;
+    color_hex?: string;
+    sort_order?: number;
+    description?: string;
+  },
+) {
+  return requestHrm<{ data: PayPolicyGroupRecord }>(`/api/hrm/pay-policy-groups/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deletePayPolicyGroup(id: string) {
+  return requestHrm<{ success: boolean }>(`/api/hrm/pay-policy-groups/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+// ====== PAY GRADE ====== //
+export type PayGradeStepRecord = {
+  step_number: number;
+  monthly_salary: number;
+};
+export type PayGradeDefinitionRecord = {
+  id: string;
+  decision_number: string | null;
+  effective_from: string;
+  steps: PayGradeStepRecord[];
+};
+export type PayGradeRecord = {
+  id: string;
+  code: string;
+  name: string;
+  description: string | null;
+  is_active: boolean;
+  active_definition?: PayGradeDefinitionRecord;
+};
+
+export async function listPayGrades(params?: { search?: string; page?: number; limit?: number }) {
+  const qs = params ? '?' + new URLSearchParams(Object.entries(params).filter(([,v]) => v != null).map(([k,v]) => [k, String(v)])).toString() : '';
+  return requestHrm<{ data: PayGradeRecord[]; meta: { total: number } }>(`/api/hrm/payroll/pay-grades${qs}`);
+}
+export async function listPayGradeDefinitions(gradeId: string) {
+  return requestHrm<{ data: PayGradeDefinitionRecord[] }>(`/api/hrm/payroll/pay-grades/${gradeId}/definitions`);
+}
+export async function checkPayGradeCode(code: string) {
+  return requestHrm<{ available: boolean; reason?: string }>(`/api/hrm/payroll/pay-grades/check-code?code=${encodeURIComponent(code)}`);
+}
+export async function createPayGrade(payload: {
+  code: string;
+  name: string;
+  description?: string;
+  decision_number?: string;
+  effective_from: string;
+  steps: PayGradeStepRecord[];
+}) {
+  return requestHrm<{ data: PayGradeRecord }>(`/api/hrm/payroll/pay-grades`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+export async function createPayGradeVersion(gradeId: string, payload: { decision_number?: string; effective_from: string }) {
+  return requestHrm<{ data: PayGradeDefinitionRecord }>(`/api/hrm/payroll/pay-grades/${gradeId}/definitions`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+export async function updatePayGradeSteps(definitionId: string, steps: { step_number: number; monthly_salary: number }[]) {
+  return requestHrm<{ success: boolean }>(`/api/hrm/payroll/pay-grade-definitions/${definitionId}/steps`, {
+    method: 'PUT',
+    body: JSON.stringify({ steps }),
+  });
+}
+export async function archivePayGrade(gradeId: string) {
+  return requestHrm<{ success: boolean }>(`/api/hrm/payroll/pay-grades/${gradeId}/archive`, {
+    method: 'POST',
+  });
+}

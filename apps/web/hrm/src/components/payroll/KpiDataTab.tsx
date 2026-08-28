@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @CODE-MEMORY
  * Screen:     HRM · Tiền lương · Dữ liệu → KPI
  * WorkItem:   PO-HRM-PAY-DATA-KPI-FE-01
@@ -14,23 +14,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 type KpiRecord = { id:string; employee_code:string; employee_name:string; department:string; kpi_score:number; revenue:number; target_revenue:number; period:string; status:'approved'|'pending'|'rejected' };
 
-const MOCK_KPI: KpiRecord[] = [
-  { id:'1', employee_code:'LX-001', employee_name:'Nguyễn Văn An', department:'Lái xe tuyến', kpi_score:92, revenue:85000000, target_revenue:80000000, period:'2026-08', status:'approved' },
-  { id:'2', employee_code:'LX-002', employee_name:'Trần Thị Bình', department:'Lái xe tuyến', kpi_score:78, revenue:62000000, target_revenue:80000000, period:'2026-08', status:'pending' },
-  { id:'3', employee_code:'DP-001', employee_name:'Lê Minh Cường', department:'Điều phối', kpi_score:88, revenue:0, target_revenue:0, period:'2026-08', status:'approved' },
-  { id:'4', employee_code:'VP-001', employee_name:'Phạm Thị Dung', department:'Văn phòng', kpi_score:95, revenue:0, target_revenue:0, period:'2026-08', status:'approved' },
-];
-
-const statusBadge = (s: KpiRecord['status']) => ({
-  approved: <Badge className="bg-green-100 text-green-700 border-green-200 gap-1"><CheckCircle2 className="w-3 h-3"/>Đã duyệt</Badge>,
-  pending:  <Badge className="bg-amber-100 text-amber-700 border-amber-200 gap-1"><Clock className="w-3 h-3"/>Chờ duyệt</Badge>,
-  rejected: <Badge className="bg-red-100 text-red-700 border-red-200 gap-1"><AlertCircle className="w-3 h-3"/>Từ chối</Badge>,
-}[s]);
-
 const fmt = (v: number) => new Intl.NumberFormat('vi-VN').format(v);
 
 export function KpiDataTab() {
-  const [records] = useState(MOCK_KPI);
+  const [records] = useState<KpiRecord[]>([]);
   const [search, setSearch] = useState('');
   const [period, setPeriod] = useState('2026-08');
   const filtered = records.filter(r => r.employee_name.toLowerCase().includes(search.toLowerCase()) || r.employee_code.includes(search));

@@ -89,7 +89,13 @@ export type SettingsTabId =
   | 'pay-payslip-tpl'
   | 'pay-tax-tables'
   | 'pay-policy-packs'
-  | 'workflow-config';
+  | 'pay-global-params'
+  | 'workflow-config'
+  | 'pay-system-data'
+  // --- Mới thêm 2026-08-27 (G0-FOUNDATION-PAY-POLICY-GROUPS-FE-01) ---
+  | 'pay-policy-groups'
+  | 'pay-grades' | 'pay-steps' // G1: Ngach luong
+  | 'pay-grade-steps'; // G2: Bac luong per ngach
 
 export type SettingsNavItem = {
   id: SettingsTabId;
@@ -183,7 +189,13 @@ const ALL_SETTINGS_TAB_IDS = new Set<SettingsTabId>([
   'pay-payslip-tpl',
   'pay-tax-tables',
   'pay-policy-packs',
+  'pay-policy-groups',   // G0: Nhom Chinh sach
+  'pay-grades',
+  'pay-steps',           // G1: Ngach luong
+  'pay-grade-steps',      // G2: Bac luong per ngach
+  'pay-global-params',
   'workflow-config',
+  'pay-system-data',
 ]);
 
 export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
@@ -272,16 +284,21 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
       { id: 'pay-salary-groups', label: 'Nhóm lương', icon: Layers, testId: 'settings-tab-pay-salary-groups' },
       { id: 'pay-sheet-tpl', label: 'Mẫu bảng lương', icon: DollarSign, testId: 'settings-tab-pay-sheet-tpl' },
       { id: 'pay-payslip-tpl', label: 'Template phiếu lương', icon: FileText, testId: 'settings-tab-pay-payslip-tpl' },
+      { id: 'pay-system-data', label: 'Dữ liệu hệ thống', icon: Layers, testId: 'settings-tab-pay-system-data' },
       { id: 'pay-tax-tables', label: 'Bảng thuế TNCN', icon: Calculator, testId: 'settings-tab-pay-tax-tables' },
       { id: 'settings-defaults', label: 'Mặc định tính lương', icon: Calculator, testId: 'settings-tab-settings-defaults' },
+      { id: 'pay-global-params', label: 'Tham số lương (Global)', icon: SettingsIcon, testId: 'settings-tab-pay-global-params' },
     ],
   },
   {
     groupId: 'policy',
     title: 'Quy trình & Chính sách',
     items: [
+      { id: 'pay-policy-groups', label: 'Nhóm Chính sách', icon: Layers, testId: 'settings-tab-pay-policy-groups' },
+      { id: 'pay-grades', label: 'Ngạch lương', icon: Layers, testId: 'settings-tab-pay-grades' },
+      { id: 'pay-steps', label: 'Bậc lương', icon: Layers, testId: 'settings-tab-pay-steps' },
+      { id: 'pay-policy-packs', label: 'Gói chính sách (Ngạch bậc)', icon: FileText, testId: 'settings-tab-pay-policy-packs' },
       { id: 'workflow-config', label: 'Cấu hình quy trình', icon: GitBranch, testId: 'settings-tab-workflow-config' },
-      { id: 'pay-policy-packs', label: 'Gói chính sách', icon: FileText, testId: 'settings-tab-pay-policy-packs' },
     ],
   },
 ];

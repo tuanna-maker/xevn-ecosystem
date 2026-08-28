@@ -110,8 +110,16 @@ const mainNavItems: NavItemWithChildren[] = [
     ]
   },
   { titleKey: 'nav.recruitment', icon: UserPlus, path: '/recruitment', badge: 3, module: 'recruitment' },
-  { titleKey: 'nav.attendance', icon: Clock, path: '/attendance', module: 'attendance' },
+  { 
+    titleKey: 'nav.attendance', 
+    icon: Clock, 
+    children: [
+      { titleKey: 'nav.attendanceOverview', icon: Clock, path: '/attendance', color: 'bg-primary', module: 'attendance' },
+      { titleKey: 'nav.attendanceGrid', icon: ClipboardList, path: '/attendance-grid', color: 'bg-amber-500', module: 'attendance' },
+    ]
+  },
   { titleKey: 'nav.payroll', icon: Wallet, path: '/payroll', module: 'payroll' },
+  { titleKey: 'nav.payrollPolicies', icon: BookOpen, path: '/payroll-policies', color: 'bg-indigo-500', module: 'payroll' },
   { titleKey: 'nav.performance', icon: TrendingUp, path: '/performance', module: 'performance' },
   { titleKey: 'nav.ai', icon: Bot, path: '/ai', module: 'ai' },
   { titleKey: 'nav.tasks', icon: ClipboardList, path: '/tasks', module: 'tasks' },

@@ -1,0 +1,94 @@
+{
+  "params": [
+    "xe-vietnam",
+    50,
+    0
+  ],
+  "query": "\n      SELECT id, code, name, description, is_active\n      FROM pay_grades\n      WHERE deleted_at IS NULL\n     AND tenant_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3",
+  "testDb": [
+    {
+      "count": "33"
+    }
+  ],
+  "result": [
+    {
+      "id": "5f7d8fc8-7c98-45fa-9547-b556bdd43576",
+      "code": "E2",
+      "name": "E2",
+      "description": "",
+      "is_active": true
+    },
+    {
+      "id": "db72b009-f570-4cd3-8d3b-587197f9bcfb",
+      "code": "E1",
+      "name": "E1",
+      "description": "",
+      "is_active": true
+    },
+    {
+      "id": "3683a330-24c9-489d-a5e6-7b31ec0b2989",
+      "code": "L2",
+      "name": "L2",
+      "description": "",
+      "is_active": true
+    },
+    {
+      "id": "333f5fb7-cbb8-4b93-9889-a5d5400e7d03",
+      "code": "L1",
+      "name": "L1",
+      "description": "",
+      "is_active": true
+    },
+    {
+      "id": "ee384618-e007-4ac6-85b9-02446a3a5906",
+      "code": "M2",
+      "name": "M2",
+      "description": "",
+      "is_active": true
+    },
+    {
+      "id": "3e05df2b-3895-46c3-a57b-9148eb869774",
+      "code": "M1",
+      "name": "M1",
+      "description": "",
+      "is_active": true
+    },
+    {
+      "id": "f350160c-e140-4f90-8881-3c00bed15c2d",
+      "code": "C2",
+      "name": "C2",
+      "description": "",
+      "is_active": true
+    },
+    {
+      "id": "6e3fc1a0-5017-499d-ba4a-e92053ced585",
+      "code": "C1",
+      "name": "C1",
+      "description": "",
+      "is_active": true
+    },
+    {
+      "id": "1706af41-18c8-4cef-b770-0de6992eafad",
+      "code": "D3",
+      "name": "D3",
+      "description": "",
+      "is_active": true
+    },
+    {
+      "id": "60cbd545-aeaf-4fc7-9bc3-f0efac6fda95",
+      "code": "D2",
+      "name": "D2",
+      "description": "",
+      "is_active": true
+    },
+    {
+      "id": "49c5313d-f9ef-4aa5-bec1-f99c3c35a50b",
+      "code": "D1",
+      "name": "D1",
+      "description": "",
+      "is_active": true
+    }
+  ],
+  "envHost": "113.20.107.184",
+  "envDbUrl": ""
+}

@@ -240,8 +240,7 @@ function createStatefulDb(opts?: {
         }
 
         if (
-          s.includes('UPDATE public.pay_sheet_templates') &&
-          s.includes('RETURNING')
+          s.includes('UPDATE public.pay_sheet_templates')
         ) {
           // Archive: SET archived_at / updated_by $2 WHERE id = $1
           // Patch: WHERE id = $N last param

@@ -20,6 +20,7 @@
  */
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import * as Location from 'expo-location';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import React, { useCallback, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { CheckInHeroCard } from '../../components/attendance/CheckInHeroCard';
@@ -86,6 +87,9 @@ export function CheckInScreen() {
   const [checkInChannel, setCheckInChannel] = useState<CheckInChannelId>(resolveDefaultCheckInChannel);
   const [selectedShift, setSelectedShift] = useState<string | null>(null);
   const [isCheckedIn, setIsCheckedIn] = useState(false);
+  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
+  const [cameraRef, setCameraRef] = useState<CameraView | null>(null);
+  const [photoBase64, setPhotoBase64] = useState<string | null>(null);
 
   const cid = auth.getAttendanceCompanyId();
   const employeeId = auth.employeeId.trim();
@@ -144,6 +148,10 @@ export function CheckInScreen() {
     }
     if (!employeeId) {
       Alert.alert(vi.error, 'Không xác định được nhân viên. Đăng nhập lại hoặc vào Cài đặt.');
+      return;
+    }
+    if (!photoBase64 && !isCheckedIn) {
+      Alert.alert(vi.error, 'Yêu cầu chụp ảnh Selfie để Check-in chống gian lận.');
       return;
     }
 
@@ -272,6 +280,41 @@ export function CheckInScreen() {
           <Text style={styles.geofenceText}>Ngoài phạm vi cho phép ({distanceToOffice}m)</Text>
           <Text style={styles.geofenceSubtext}>Bạn vẫn có thể chấm công nhưng cần ghi chú lý do.</Text>
         </View>
+      )}
+
+      {!isCheckedIn && (
+        <ProfileSectionCard title="Xác thực khuôn mặt (Bắt buộc)" icon="camera-outline">
+          {!cameraPermission?.granted ? (
+            <View style={{ padding: layout.itemGap }}>
+              <Text style={styles.warnText}>Cần cấp quyền Camera để chụp ảnh check-in.</Text>
+              <PrimaryButton label="Cấp quyền Camera" onPress={requestCameraPermission} />
+            </View>
+          ) : !photoBase64 ? (
+            <View style={{ height: 300, borderRadius: layout.itemGap, overflow: 'hidden', margin: layout.itemGap }}>
+              <CameraView 
+                ref={setCameraRef}
+                style={{ flex: 1 }} 
+                facing="front"
+              />
+              <View style={{ position: 'absolute', bottom: 16, alignSelf: 'center' }}>
+                <PrimaryButton 
+                  label="Chụp ảnh Selfie"
+                  onPress={async () => {
+                    if (cameraRef) {
+                      const photo = await cameraRef.takePictureAsync({ base64: true, quality: 0.5 });
+                      setPhotoBase64(photo?.base64 || null);
+                    }
+                  }} 
+                />
+              </View>
+            </View>
+          ) : (
+            <View style={{ padding: layout.itemGap, alignItems: 'center' }}>
+              <Text style={{ color: colors.primary, fontWeight: 'bold' }}>✓ Đã chụp ảnh xác thực</Text>
+              <PrimaryButton label="Chụp lại" variant="ghost" onPress={() => setPhotoBase64(null)} />
+            </View>
+          )}
+        </ProfileSectionCard>
       )}
 
       <CheckInMethodSelector value={checkInChannel} onChange={setCheckInChannel} />

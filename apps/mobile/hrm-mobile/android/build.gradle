@@ -39,6 +39,13 @@ allprojects {
         google()
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
+        maven {
+            // Expo Camera requires its local maven repo for com.google.android:cameraview
+            def expoCameraPath = ['node', '--print', "require.resolve('expo-camera/package.json')"].execute(null, rootDir).text.trim()
+            if (expoCameraPath) {
+                url(new File(expoCameraPath, '../android/maven'))
+            }
+        }
     }
 }
 

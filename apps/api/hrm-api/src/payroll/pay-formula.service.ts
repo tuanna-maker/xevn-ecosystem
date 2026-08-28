@@ -1836,23 +1836,55 @@ export class PayFormulaService {
     }
 
     const overrideId = String(input.column.formula_definition_id ?? '').trim();
+    const hasDirectFormula =
+      input.column.formula_override_json &&
+      typeof input.column.formula_override_json === 'object' &&
+      typeof (input.column.formula_override_json as any).formula === 'string' &&
+      String((input.column.formula_override_json as any).formula).trim().length > 0;
+
     /** OV-C only when snapshot/template explicitly marks override_applied (strict). */
-    if (overrideId && input.column.override_applied === true) {
-      const overrideFormula = await this.loadPublishedFormulaById({
-        formulaDefinitionId: overrideId,
-        companyId: input.companyId,
-        authorization: input.authorization,
-      });
-      if (!overrideFormula) {
-        return {
-          ok: false,
-          code: HRM_PAY_FORMULA_412,
-          message: 'Template override formula is not published/active (OV-C)',
-          details: {
-            componentCode,
-            formulaDefinitionId: overrideId,
-            payroll_e2e_ready: false,
+    if ((overrideId || hasDirectFormula) && input.column.override_applied === true) {
+      let overrideFormula: PublishedFormulaBind;
+      if (overrideId) {
+        const dbFormula = await this.loadPublishedFormulaById({
+          formulaDefinitionId: overrideId,
+          companyId: input.companyId,
+          authorization: input.authorization,
+        });
+        if (!dbFormula) {
+          return {
+            ok: false,
+            code: HRM_PAY_FORMULA_412,
+            message: 'Template override formula is not published/active (OV-C)',
+            details: {
+              componentCode,
+              formulaDefinitionId: overrideId,
+              payroll_e2e_ready: false,
+            },
+          };
+        }
+        overrideFormula = dbFormula;
+      } else {
+        const rawFormula = String((input.column.formula_override_json as any).formula).trim();
+        const formula = rawFormula.startsWith('=') ? rawFormula : '=' + rawFormula;
+        overrideFormula = {
+          id: 'direct-override-' + componentCode,
+          company_id: input.companyId,
+          code: 'DIRECT_OVERRIDE_' + componentCode.toUpperCase(),
+          version: 1,
+          status: 'active',
+          expression_json: {
+            form: 'hyperformula_v1',
+            lines: [
+              {
+                component_code: componentCode,
+                sign: sign,
+                formula: formula,
+              }
+            ]
           },
+          required_vars_json: {},
+          source: 'company_active',
         };
       }
       const evalOverride = await this.evaluateFormulaAmountForComponent({

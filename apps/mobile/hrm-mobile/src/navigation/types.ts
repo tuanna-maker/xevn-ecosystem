@@ -22,6 +22,9 @@ export type AttendanceStackParamList = {
   TeamColleagueDetail: { employeeId: string };
   CheckIn: undefined;
   AttendanceHistory: undefined;
+  CreateOtRequest: undefined;
+  CreateTripRequest: undefined;
+  MySchedule: undefined;
 };
 
 export type LeaveRequestPrefill = {
@@ -54,6 +57,8 @@ export type ProfileStackParamList = {
   UpdateRequestDetail: { id: string };
   LeaveRequestDetail: { id: string; employeeId?: string };
   Journey: { feed?: JourneyFeedParams };
+  InternalNews: undefined;
+  NewsDetail: { id: string };
 };
 
 /** Leave/update flows nested under TabProfile — not a root tab. */

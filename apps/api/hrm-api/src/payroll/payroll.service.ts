@@ -1348,6 +1348,7 @@ export class PayrollService {
             this.settingsTaxParams,
             current.company_id,
             authorization,
+            this.db,
           );
         }
         const tncn = computePayTncnBreakdown({
@@ -2148,6 +2149,7 @@ export class PayrollService {
         this.settingsTaxParams,
         periodCompanyId,
         authorization,
+        this.db,
       );
       const gtgcResolved = await resolvePayGtgcForEmployee(this.db, {
         periodCompanyId,
@@ -3330,6 +3332,17 @@ export class PayrollService {
       default_value?: number;
       is_required?: boolean;
       sort_order?: number;
+      data_source_type?: string;
+      source_mapping_key?: string;
+      formula?: string;
+      condition_formula?: string;
+      min_value?: number;
+      max_value?: number;
+      apply_tax?: boolean;
+      apply_insurance?: boolean;
+      description?: string;
+      is_visible?: boolean;
+      is_editable?: boolean;
     },
     authorization?: string,
   ) {
@@ -3341,8 +3354,10 @@ export class PayrollService {
     const id = randomUUID();
     const res = await this.db.query(
       `INSERT INTO public.hrm_salary_template_components
-        (id, template_id, company_id, component_id, default_value, is_required, sort_order)
-       VALUES ($1, $2::uuid, $3, $4::uuid, $5, $6, $7) RETURNING *;`,
+        (id, template_id, company_id, component_id, default_value, is_required, sort_order,
+         data_source_type, source_mapping_key, formula, condition_formula, min_value, max_value,
+         apply_tax, apply_insurance, description, is_visible, is_editable)
+       VALUES ($1, $2::uuid, $3, $4::uuid, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18) RETURNING *;`,
       [
         id,
         templateId,
@@ -3351,6 +3366,17 @@ export class PayrollService {
         payload.default_value ?? 0,
         payload.is_required ?? false,
         payload.sort_order ?? 0,
+        payload.data_source_type ?? 'FORMULA',
+        payload.source_mapping_key ?? null,
+        payload.formula ?? null,
+        payload.condition_formula ?? null,
+        payload.min_value ?? null,
+        payload.max_value ?? null,
+        payload.apply_tax ?? true,
+        payload.apply_insurance ?? false,
+        payload.description ?? null,
+        payload.is_visible ?? true,
+        payload.is_editable ?? true,
       ],
     );
     return res.rows[0];
@@ -3452,6 +3478,17 @@ export class PayrollService {
           default_value: comp.default_value,
           is_required: comp.is_required,
           sort_order: comp.sort_order,
+          data_source_type: (comp as any).data_source_type,
+          source_mapping_key: (comp as any).source_mapping_key,
+          formula: (comp as any).formula,
+          condition_formula: (comp as any).condition_formula,
+          min_value: (comp as any).min_value,
+          max_value: (comp as any).max_value,
+          apply_tax: (comp as any).apply_tax,
+          apply_insurance: (comp as any).apply_insurance,
+          description: (comp as any).description,
+          is_visible: (comp as any).is_visible,
+          is_editable: (comp as any).is_editable,
         },
         authorization,
       );
@@ -3873,5 +3910,91 @@ export class PayrollService {
       authorization,
       tenantId,
     });
+  }
+
+  async assignEmployeesToTemplate(
+    templateId: string,
+    companyId: string,
+    employeeIds: string[],
+    authorization?: string,
+  ) {
+    const persistCompanyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      companyId,
+    );
+    const scope = resolveHrmListScope(authorization, persistCompanyId);
+    
+    if (employeeIds.length === 0) return { assigned: 0 };
+    
+    // Xóa assignment cũ (nếu có) để insert mới, hoặc có thể dùng UPSERT
+    // Ở đây ta đơn giản là xóa gán cũ của user rồi insert gán mới để luôn có effective_from = NOW()
+    const placeholders = employeeIds.map((_, i) => `$${i + 2}`).join(', ');
+    await this.db.query(
+      `DELETE FROM public.pay_employee_templates WHERE employee_id IN (${placeholders})`,
+      [templateId, ...employeeIds].slice(1),
+    );
+
+    const values: unknown[] = [];
+    const inserts: string[] = [];
+    let i = 1;
+    for (const empId of employeeIds) {
+      inserts.push(`($${i++}::uuid, $${i++}::uuid, NOW())`);
+      values.push(empId, templateId);
+    }
+
+    if (inserts.length > 0) {
+      await this.db.query(
+        `INSERT INTO public.pay_employee_templates (employee_id, template_id, effective_from)
+         VALUES ${inserts.join(', ')}`,
+        values,
+      );
+    }
+    
+    return { assigned: employeeIds.length };
+  }
+
+  async unassignEmployeesFromTemplate(
+    templateId: string,
+    companyId: string,
+    employeeIds: string[],
+    authorization?: string,
+  ) {
+    const persistCompanyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      companyId,
+    );
+    const scope = resolveHrmListScope(authorization, persistCompanyId);
+    
+    if (employeeIds.length === 0) return { unassigned: 0 };
+
+    const placeholders = employeeIds.map((_, i) => `$${i + 2}`).join(', ');
+    const res = await this.db.query(
+      `DELETE FROM public.pay_employee_templates 
+       WHERE template_id = $1::uuid AND employee_id IN (${placeholders})`,
+      [templateId, ...employeeIds],
+    );
+
+    return { unassigned: res.rowCount };
+  }
+
+  async listTemplateAssignments(
+    templateId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
+    const persistCompanyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      companyId,
+    );
+    const scope = resolveHrmListScope(authorization, persistCompanyId);
+    
+    const res = await this.db.query(
+      `SELECT employee_id, effective_from, effective_to, created_at, updated_at
+       FROM public.pay_employee_templates
+       WHERE template_id = $1::uuid`,
+      [templateId],
+    );
+    
+    return { total: res.rows.length, data: res.rows };
   }
 }

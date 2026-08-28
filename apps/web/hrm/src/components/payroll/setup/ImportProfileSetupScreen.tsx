@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @CODE-MEMORY
  * Screen:     HRM Lương → Thiết lập → Profile nhập liệu
  * WorkItem:   PO-HRM-PAY-STP-IMPORT-PROFILE-FE-01
@@ -20,26 +20,8 @@ type ImportProfile = {
   mappings: FieldMapping[]; lastUsed: string; status: 'active'|'draft';
 };
 
-const MOCK: ImportProfile[] = [
-  {
-    id:'1', name:'Import chấm công từ máy chấm', type:'attendance', fileFormat:'xlsx',
-    mappings:[{column:'A',field:'employee_code',required:true},{column:'B',field:'date',required:true},{column:'C',field:'checkin',required:false},{column:'D',field:'checkout',required:false}],
-    lastUsed:'2026-08-01', status:'active'
-  },
-  {
-    id:'2', name:'Import KPI từ phần mềm KPI Engine', type:'kpi', fileFormat:'csv',
-    mappings:[{column:'emp_code',field:'employee_code',required:true},{column:'score',field:'kpi_score',required:true},{column:'revenue',field:'revenue_amount',required:false}],
-    lastUsed:'2026-07-31', status:'active'
-  },
-  {
-    id:'3', name:'Import sản lượng lái xe tải VTS', type:'product', fileFormat:'xlsx',
-    mappings:[{column:'NV',field:'employee_code',required:true},{column:'SL',field:'quantity',required:true},{column:'DG',field:'unit_price',required:true}],
-    lastUsed:'2026-08-05', status:'draft'
-  },
-];
-
 export function ImportProfileSetupScreen() {
-  const [profiles, setProfiles] = useState(MOCK);
+  const [profiles, setProfiles] = useState<ImportProfile[]>([]);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ name:'', type:'attendance', fileFormat:'xlsx' });
 

@@ -305,6 +305,15 @@ export class PaySheetTemplateLineInputDto {
   formulaOverrideDefinitionId?: string | null;
 
   @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  inputMethod?: string | null;
+
+  @IsOptional()
+  @IsUUID()
+  systemDataMappingId?: string | null;
+
+  @IsOptional()
   @IsObject()
   formulaOverrideJson?: Record<string, unknown> | null;
 }

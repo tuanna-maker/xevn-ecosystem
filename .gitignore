@@ -92,3 +92,5 @@ delete*.sql
 
 # Payroll seed reports (chứa lương thực tế — không commit)
 scripts/seed-reports/
+TEST_CREDENTIALS.md
+

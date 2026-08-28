@@ -177,7 +177,7 @@ Tạo đề xuất nâng bậc.
 
 ## 2. POLICY ENGINE
 
-### `GET /pay-policies`
+### `GET /bonus-policies`
 Lấy danh sách policies.
 
 **Query Params:**

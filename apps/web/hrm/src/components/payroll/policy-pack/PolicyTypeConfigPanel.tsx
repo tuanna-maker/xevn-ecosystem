@@ -240,7 +240,7 @@ export function PolicyTypeConfigPanel({ onClose }: { onClose: () => void }) {
                               <SelectTrigger className="h-8 bg-white text-xs">
                                 <SelectValue placeholder="Chỉ hiển thị (Không map)" />
                               </SelectTrigger>
-                              <SelectContent className="z-[300]">
+                              <SelectContent>
                                 <SelectItem value="none" className="text-muted-foreground italic">-- Chỉ hiển thị (Không map) --</SelectItem>
                                 {MAPPABLE_SYSTEM_TABLES.map(table => (
                                   <SelectGroup key={table.id}>

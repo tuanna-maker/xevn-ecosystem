@@ -434,6 +434,7 @@ function mapLineRowToAttVars(row: {
   ot_hours_weighted: string | null;
   paid_leave_hours: string | null;
   unpaid_leave_hours: string | null;
+  work_days: string | null;
 }): Record<string, number> {
   const vars: Record<string, number> = {};
   const pairs: Array<
@@ -444,6 +445,7 @@ function mapLineRowToAttVars(row: {
     ['ot_hours_weighted', 'ot_hours_weighted'],
     ['paid_leave_hours', 'paid_leave_hours'],
     ['unpaid_leave_hours', 'unpaid_leave_hours'],
+    ['work_days', 'work_days'],
   ];
   for (const [col, key] of pairs) {
     const n = toNumber(row[col]);
@@ -567,6 +569,7 @@ export async function loadAttHoursFromClosedLine(
         ot_hours_weighted: string | null;
         paid_leave_hours: string | null;
         unpaid_leave_hours: string | null;
+        work_days: string | null;
       }
     | undefined;
   try {
@@ -578,6 +581,7 @@ export async function loadAttHoursFromClosedLine(
       ot_hours_weighted: string | null;
       paid_leave_hours: string | null;
       unpaid_leave_hours: string | null;
+      work_days: string | null;
     }>(
       `
         SELECT
@@ -587,7 +591,8 @@ export async function loadAttHoursFromClosedLine(
           standard_hours::text AS standard_hours,
           ot_hours_weighted::text AS ot_hours_weighted,
           paid_leave_hours::text AS paid_leave_hours,
-          unpaid_leave_hours::text AS unpaid_leave_hours
+          unpaid_leave_hours::text AS unpaid_leave_hours,
+          work_days::text AS work_days
         FROM public.att_timesheet_line
         WHERE header_id = $1::uuid
           AND employee_id = $2::uuid
@@ -687,9 +692,13 @@ export async function loadInputPackBag(
   db: HrmDbService,
 ): Promise<Record<string, number>> {
   const coreSet = new Set<string>(
-    PAY_FORMULA_REQUIRED_VAR_ALLOWLIST as readonly string[],
+    (PAY_FORMULA_REQUIRED_VAR_ALLOWLIST as readonly string[]).map((k) =>
+      k.toLowerCase(),
+    ),
   );
-  const res = await db.query<{ source_kind: string; total: string }>(
+
+  // 1. Load by source_kind
+  const resKind = await db.query<{ source_kind: string; total: string }>(
     `SELECT source_kind, SUM(amount)::text AS total
      FROM public.pay_period_input_lines
      WHERE period_id = $1
@@ -699,12 +708,35 @@ export async function loadInputPackBag(
     [periodId, employeeId],
   );
   const bag: Record<string, number> = {};
-  for (const row of res.rows) {
+  for (const row of resKind.rows) {
     // BR-W10-03: skip source_kinds colliding with protected ATT var names
-    if (coreSet.has(row.source_kind)) continue;
-    const val = parseFloat(row.total);
-    if (Number.isFinite(val)) bag[row.source_kind] = val;
+    if (row.source_kind && !coreSet.has(row.source_kind.toLowerCase())) {
+      const val = parseFloat(row.total);
+      if (Number.isFinite(val)) bag[row.source_kind] = val;
+    }
   }
+
+  // 2. Load by component_code (enables manual input columns referencing in formulas)
+  const resCode = await db.query<{ component_code: string; amount: string }>(
+    `SELECT component_code, amount::text AS amount
+     FROM public.pay_period_input_lines
+     WHERE period_id = $1
+       AND employee_id = $2
+       AND archived_at IS NULL`,
+    [periodId, employeeId],
+  );
+  for (const row of resCode.rows) {
+    const code = row.component_code?.trim();
+    if (code && !coreSet.has(code.toLowerCase())) {
+      const val = parseFloat(row.amount);
+      if (Number.isFinite(val)) {
+        bag[code] = val;
+        bag[code.toLowerCase()] = val;
+        bag[code.toUpperCase()] = val;
+      }
+    }
+  }
+
   return bag;
 }
 

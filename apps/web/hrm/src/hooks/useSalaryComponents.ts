@@ -53,7 +53,6 @@ export interface SalaryComponent {
   value_type: 'currency' | 'number' | 'percentage';
   is_taxable: boolean;
   is_insurance_base: boolean;
-  formula?: string;
   default_value: number;
   min_value?: number;
   max_value?: number;
@@ -73,9 +72,8 @@ export interface SalaryComponentFormData {
   component_type: string;
   nature: 'income' | 'deduction' | 'other';
   value_type: 'currency' | 'number' | 'percentage';
-  is_taxable: boolean;
-  is_insurance_base: boolean;
-  formula?: string;
+  is_taxable?: boolean;
+  is_insurance_base?: boolean;
   default_value: number;
   min_value?: number;
   max_value?: number;

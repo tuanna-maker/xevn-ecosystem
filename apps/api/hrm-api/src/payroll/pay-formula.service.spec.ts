@@ -824,6 +824,72 @@ describe('PayFormulaService (PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01)', () => {
       expect(result.sourceTiers).toContain('emp_cb');
     });
 
+    it('evaluates direct formula override from formula_override_json when override_applied is true', async () => {
+      const db = {
+        query: jest.fn(async (sql: string) => {
+          if (
+            sql.includes('ALTER TABLE') ||
+            sql.includes('UPDATE public.employee_compensation_lines')
+          ) {
+            return { rows: [] };
+          }
+          if (sql.includes('information_schema')) {
+            return { rows: [{ exists: true }] };
+          }
+          if (sql.includes('FROM public.employees')) {
+            return { rows: [{ company_id: 'holding' }] };
+          }
+          if (sql.includes('FROM public.employee_compensation_packages')) {
+            return { rows: [] };
+          }
+          if (sql.includes('FROM public.pay_period_input_lines')) {
+            return { rows: [] };
+          }
+          if (sql.includes('FROM public.salary_components')) {
+            return {
+              rows: [
+                {
+                  id: 'sc-1',
+                  nature: 'income',
+                  default_value: '0',
+                  value_type: 'fixed',
+                },
+              ],
+            };
+          }
+          return { rows: [] };
+        }),
+      } as unknown as HrmDbService;
+      const svc = new PayFormulaService(db);
+      const result = await svc.processEmployeePayslipViaSrc({
+        companyId: 'holding',
+        periodId: 'period-1',
+        employeeId: '11111111-1111-4111-8111-111111111111',
+        asOfDate: '2026-04-30',
+        periodFrom: '2026-04-01',
+        periodTo: '2026-04-30',
+        sheetTemplateSnapshotJson: {
+          columns: [
+            {
+              component_code: 'BASE',
+              sort_order: 0,
+              formula_definition_id: null,
+              override_applied: true,
+              formula_override_json: { formula: '=1000 + 2000' },
+            },
+          ],
+        },
+        boundFormula,
+      });
+      expect(result.mode).toBe('computed');
+      if (result.mode !== 'computed') return;
+      expect(result.lines[0]).toMatchObject({
+        component_code: 'BASE',
+        amount: 3000,
+        source_tier: 'template_override',
+      });
+    });
+
     it('SRC-02 D-PAY-SRC-01: LUONG_CO_BAN snapshot matches C&B base → emp_cb', async () => {
       const db = {
         query: jest.fn(async (sql: string) => {

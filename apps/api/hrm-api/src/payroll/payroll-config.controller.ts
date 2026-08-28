@@ -6,7 +6,7 @@ import { CreateSalaryComponentDto } from './dto/create-salary-component.dto';
 // Giả lập OS ScopeContextGuard. Trong code thật sẽ import từ @xevn/platform-core
 // import { ScopeContextGuard, RequiredScope } from '@xevn/platform-core';
 
-@Controller('api/hrm/payroll-config')
+@Controller('payroll-config')
 export class PayrollConfigController {
   constructor(private readonly configService: PayrollConfigService) {}
 

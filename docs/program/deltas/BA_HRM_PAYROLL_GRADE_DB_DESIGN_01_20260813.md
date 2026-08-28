@@ -42,6 +42,7 @@
 | `job_grade_id` | `VARCHAR(36)` | NOT NULL, FK `pay_job_grade(id) ON DELETE CASCADE` | Link tới Ngạch bậc cha |
 | `step_number` | `INTEGER` | NOT NULL | Số bậc (1 = Bậc I, 2 = Bậc II, ...) |
 | `base_salary` | `DECIMAL(15, 2)` | NOT NULL | Mức lương cứng của bậc (VNĐ) |
+| `job_titles` | `JSONB` | NULLABLE | Mảng các chức danh áp dụng (multi-select, quan hệ 1-N từ Ngạch) |
 | `note` | `TEXT` | NULLABLE | Ghi chú (VD: "Chưa có căn cứ văn bản") |
 | `created_at` | `TIMESTAMPTZ` | NOT NULL, DEFAULT NOW() | Thời gian tạo |
 

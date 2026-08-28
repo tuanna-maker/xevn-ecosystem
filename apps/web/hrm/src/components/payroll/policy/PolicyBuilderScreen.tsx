@@ -1,195 +1,384 @@
-﻿/**
+/**
  * @CODE-MEMORY
- * Screen:     HRM · Policy Builder (S2)
- * Route:      /hr/payroll/policy-engine → click Xem/Sửa
- * BEEndpoint: GET /pay-policies/:id, POST /pay-policies/:id/components,
- *             PUT reorder, DELETE component, POST activate
- * WorkItem:   HRM-POLICY-FE-S2
- * Coded:      2026-08-22
+ * Screen:      HRM · Policy Builder (Wizard)
+ * Route:       /hr/payroll/policy-engine → click Xem/Sửa
+ * WorkItem:    HRM-POLICY-FE-FLEX-WIZARD & G10 - Khôi phục và Đồng bộ Hóa Giao diện Cấu hình Thuế TNCN
+ * Coded:       2026-08-27
+ * Description: Màn hình Wizard tạo/sửa chính sách lương động. Cập nhật hỗ trợ chuyển đổi linh hoạt
+ *              lựa chọn cấu trúc và thuộc tính component lưu trữ tương thích với chính sách Thuế.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { useDepartments } from "@/hooks/useDepartments";
+import { useJobTitles } from "@/hooks/useJobTitles";
+import { useSettingsCatalogsOverview } from "@/hooks/useSettingsCatalogsOverview";
+import { contractTypeOptionsFromCatalog } from "@/lib/catalogSearchPicker";
+import { useToast } from "@/components/ui/use-toast";
 import { type Policy, type PolicyComponent, PolicyAPI } from "../../../lib/api/hrm-policy-api";
+import { ComponentFormBuilder } from "./ComponentFormBuilder";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Rocket, Plus, Trash2, Loader2, Settings2, ShieldCheck, Database, SlidersHorizontal } from "lucide-react";
+import { RuleConditionBuilder, type Condition } from "../RuleConditionBuilder";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ViDatePickerField } from "@/components/ui/ViDatePickerField";
 
-const COMPONENT_TYPES = [
-  "grade_base","grade_allowance","kpi_bonus_pct","trip_rate_tiered",
-  "revenue_quality","cpn_commission","contract_fee","vehicle_repair_deduction",
-  "fixed_base_salary","vehicle_mgmt_allowance","revenue_commission_tiered",
-  "fuel_quota_deduction","clhd_point_deduction","kpi_pool_share",
-  "revenue_pool_commission","team_milestone_bonus","delivery_commission",
-  "zero_sum_pool","attendance_bonus_conditional","meal_allowance_conditional",
-  "remote_work_allowance","loading_support","special_allowance",
-  "probation_override","fixed_trial_salary","ranking_bonus",
-  "kpi_multiplier","penalty_deduction","insurance_deduction",
+type WizardStep = "definition" | "tariff" | "rules";
+
+const STRUCTURE_TYPES = [
+  { value: "step_only_table", label: "Bảng lương theo Bậc (1 chiều)" },
+  { value: "grade_step_matrix", label: "Bảng lương Ngạch-Bậc (2 chiều)" },
+  { value: "fixed_amount", label: "Mức cố định (Flat)" },
+  { value: "formula_based", label: "Tính theo công thức/thời gian" },
 ];
-
-const S = {
-  root: { display: "grid", gridTemplateColumns: "340px 1fr", gap: 20, minHeight: "70vh" } as React.CSSProperties,
-  panel: { background: "#1a1f2e", borderRadius: 12, border: "1px solid #2a2f45", overflow: "hidden" } as React.CSSProperties,
-  header: { background: "#1e2540", padding: "14px 20px", borderBottom: "1px solid #2a2f45", display: "flex", justifyContent: "space-between", alignItems: "center" } as React.CSSProperties,
-  compItem: (active: boolean, deduction: boolean): React.CSSProperties => ({
-    padding: "12px 16px", borderBottom: "1px solid #1e2540", cursor: "pointer",
-    background: active ? "#312e81" : "transparent", display: "flex", justifyContent: "space-between", alignItems: "center",
-    transition: "background .15s",
-    borderLeft: `3px solid ${deduction ? "#f87171" : "#4ade80"}`,
-  }),
-  input: { background: "#0f1117", border: "1px solid #334155", borderRadius: 8, color: "#e8eaf0", padding: "8px 14px", fontSize: 14, width: "100%", boxSizing: "border-box" as const },
-  btn: (color: string): React.CSSProperties => ({ background: color, color: "#fff", border: "none", borderRadius: 8, padding: "8px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer" }),
-  label: { fontSize: 12, color: "#94a3b8", marginBottom: 4, display: "block" } as React.CSSProperties,
-  field: { marginBottom: 14 } as React.CSSProperties,
-};
 
 export function PolicyBuilderScreen({ policyId, onBack }: { policyId: string; onBack: () => void }) {
   const [policy, setPolicy] = useState<Policy | null>(null);
-  const [selectedComp, setSelectedComp] = useState<PolicyComponent | null>(null);
+  const [components, setComponents] = useState<PolicyComponent[]>([]);
   const [loading, setLoading] = useState(true);
-  const [addForm, setAddForm] = useState({ component_type: COMPONENT_TYPES[0], name: "", params: "{}" });
-  const [showAdd, setShowAdd] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [activeStep, setActiveStep] = useState<WizardStep>("definition");
+  const { departments } = useDepartments();
+  const { data: jobTitles = [] } = useJobTitles() as { data: any[] };
+  const { catalogs } = useSettingsCatalogsOverview();
+  const contractTypePickerOptions = useMemo(
+    () => contractTypeOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
+  const { toast } = useToast();
+  const isReadOnly = policy?.status === "ACTIVE";
+  const [confirmDialog, setConfirmDialog] = useState<{
+    title: string;
+    description: string;
+    onConfirm: () => void | Promise<void>;
+  } | null>(null);
+
+  // Local state for Definition
+  const [conditions, setConditions] = useState<Condition[]>([]);
+  const [paramsStr, setParamsStr] = useState("{}");
+  const [policyDef, setPolicyDef] = useState({
+    name: "",
+    description: "",
+    effective_from: "",
+    structureType: "step_only_table",
+    scope: "global"
+  });
 
   const load = async () => {
     setLoading(true);
-    try { setPolicy(await PolicyAPI.get(policyId)); }
+    try { 
+      const p = await PolicyAPI.get(policyId); 
+      setPolicy(p);
+      const comps = p.components || [];
+      setComponents(comps);
+      
+      const comp = comps[0];
+      if (comp) {
+        setParamsStr(JSON.stringify(comp.params || {}));
+        setPolicyDef({
+          name: p.name || "",
+          description: p.description || "",
+          effective_from: p.effective_from || "",
+          structureType: comp.component_type || "step_only_table",
+          scope: (comp.params as any)?.scope || "global"
+        });
+        setConditions((comp.params as any)?.conditions || []);
+      } else {
+        setParamsStr("{}");
+        setPolicyDef({
+          name: p.name || "",
+          description: p.description || "",
+          effective_from: p.effective_from || "",
+          structureType: "step_only_table",
+          scope: "global"
+        });
+        setConditions([]);
+      }
+    }
     catch { setPolicy(null); }
     finally { setLoading(false); }
   };
 
   useEffect(() => { void load(); }, [policyId]);
 
-  const handleDelete = async (compId: string) => {
-    if (!confirm("Xóa component này?")) return;
-    await PolicyAPI.deleteComponent(policyId, compId);
-    setSelectedComp(null);
-    await load();
+  const handleActivate = () => {
+    setConfirmDialog({
+      title: "Kích hoạt chính sách",
+      description: "Kích hoạt chính sách này? Phiên bản cũ sẽ bị đóng.",
+      onConfirm: async () => {
+        try {
+          await PolicyAPI.toggleStatus(policyId);
+          await load();
+          toast({ title: "Đã kích hoạt chính sách thành công!" });
+        } catch (e: any) {
+          toast({ title: "Lỗi kích hoạt", description: e.message, variant: "destructive" });
+        }
+      }
+    });
   };
 
-  const handleAddComp = async () => {
-    setSaving(true);
-    let params: Record<string, unknown> = {};
-    try { params = JSON.parse(addForm.params) as Record<string, unknown>; }
-    catch { alert("Params JSON không hợp lệ"); setSaving(false); return; }
+  const handleDeactivate = () => {
+    setConfirmDialog({
+      title: "Hủy kích hoạt chính sách",
+      description: "Hủy kích hoạt chính sách này? Trạng thái sẽ chuyển về INACTIVE.",
+      onConfirm: async () => {
+        try {
+          await PolicyAPI.toggleStatus(policyId);
+          await load();
+          toast({ title: "Đã hủy kích hoạt chính sách thành công!" });
+        } catch (e: any) {
+          toast({ title: "Lỗi hủy kích hoạt", description: e.message, variant: "destructive" });
+        }
+      }
+    });
+  };
+
+  const handleSaveDef = async () => {
     try {
-      await PolicyAPI.addComponent(policyId, { component_type: addForm.component_type, name: addForm.name || addForm.component_type, sort_order: undefined, is_deduction: addForm.component_type.includes("deduction") || addForm.component_type.includes("penalty"), input_source: "system", params } as Omit<import("../../../lib/api/hrm-policy-api").PolicyComponent, "id" | "policy_id">);
-      setShowAdd(false);
-      setAddForm({ component_type: COMPONENT_TYPES[0], name: "", params: "{}" });
-      await load();
-    } catch (e: unknown) { alert((e as { message?: string }).message ?? "Lỗi"); }
-    finally { setSaving(false); }
+      setSaving(true);
+      await PolicyAPI.update(policyId, { 
+        name: policyDef.name, 
+        description: policyDef.description
+      });
+      toast({ title: "Đã lưu thông tin chung thành công" });
+      setActiveStep("tariff");
+    } catch (e) {
+      toast({ title: "Lỗi lưu chính sách", variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleActivate = async () => {
-    if (!confirm("Kích hoạt chính sách? Phiên bản cũ sẽ bị đóng.")) return;
-    try { await PolicyAPI.activate(policyId); await load(); alert("Đã kích hoạt!"); }
-    catch (e: unknown) { alert((e as { message?: string }).message ?? "Lỗi"); }
-  };
-
-  if (loading) return <div style={{ textAlign: "center", padding: 60, color: "#6366f1" }}>⏳ Đang tải...</div>;
-  if (!policy) return <div style={{ color: "#f87171" }}>Không tìm thấy chính sách</div>;
-
-  const components = policy.components ?? [];
-  const isEditable = policy.status === "DRAFT";
+  if (loading || !policy) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
-    <div>
-      {/* Back + header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-          <button style={S.btn("#334155")} onClick={onBack}>← Danh sách</button>
+    <div className="flex h-full flex-col bg-slate-50/50">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b bg-white shrink-0 shadow-sm">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={onBack}>
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
           <div>
-            <h2 style={{ margin: 0, color: "#a5b4fc", fontSize: 18 }}>{policy.name}</h2>
-            <span style={{ fontSize: 12, color: "#64748b" }}>v{policy.version} · {policy.pay_group_code} · {policy.status}</span>
+            <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+              Thiết lập chính sách: {policy.name}
+              <Badge variant={policy.status === "ACTIVE" ? "default" : "outline"} className={policy.status === "ACTIVE" ? "bg-green-600" : ""}>
+                {policy.status}
+              </Badge>
+            </h2>
+            <p className="text-sm text-slate-500">Mã: {policy.pay_group_code} • v{policy.version} • Từ {policy.effective_from}</p>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          {isEditable && <button style={S.btn("#16a34a")} onClick={handleActivate} id="btn-activate">🚀 Kích hoạt</button>}
-          {isEditable && <button style={S.btn("#6366f1")} onClick={() => setShowAdd(!showAdd)} id="btn-add-comp">+ Thêm component</button>}
-        </div>
-      </div>
+        <div className="flex gap-2">
+          {policy.status === "DRAFT" && (
+            <Button onClick={handleActivate} className="bg-emerald-600 hover:bg-emerald-700">
+              <Rocket className="w-4 h-4 mr-2" /> Kích hoạt bản nháp
+            </Button>
+          )}
+          {policy.status === "ACTIVE" && (
+            <Button onClick={handleDeactivate} className="bg-amber-600 hover:bg-amber-700">
+              <Rocket className="w-4 h-4 mr-2" /> Hủy kích hoạt
+            </Button>
+          )}
+          <Button variant="outline" onClick={onBack}>Đóng</Button>
+          {!isReadOnly && (
+            <Button className="bg-primary" disabled={saving} onClick={async () => {
+                try {
+                  setSaving(true);
+                  // 1. Save policy name, description and effective date
+                  await PolicyAPI.update(policyId, {
+                    name: policyDef.name,
+                    description: policyDef.description,
+                    effective_from: policyDef.effective_from
+                  });
 
-      {/* Add component form */}
-      {showAdd && (
-        <div style={{ ...S.panel, padding: 20, marginBottom: 20 }}>
-          <h3 style={{ margin: "0 0 16px", color: "#a5b4fc" }}>Thêm component</h3>
-          <div style={{ display: "grid", gap: 12, gridTemplateColumns: "1fr 1fr" }}>
-            <div>
-              <label style={S.label}>Loại component *</label>
-              <select id="add-comp-type" style={{ ...S.input }} value={addForm.component_type} onChange={e => setAddForm(f => ({ ...f, component_type: e.target.value }))}>
-                {COMPONENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </div>
-            <div>
-              <label style={S.label}>Tên hiển thị</label>
-              <input id="add-comp-name" style={S.input} value={addForm.name} onChange={e => setAddForm(f => ({ ...f, name: e.target.value }))} placeholder={addForm.component_type} />
-            </div>
-            <div style={{ gridColumn: "1/-1" }}>
-              <label style={S.label}>Params (JSON)</label>
-              <textarea id="add-comp-params" style={{ ...S.input, minHeight: 80, fontFamily: "monospace", resize: "vertical" }} value={addForm.params} onChange={e => setAddForm(f => ({ ...f, params: e.target.value }))} />
-            </div>
-          </div>
-          <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
-            <button style={S.btn("#6366f1")} onClick={handleAddComp} disabled={saving} id="btn-add-comp-submit">{saving ? "Đang thêm..." : "Thêm"}</button>
-            <button style={S.btn("#334155")} onClick={() => setShowAdd(false)}>Hủy</button>
-          </div>
-        </div>
-      )}
-
-      {/* Main layout */}
-      <div style={S.root}>
-        {/* Component list */}
-        <div style={S.panel}>
-          <div style={S.header}>
-            <span style={{ color: "#e8eaf0", fontWeight: 600 }}>Components ({components.length})</span>
-            <span style={{ fontSize: 12, color: "#64748b" }}>Thu nhập ● Khấu trừ ●</span>
-          </div>
-          <div style={{ overflowY: "auto", maxHeight: "60vh" }}>
-            {components.length === 0 ? (
-              <div style={{ padding: 40, textAlign: "center", color: "#475569" }}>Chưa có component nào</div>
-            ) : (
-              components.map(comp => (
-                <div key={comp.id} style={S.compItem(selectedComp?.id === comp.id, comp.is_deduction)} onClick={() => setSelectedComp(comp)}>
-                  <div>
-                    <div style={{ fontWeight: 600, fontSize: 14 }}>{comp.name}</div>
-                    <div style={{ fontSize: 11, color: "#64748b", marginTop: 2 }}>{comp.component_type}</div>
-                  </div>
-                  <div style={{ fontSize: 11, color: comp.is_deduction ? "#f87171" : "#4ade80" }}>
-                    {comp.is_deduction ? "−KT" : "+TN"}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Component detail */}
-        <div style={S.panel}>
-          {selectedComp ? (
-            <div>
-              <div style={S.header}>
-                <span style={{ color: "#e8eaf0", fontWeight: 600 }}>Chi tiết: {selectedComp.name}</span>
-                {isEditable && (
-                  <button style={S.btn("#ef4444")} onClick={() => handleDelete(selectedComp.id)} id={`btn-del-${selectedComp.id}`}>Xóa</button>
-                )}
-              </div>
-              <div style={{ padding: 20 }}>
-                <div style={S.field}><label style={S.label}>Loại</label><code style={{ color: "#818cf8" }}>{selectedComp.component_type}</code></div>
-                <div style={S.field}><label style={S.label}>Sort Order</label>{selectedComp.sort_order}</div>
-                <div style={S.field}><label style={S.label}>Loại thu/khấu</label>{selectedComp.is_deduction ? "🔴 Khấu trừ" : "🟢 Thu nhập"}</div>
-                <div style={S.field}><label style={S.label}>Nguồn dữ liệu</label>{selectedComp.input_source}</div>
-                <div style={S.field}>
-                  <label style={S.label}>Params</label>
-                  <pre style={{ background: "#0f1117", padding: 14, borderRadius: 8, fontSize: 12, color: "#4ade80", overflow: "auto", margin: 0 }}>
-                    {JSON.stringify(selectedComp.params, null, 2)}
-                  </pre>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", color: "#475569" }}>
-              <div style={{ fontSize: 48, marginBottom: 16 }}>👈</div>
-              <div>Chọn một component để xem chi tiết</div>
-            </div>
+                  // 2. Save component matrix and rules
+                  const isTaxPolicy = policy.pay_group_code === "TAX";
+                  let parsedParams = {};
+                  try {
+                    parsedParams = JSON.parse(paramsStr);
+                  } catch {}
+                  const paramsPayload = {
+                    ...parsedParams,
+                    conditions,
+                    scope: policyDef.scope
+                  };
+                  await PolicyAPI.addComponent(policyId, {
+                    name: isTaxPolicy ? "Luật tính thuế" : "Main Matrix",
+                    component_type: policyDef.structureType,
+                    sort_order: 1,
+                    is_deduction: isTaxPolicy ? true : false,
+                    input_source: isTaxPolicy ? "system" : "manual",
+                    params: paramsPayload
+                  } as any);
+                  
+                  toast({ title: "Lưu cấu hình chính sách thành công!" });
+                  onBack();
+                } catch(e) {
+                  toast({ title: "Lỗi lưu cấu hình chính sách", variant: "destructive" });
+                } finally {
+                  setSaving(false);
+                }
+              }}>Hoàn tất & Lưu Chính sách</Button>
           )}
         </div>
       </div>
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Content Area */}
+        <div className="flex-1 overflow-y-auto p-6">
+          {isReadOnly && (
+            <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-lg mb-6 flex items-center shadow-sm">
+              <span className="text-sm font-medium">
+                ⚠️ Chính sách đang hoạt động (ACTIVE) không được phép chỉnh sửa trực tiếp. Vui lòng quay lại danh sách và thực hiện "Clone" để tạo phiên bản mới.
+              </span>
+            </div>
+          )}
+          <div className="grid grid-cols-12 gap-6 min-h-[calc(100vh-200px)]">
+
+            <div className="col-span-3 h-full overflow-y-auto pr-2"><Card className="shadow-sm border-slate-200 h-full">
+<CardHeader>
+<CardTitle>Định nghĩa Chính sách</CardTitle>
+                  <CardDescription>Thiết lập tên gọi và kiểu cấu trúc bảng lương (Tariff structure)</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid gap-2">
+                    <Label>Tên chính sách</Label>
+                    <Input value={policyDef.name} disabled={isReadOnly} onChange={e => setPolicyDef({...policyDef, name: e.target.value})} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Ngày hiệu lực</Label>
+                    <ViDatePickerField 
+                      value={policyDef.effective_from} 
+                      onValueChange={v => setPolicyDef({...policyDef, effective_from: v})} 
+                      placeholder="dd/MM/yyyy"
+                      disabled={isReadOnly}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Kiểu Cấu trúc Bảng lương</Label>
+                    <div className="grid grid-cols-2 gap-4">
+                      {(policy?.pay_group_code === "TAX"
+                        ? [
+                            { value: "tax_progressive", label: "Biểu thuế lũy tiến" },
+                            { value: "tax_flat", label: "Thuế suất cố định (Flat)" }
+                          ]
+                        : STRUCTURE_TYPES
+                      ).map(t => (
+                        <div 
+                          key={t.value} 
+                          onClick={() => !isReadOnly && setPolicyDef({...policyDef, structureType: t.value})}
+                          className={`p-4 border rounded-xl transition-all ${isReadOnly ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} ${policyDef.structureType === t.value ? 'border-primary ring-2 ring-primary/20 bg-primary/5 shadow-sm' : 'hover:border-slate-300 hover:bg-slate-50'}`}
+                        >
+                          <div className="font-semibold text-slate-800">{t.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Phạm vi áp dụng</Label>
+                    <select className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" value={policyDef.scope} disabled={isReadOnly} onChange={e => setPolicyDef({...policyDef, scope: e.target.value})}>
+                      <option value="global">Toàn công ty</option>
+                      <option value="department">Theo Phòng ban / Vùng</option>
+                      <option value="position">Theo Chức danh / Vị trí</option>
+                    </select>
+                  </div>
+                  
+                </CardContent>
+              </Card>
+            </div>
+<div className="col-span-5 h-full overflow-y-auto pr-2"><Card className="shadow-sm border-slate-200 h-full">
+<CardHeader>
+<CardTitle>Quy tắc & Điều kiện (Rules)</CardTitle>
+                  <CardDescription>Các điều kiện phụ thuộc (Ví dụ: thử việc hưởng 85%, đi muộn trừ tiền)</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <RuleConditionBuilder 
+                    conditions={conditions} 
+                    onChange={setConditions}
+                    disabled={isReadOnly} 
+                    fieldOptions={[
+                      { 
+                        value: 'department', 
+                        label: 'Phòng ban', 
+                        type: 'select', 
+                        options: departments.map(d => ({ value: String(d.department_id || d.id), label: d.name }))
+                      },
+                      { 
+                        value: 'title', 
+                        label: 'Chức danh', 
+                        type: 'select',
+                        options: jobTitles.map(p => ({ value: String(p.code), label: String(p.label) }))
+                      },
+                      { 
+                        value: 'contract_type', 
+                        label: 'Loại hợp đồng', 
+                        type: 'select',
+                        options: contractTypePickerOptions.map(ct => ({ value: String(ct.value), label: String(ct.label) }))
+                      },
+                      { value: 'seniority', label: 'Thâm niên (tháng)', type: 'number' }
+                    ]} 
+                  />
+                  
+                </CardContent>
+              </Card>
+            </div>
+<div className="col-span-4 h-full overflow-y-auto pr-2 flex flex-col gap-4"><Card className="shadow-sm border-slate-200 flex-1">
+<CardHeader className="flex flex-row items-center justify-between">
+<div>
+<CardTitle>Cấu hình Bảng giá trị (Tariff Matrix)</CardTitle>
+                    <CardDescription>
+                      {policyDef.structureType === 'step_only_table' && "Bảng cấu hình theo Bậc (1 chiều). Phù hợp cho Nhân viên Điều phối."}
+                      {policyDef.structureType === 'grade_step_matrix' && "Bảng cấu hình theo Ngạch & Bậc (2 chiều)."}
+                      {policyDef.structureType === 'fixed_amount' && "Cấu hình một mức tiền cố định."}
+                      {policyDef.structureType === 'formula_based' && "Cấu hình theo tham số và công thức linh hoạt."}
+                      {policyDef.structureType === 'tax_progressive' && "Biểu thuế luỹ tiến từng phần tính thuế thu nhập cá nhân."}
+                      {policyDef.structureType === 'tax_flat' && "Biểu thuế suất cố định toàn phần."}
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <ComponentFormBuilder 
+                    componentType={policyDef.structureType} 
+                    paramsStr={paramsStr} 
+                    onChange={setParamsStr} 
+                    disabled={isReadOnly}
+                  />
+                  
+                </CardContent>
+              </Card>
+            </div>
+  
+</div>
+        </div>
+      </div>
+
+      {/* Confirm Action Dialog */}
+      <AlertDialog open={!!confirmDialog} onOpenChange={(open) => { if (!open) setConfirmDialog(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{confirmDialog?.title}</AlertDialogTitle>
+            <AlertDialogDescription>{confirmDialog?.description}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogAction onClick={async () => {
+              if (confirmDialog?.onConfirm) {
+                await confirmDialog.onConfirm();
+              }
+              setConfirmDialog(null);
+            }}>Xác nhận</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

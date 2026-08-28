@@ -28,6 +28,7 @@ import { HomeActivityTrigger } from '../../components/home/HomeActivityTrigger';
 import { JourneyTimelineCard } from '../../components/home/JourneyTimelineCard';
 import { Phase2StubModal } from '../../components/home/Phase2StubModal';
 import { QuickAccessGrid } from '../../components/home/QuickAccessGrid';
+import { TodayShiftWidget } from '../../components/home/TodayShiftWidget';
 
 import { DashboardHomeShimmer } from '../../components/primitives/DashboardHomeShimmer';
 
@@ -1544,6 +1545,18 @@ export function DashboardScreen() {
 
           break;
 
+        case 'ot_request':
+          nav.navigate('TabAttendance', { screen: 'CreateOtRequest' });
+          break;
+
+        case 'business_trip':
+          nav.navigate('TabAttendance', { screen: 'CreateTripRequest' });
+          break;
+
+        case 'schedule':
+          nav.navigate('TabAttendance', { screen: 'MySchedule' });
+          break;
+
         case 'payroll':
 
           goPayslipList();
@@ -1580,6 +1593,10 @@ export function DashboardScreen() {
 
           goNotifications();
 
+          break;
+
+        case 'news':
+          nav.navigate('TabProfile', { screen: 'InternalNews' });
           break;
 
         case 'journey':
@@ -2194,6 +2211,8 @@ export function DashboardScreen() {
         onNotificationsPress={goNotifications}
 
       />
+
+      <TodayShiftWidget />
 
       {HOME_ABOVE_FOLD_RENDER_ORDER.map(renderHomeSection)}
       {showProfileSkeleton ? <DashboardHomeShimmer /> : null}

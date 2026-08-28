@@ -1,0 +1,130 @@
+3: * Screen:     /payroll ? B?ng l??ng (HR / payroll ops)
+5: * Purpose:    Shell tab l??ng; live Th�nh ph?n l??ng = SalaryComponentsTab;
+6: *             quy?t to�n thu? edit NV d�ng taxSettlementFloatingUi (C1).
+7: * WorkItem:   D-UX-P0C-PAYROLL-REDUCER-01 � D-UX-D5-ZOD-LIVE-WIRE-01 � D-UX-C1-PAYROLL-FE-01
+8: * Callers:    App route /payroll � portal embed
+9: * Callees:    SalaryComponentsTab � taxSettlementFloatingUi � usePayrollDomainUi
+10: * must_keep:  taxSettlementFloatingUi C1; SalaryComponentsTab mount; kh�ng seed/deploy
+16: * What: G? orphan Dialog Th�m th�nh ph?n l??ng kh?i Payroll ? Zod+RHF live ?
+18: * Why: QA-UX-D5-01 ? Zod kh�ng n?m user-reachable path
+19: * must_keep: taxSettlementFloatingUi; Payroll mount; UX-03 debounce kh�ng ??ng
+33: * What: X�a mock tax/insurance/advance islands; HIDE quy?t to�n thu? invent UI (AC-E2-P3-02);
+35: * Why: FR-HRM-PAY-CLEAN-E2-01 � sa-erp-e2-ack-01 tax HIDE � AC-E2-NOMOCK-01
+36: * must_keep: SalaryComponentsTab; E1-A/E1-B; taxSettlementFloatingUi module (kh�ng expose invent)
+366: // System salary components data (Danh m?c h? th?ng)
+382: // Advance batch interface (B?ng t?m ?ng)
+472: 'V?n ph�ng T?ng c�ng ty',
+473: 'V?n ph�ng H� N?i',
+474: 'V?n ph�ng ?� N?ng',
+475: 'V?n ph�ng TP.HCM',
+476: 'V?n ph�ng C?n Th?',
+477: 'Trung t�m T? v?n & H? tr? kh�ch h�ng',
+493: policyType: 'progressive' | 'flat'; // Thu? theo bi?u l?y ti?n / Thu? theo h? s? ph?n tr?m c? ??nh
+496: status: 'active' | 'inactive'; // Kh? d?ng / Kh�ng kh? d?ng
+511: insuranceType: 'social' | 'health' | 'unemployment' | 'all'; // BHXH / BHYT / BHTN / T?t c?
+726: // Tax settlement data (list) ? kh�ng g?p v�o UI reducer
+728: /** Floating UI dialog s?a NV quy?t to�n thu? ? lu�n init object (UX-02 / P0-b / C1 must_keep). */
+1077: title={t('payroll.feedback.emptyTitle', 'Ch?a c� ph?n h?i b?ng l??ng')}
+1078: body={t('payroll.feedback.emptyBody', 'Ph?n h?i nh�n vi�n s? hi?n th? khi c� d? li?u t? hrm-api.')}
+1204: 'V?n ph�ng H� N?i',
+1205: 'V?n ph�ng C� Mau',
+1206: 'V?n ph�ng TP.HCM',
+1207: 'V?n ph�ng ?� N?ng',
+1208: 'C�ng ty TNHH ??i Th�nh',
+1733: // Open edit tax employee dialog (safe init ? kh�ng crash khi row thi?u field)
+1816: Ch?a chuy?n
+2224: Kh�ng c� nh�n vi�n ?? s?a. ?�ng h?p tho?i v� ch?n l?i t? b?ng.
+2232: H?y b?
+2235: L?u thay ??i
+2245: <DialogTitle>X�c nh?n x�a nh�n vi�n</DialogTitle>
+2252: <p className="font-medium text-destructive">C?nh b�o</p>
+2254: H�nh ??ng n�y kh�ng th? ho�n t�c
+2259: B?n c� ch?c ch?n mu?n x�a nh�n vi�n sau kh?i b?ng quy?t to�n thu??
+2279: H?y b?
+2292: X�a nh�n vi�n
+2304: X�c nh?n x�a nhi?u nh�n vi�n
+2311: <p className="font-medium text-destructive">C?nh b�o</p>
+2313: H�nh ??ng n�y kh�ng th? ho�n t�c
+2318: B?n c� ch?c ch?n mu?n x�a <span className="font-semibold text-foreground">{selectedTaxSettlementEmployees.length}</span> nh�n vi�n ?� ch?n kh?i b?ng quy?t to�n thu??
+2341: H?y b?
+2352: X�a {selectedTaxSettlementEmployees.length} nh�n vi�n
+2358: {/* Tax Refund Dialog (Ho�n thu?) */}
+2362: <DialogTitle>Th�m b?ng thu nh?p kh�c</DialogTitle>
+2368: Th?i gian <span className="text-destructive">*</span>
+2373: value={`Th�ng ${String(taxRefundFormData.date.getMonth() + 1).padStart(2, '0')}, ${taxRefundFormData.date.getFullYear()}`}
+2384: ??n v? �p d?ng <span className="text-destructive">*</span>
+2408: name: `B?ng thu nh?p kh�c th�ng ${prev.date.getMonth() + 1}/${prev.date.getFullYear()} - ${[...prev.appliedUnits, value].join(', ')}`
+2414: <SelectValue placeholder="Ch?n ??n v?" />
+2427: <Label className="text-right">V? tr� �p d?ng</Label>
+2429: value="T?t c? c�c v? tr� trong ??n v?"
+2437: <Label className="text-right pt-2">Nh�n vi�n �p d?ng</Label>
+2446: T?t c? nh�n vi�n
+2452: Nh�n vi�n ???c ch?n
+2461: T�n b?ng thu nh?p kh�c <span className="text-destructive">*</span>
+2464: value={taxRefundFormData.name || `B?ng thu nh?p kh�c th�ng ${taxRefundFormData.date.getMonth() + 1}/${taxRefundFormData.date.getFullYear()}${taxRefundFormData.appliedUnits.length > 0 ? ` - ${taxRefundFormData.appliedUnits.join(', ')}` : ''}`}
+2466: placeholder="T�n b?ng thu nh?p kh�c"
+2473: Kho?n thu nh?p kh�c <span className="text-destructive">*</span>
+2495: incomeType: 'Thu? TNCN ???c ho�n',
+2498: H?y b?
+2511: incomeType: 'Thu? TNCN ???c ho�n',
+2516: L?u
+2526: <DialogTitle>Th�m b?ng kh?u tr? kh�c</DialogTitle>
+2532: Th?i gian <span className="text-destructive">*</span>
+2537: value={`Th�ng ${String(taxDeductionFormData.date.getMonth() + 1).padStart(2, '0')}, ${taxDeductionFormData.date.getFullYear()}`}
+2548: ??n v? �p d?ng <span className="text-destructive">*</span>
+2572: name: `B?ng kh?u tr? kh�c th�ng ${prev.date.getMonth() + 1}/${prev.date.getFullYear()} - ${[...prev.appliedUnits, value].join(', ')}`
+2578: <SelectValue placeholder="Ch?n ??n v?" />
+2591: <Label className="text-right">V? tr� �p d?ng</Label>
+2593: value="T?t c? c�c v? tr� trong ??n v?"
+2601: <Label className="text-right pt-2">Nh�n vi�n �p d?ng</Label>
+2610: T?t c? nh�n vi�n
+2616: Nh�n vi�n ???c ch?n
+2625: T�n b?ng kh?u tr? kh�c <span className="text-destructive">*</span>
+2628: value={taxDeductionFormData.name || `B?ng kh?u tr? kh�c th�ng ${taxDeductionFormData.date.getMonth() + 1}/${taxDeductionFormData.date.getFullYear()}${taxDeductionFormData.appliedUnits.length > 0 ? ` - ${taxDeductionFormData.appliedUnits.join(', ')}` : ''}`}
+2630: placeholder="T�n b?ng kh?u tr? kh�c"
+2637: Kho?n kh?u tr? kh�c <span className="text-destructive">*</span>
+2659: deductionType: 'Thu? TNCN kh?u tr?',
+2662: H?y b?
+2675: deductionType: 'Thu? TNCN kh?u tr?',
+2680: L?u
+2965: {/* B?ng l??ng */}
+2976: <SelectItem value="salary-09-2021">B?ng l??ng th�ng 9/2021 - VP H� N?i</SelectItem>
+2977: <SelectItem value="salary-08-2021">B?ng l??ng th�ng 8/2021 - VP H� N?i</SelectItem>
+2978: <SelectItem value="salary-07-2021">B?ng l??ng th�ng 7/2021 - VP H� N?i</SelectItem>
+2984: value="Th�ng 09/2021"
+2991: {/* ??n v? �p d?ng */}
+2999: V?n ph�ng H� N?i
+3008: {/* V? tr� �p d?ng */}
+3022: {/* Nh�n vi�n �p d?ng */}
+3041: {/* T�n b?ng chi tr? l??ng */}
+3048: defaultValue="B?ng chi tr? l??ng K? 1 - th�ng 09/2021 l?n 2 - V?n ph�ng H� N?i"
+3062: <SelectValue placeholder="Ch?n k?" />
+3090: <SelectValue placeholder="Ch?n lo?i" />
+3110: {/* H�nh th?c thanh to�n */}
+3118: <SelectValue placeholder="Ch?n h�nh th?c" />
+3168: {/* B?ng l??ng */}
+3189: C�ng ty th�nh vi�n
+3198: {/* V? tr� */}
+3218: {/* T�n b?ng t?ng h?p */}
+3225: defaultValue="B?ng t?ng h?p l??ng Th�ng 5/2022 - C�ng ty th�nh vi�n"
+3231: {/* Ng�y t?ng h?p */}
+3366: {/* Add Advance Dialog (Th�m b?ng t?m ?ng) */}
+3373: {/* B?ng l??ng */}
+3391: {/* ??n v? �p d?ng */}
+3409: {/* V? tr� �p d?ng */}
+3419: {/* Nh�n vi�n �p d?ng */}
+3442: {/* T�n b?ng t?m ?ng */}
+3454: {/* Di?n gi?i */}
+3573: {/* T�n b?ng t?m ?ng */}
+3605: {/* Tr?ng th�i */}
+3771: {/* M� th�nh ph?n */}
+3783: {/* T�n th�nh ph?n */}
+3795: {/* ??n v? �p d?ng */}
+3806: <SelectItem value="C�ng ty TNHH ??i Th�nh">C�ng ty TNHH ??i Th�nh</SelectItem>
+3807: <SelectItem value="C�ng ty ABC">C�ng ty ABC</SelectItem>
+3808: <SelectItem value="C�ng ty XYZ">C�ng ty XYZ</SelectItem>
+3813: {/* Lo?i th�nh ph?n */}
+3825: D�ng tab Th�nh ph?n l??ng (pay_types catalog)
+3831: {/* T�nh ch?t */}
+3849: {/* Ki?u gi� tr? */}
+3867: {/* Gi� tr? (C�ng th?c) */}

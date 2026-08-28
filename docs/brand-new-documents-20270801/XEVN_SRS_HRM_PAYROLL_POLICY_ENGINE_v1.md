@@ -178,38 +178,43 @@ CREATE INDEX IF NOT EXISTS idx_emp_grade_assign_emp_date
 - Nhập data mẫu (số lượt, DT, điểm CLDV...) → hệ thống tính + hiển thị breakdown
 - Không lưu vào payroll records
 
-### 28 Component Types và Params Schema
+### 30 Component Types và Params Schema (Dynamic Configuration)
 
-| # | component_type | params (JSONB) key fields |
-|---|---------------|--------------------------|
-| 1 | `grade_base` | _(auto từ grade_code + step_number)_ |
-| 2 | `grade_allowance` | `location_type: 'HN'|'TINH'` |
-| 3 | `kpi_bonus_pct` | `grade_code, max_pct, overachieve_multiplier` |
-| 4 | `trip_rate_tiered` | `province_code, tiers:[{max_trips,rate_vnd}], support_rate_vnd, noibai_rate_vnd, sunday_meal_vnd` |
-| 5 | `revenue_quality` | `province_code, revenue_threshold_vnd, tier1_pct, tier2_pct, cldv_table:[{min,max,multiplier}]` |
-| 6 | `cpn_commission` | `pct: 10` |
-| 7 | `contract_fee` | `fee_table:[{type,flat_vnd,revenue_pct}]` |
-| 8 | `vehicle_repair_deduction` | `province_code, group_pct, personal_accident_pct, ford_override_pct` |
-| 9 | `fixed_base_salary` | `vehicle_type_code, salary_vnd` |
-| 10 | `vehicle_mgmt_allowance` | `amount_vnd` |
-| 11 | `revenue_commission_tiered` | `tiers:[{max_revenue_vnd,pct}], driver_type: 'MAIN'|'EXPRESS'|'TC'` |
-| 12 | `fuel_quota_deduction` | `vehicle_type_code, quota_per_100km` |
-| 13 | `clhd_point_deduction` | `vnd_per_point:100000, penalty_table:[{violation,points}]` |
-| 14 | `kpi_pool_share` | `pool_amount_vnd, location_type, allocation_basis:'working_days'` |
-| 15 | `revenue_pool_commission` | `dthg_pct_tiers:[{max_vnd,pct}], dthn_pct_tiers:[...]` |
-| 16 | `team_milestone_bonus` | `office_code, milestones:[{threshold_vnd, overachieve_pct, bonus_team_vnd}]` |
-| 17 | `delivery_commission` | `location_type, pct_hn:25, pct_tinh:70, effort_table:[{min_dt_vnd,team_bonus_vnd}]` |
-| 18 | `zero_sum_pool` | `pool_key, pool_amount_vnd, allocation_basis:'calls'|'hours'|'coefficient', min_attendance_pct:50` |
-| 19 | `attendance_bonus_conditional` | `min_working_days:24, exclude_weekend:true, bonus_vnd:1000000, period_to` |
-| 20 | `meal_allowance_conditional` | `trigger:'SUNDAY', amount_vnd:25000` |
-| 21 | `remote_work_allowance` | `type:'PER_TRIP'|'MONTHLY', amount_vnd, province_code` |
-| 22 | `loading_support` | `type:'ACTUAL'|'FIXED', fixed_amount_vnd` |
-| 23 | `special_allowance` | `name, amount_vnd, period_from, period_to, condition_expr` |
-| 24 | `probation_override` | `pct_of_full:85` — nhân hệ số toàn bộ income |
-| 25 | `fixed_trial_salary` | `salary_vnd` — flat rate thử việc |
-| 26 | `ranking_bonus` | `ranks:[{rank,min_score,bonus_vnd}]` |
-| 27 | `kpi_multiplier` | `thresholds:[{max_pct,multiplier}]` — hệ số nhỡ TĐ |
-| 28 | `penalty_deduction` | `source:'SUPERVISION'|'CLHD', rule_expr` |
+Hệ thống thiết kế theo kiến trúc Dynamic Rendering. Bảng `params` (JSONB) không giới hạn cấu trúc, UI Frontend (React) sẽ render Component tương ứng (Flat form hoặc Tiered Table) dựa trên `component_type`.
+
+| # | Nhóm | component_type | params (JSONB) schema (Gợi ý) | Loại UI Render |
+|---|---|---------------|-----------------------------|---------------|
+| 1 | Chung | `grade_base` | _(auto tính theo bảng lương ngạch-bậc, không cần điền JSON)_ | Read-only |
+| 2 | Chung | `grade_allowance` | `locations: [{ province, amount }]` | Tiered Table |
+| 3 | Chung | `kpi_bonus_pct` | `grade_code, max_pct, overachieve_multiplier` | Tiered Table |
+| 4 | LXTuyen | `trip_rate_tiered` | `province_code`, `tiers: [{ min, max, rate }]` | Tiered Table |
+| 5 | LXTuyen | `revenue_quality` | `province_code, thresholds, cldv_table` | Tiered Table |
+| 6 | LXTuyen | `cpn_commission` | `pct_rate: 10` | Flat Input |
+| 7 | LXTuyen | `contract_fee` | `fee_table:[{type, flat_vnd, revenue_pct}]` | Tiered Table |
+| 8 | LXTuyen | `vehicle_repair_deduction` | `group_pct, accident_pct` | Flat Input |
+| 9 | LXTuyen | `attendance_bonus_conditional` | `conditions, amount_vnd` | Tiered Table |
+| 10 | LXTuyen | `meal_allowance_conditional` | `rate_per_sunday: 25000` | Flat Input |
+| 11 | LXTuyen | `remote_work_allowance` | `rates_by_type: [{ type, amount }]` | Tiered Table |
+| 12 | LXTai | `fixed_base_salary` | `vehicle_type_code, salary_vnd` | Tiered Table |
+| 13 | LXTai | `vehicle_mgmt_allowance` | `amount_vnd` | Flat Input |
+| 14 | LXTai | `revenue_commission_tiered` | `driver_type, tiers: [{ max_rev, pct }]` | Tiered Table |
+| 15 | LXTai | `clhd_point_deduction` | `vnd_per_point, penalty_table` | Tiered Table |
+| 16 | LXTai | `loading_support` | `driver_type, flat_amount_vnd` | Tiered Table |
+| 17 | LXTai | `fuel_quota_deduction` | `vehicle_type, quota_per_100km` | Tiered Table |
+| 18 | DPHH | `kpi_pool_share` | `region, pool_amount` | Flat Input |
+| 19 | DPHH | `revenue_commission_sent` | `tiers: [{ rev_min, pct }]` | Tiered Table |
+| 20 | DPHH | `revenue_commission_received` | `tiers: [{ rev_max, pct }]` | Tiered Table |
+| 21 | DPHH | `team_milestone_bonus` | `branch_code, milestones: [{ m1, m2, m3 }]` | Tiered Table |
+| 22 | DPHH | `delivery_commission` | `region, pct_rate, pool_tiers` | Tiered Table |
+| 23 | TD | `zero_sum_pool_base` | `pool_amount, standard_days` | Flat Input |
+| 24 | TD | `zero_sum_pool_bonus` | `pool_contract_am, pool_contract_pm` | Tiered Table |
+| 25 | TD | `kpi_multiplier` | `miss_rate_tiers: [{ max_rate, multiplier }]` | Tiered Table |
+| 26 | TD | `ranking_bonus` | `rank_tiers: [{ rank, amount_vnd }]` | Tiered Table |
+| 27 | TD | `special_allowance_app` | `rate_per_hour` | Flat Input |
+| 28 | VP Tỉnh | `zero_sum_pool_branch` | `branch_code, customer_rate, mgmt_rate` | Tiered Table |
+| 29 | VP Tỉnh | `branch_base_salary` | `branch_code, position, amount` | Tiered Table |
+| 30 | Chung | `probation_salary` | `is_flat, amount_vnd, override_pct` | Flat Input |
+
 
 ### DB Schema
 
@@ -582,13 +587,19 @@ GET    /api/hrm/vehicles/:id/fuel-logs
 
 ---
 
-## 12. OPEN QUESTIONS (Cần Sponsor confirm trước khi code E2.4.x)
+## 12. CẤU HÌNH THAM SỐ TOÀN CỤC (GLOBAL SETTINGS)
 
-| # | Câu hỏi | Ảnh hưởng | Mức |
-|---|---------|----------|-----|
-| Q1 | Mức 1 / Mức 2 DT thưởng LX Tải — con số cụ thể theo loại xe? | E2 component 11 | 🔴 |
-| Q2 | VP Hà Nội lương cơ chế gì (ngạch-bậc hay pool)? | E2 pay_group VP_HN | 🔴 |
-| Q3 | Pool TĐ 1500 vs 1731 — cùng formula hay khác? | E2 component 18 | 🔴 |
-| Q4 | Tạm ứng lương: % cho phép? | E4 batch pre-check | 🟠 |
-| Q5 | Thưởng chuyên cần LX Tuyến sau 31/05/2026 — gia hạn? | E2 component 19 | 🟡 |
-| Q6 | CLHĐ điểm phạt LX Tải — HR hay Fleet nhập? | E3 FREIGHT_REVENUE template | 🟡 |
+Để đảm bảo tính linh hoạt của hệ thống Payroll mà không phụ thuộc vào việc hardcode các con số kinh doanh, toàn bộ các tham số có thể thay đổi sẽ được đưa vào module **Cấu hình tham số lương (Payroll Parameters)** trong màn hình `Cài đặt` (Settings).
+
+Các cấu hình bắt buộc phải có màn hình để HR/Admin tự định nghĩa:
+
+| Nhóm Cấu hình | Mô tả & Tham số | Mức độ |
+|---|---------|----------|
+| **Cơ chế đặc thù** | Loại hình trả lương (Ngạch-bậc, Pool) cho từng nhóm/vùng (VD: VP Hà Nội). | 🔴 Quan trọng |
+| **Hạn mức & Tỷ lệ** | Tỷ lệ % cho phép tạm ứng tối đa trên mức lương cơ sở/dự kiến; Tỷ lệ thưởng chuyên cần. | 🔴 Quan trọng |
+| **Định mức doanh thu** | Mức 1 / Mức 2 doanh thu thưởng (áp dụng cho LX Tải hoặc các đối tượng tương tự) theo loại xe. | 🔴 Quan trọng |
+| **Quỹ thưởng (Pool)** | Công thức phân bổ quỹ thưởng (Pool) cho từng nhóm (VD: TĐ 1500 vs 1731), chia theo trọng số, cổ phần hay cào bằng. | 🟠 Trung bình |
+| **Phân quyền dữ liệu** | Phân định rõ phòng ban (HR, Fleet, v.v.) nào được quyền nhập/Duyệt điểm phạt CLHĐ, chi phí nhiên liệu. | 🟡 Thấp |
+| **Thời hạn áp dụng** | Ngày hết hạn của các khoản phụ cấp/thưởng đặc biệt (VD: Thưởng chuyên cần LX Tuyến hết hạn gia hạn). | 🟡 Thấp |
+
+*Ghi chú:* Các thông số này phải được fetch thông qua API từ `hrm-api` để Policy Engine tính toán tự động dựa trên thời điểm tính lương, tránh bị lỗi logic khi số liệu kinh doanh thay đổi.

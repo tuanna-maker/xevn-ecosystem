@@ -67,6 +67,8 @@
 
 import { useMemo, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useGrades } from '@/hooks/useGrades';
+import { Grade } from '@/lib/api/hrm-policy-api';
 import { Link } from 'react-router-dom';
 import { Plus, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
@@ -105,7 +107,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Save } from 'lucide-react';
+import { Save, Trash2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -518,6 +520,177 @@ function PickerSmokePreview() {
   );
 }
 
+function GradeMasterDataPanel() {
+  const { grades, isLoading, isError, upsertGrade } = useGrades();
+  const [search, setSearch] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [form, setForm] = useState<Partial<Grade>>({});
+
+  const filteredGrades = useMemo(() => {
+    if (!search.trim()) return grades;
+    const lower = search.toLowerCase();
+    return grades.filter(g => g.grade_code.toLowerCase().includes(lower) || g.grade_name.toLowerCase().includes(lower));
+  }, [grades, search]);
+
+  const handleSave = () => {
+    if (!form.grade_code || !form.grade_name) {
+      toast.error('Vui lòng nhập đủ mã và tên ngạch');
+      return;
+    }
+    upsertGrade.mutate({
+      id: form.id,
+      grade_code: form.grade_code,
+      grade_name: form.grade_name,
+      pay_group_code: form.pay_group_code || 'CHUNG',
+      steps: form.steps || []
+    }, {
+      onSuccess: () => {
+        toast.success('Đã lưu cấu hình Ngạch Bậc');
+        setDialogOpen(false);
+      },
+      onError: () => toast.error('Lỗi khi lưu cấu hình')
+    });
+  };
+
+  const handleAddStep = () => {
+    const currentSteps = form.steps || [];
+    setForm({
+      ...form,
+      steps: [...currentSteps, { step_number: currentSteps.length + 1, salary_vnd: 0 }]
+    });
+  };
+
+  const handleUpdateStep = (idx: number, val: string) => {
+    const newSteps = [...(form.steps || [])];
+    newSteps[idx].salary_vnd = Number(val);
+    setForm({ ...form, steps: newSteps });
+  };
+
+  const handleRemoveStep = (idx: number) => {
+    const newSteps = [...(form.steps || [])];
+    newSteps.splice(idx, 1);
+    // Re-index steps
+    newSteps.forEach((s, i) => s.step_number = i + 1);
+    setForm({ ...form, steps: newSteps });
+  };
+
+  if (isLoading) return <p className="text-sm text-muted-foreground py-4">Đang tải cấu hình Ngạch Bậc...</p>;
+  if (isError) return <p className="text-sm text-destructive py-4">Lỗi tải cấu hình Ngạch Bậc.</p>;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-end max-w-md">
+        <div className="space-y-1.5 flex-1 mr-4">
+          <Label>Tìm theo mã / tên ngạch</Label>
+          <Input 
+            value={search} 
+            onChange={e => setSearch(e.target.value)} 
+            placeholder="Gõ để lọc..." 
+            className="rounded-input"
+          />
+        </div>
+        <Button onClick={() => { setForm({ steps: [] }); setDialogOpen(true); }}>
+          <Plus className="w-4 h-4 mr-1" /> Thêm Ngạch Bậc
+        </Button>
+      </div>
+
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Mã Ngạch</TableHead>
+            <TableHead>Tên Ngạch</TableHead>
+            <TableHead>Thuộc nhóm</TableHead>
+            <TableHead>Số Bậc</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredGrades.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={4} className="text-center py-4 text-slate-400">Không có dữ liệu</TableCell>
+            </TableRow>
+          ) : (
+            filteredGrades.map(g => (
+              <TableRow key={g.id} className="cursor-pointer hover:bg-slate-50" onClick={() => { setForm(g); setDialogOpen(true); }}>
+                <TableCell className="font-mono">{g.grade_code}</TableCell>
+                <TableCell>{g.grade_name}</TableCell>
+                <TableCell><Badge variant="outline">{g.pay_group_code}</Badge></TableCell>
+                <TableCell>{g.steps?.length || 0} bậc</TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{form.id ? 'Sửa Ngạch Bậc' : 'Thêm Ngạch Bậc Mới'}</DialogTitle>
+          </DialogHeader>
+          
+          <div className="grid grid-cols-2 gap-4 py-4">
+            <div className="space-y-2">
+              <Label>Mã Ngạch</Label>
+              <Input value={form.grade_code || ''} onChange={e => setForm({...form, grade_code: e.target.value})} placeholder="VD: D1" />
+            </div>
+            <div className="space-y-2">
+              <Label>Tên Ngạch</Label>
+              <Input value={form.grade_name || ''} onChange={e => setForm({...form, grade_name: e.target.value})} placeholder="VD: Chủ tịch HĐTV" />
+            </div>
+          </div>
+
+          <div className="space-y-2 border rounded-md p-4 bg-slate-50">
+            <div className="flex justify-between items-center mb-2">
+              <Label className="font-semibold text-slate-700">Cấu hình Bậc Thang (Tiers)</Label>
+              <Button size="sm" variant="outline" onClick={handleAddStep}><Plus className="w-3 h-3 mr-1" /> Thêm Bậc</Button>
+            </div>
+            
+            <div className="max-h-60 overflow-y-auto">
+              <table className="w-full border-collapse bg-white text-sm">
+                <thead>
+                  <tr className="bg-slate-100">
+                    <th className="border p-2 text-left w-20">Bậc</th>
+                    <th className="border p-2 text-left">Mức Lương (VNĐ)</th>
+                    <th className="border p-2 w-16 text-center">Xóa</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(form.steps || []).length === 0 ? (
+                    <tr><td colSpan={3} className="text-center p-4 text-slate-400 border">Chưa cấu hình bậc nào</td></tr>
+                  ) : (
+                    form.steps!.map((step, idx) => (
+                      <tr key={idx}>
+                        <td className="border p-2 text-center font-semibold bg-slate-50">Bậc {step.step_number}</td>
+                        <td className="border p-1">
+                          <Input 
+                            type="number" 
+                            value={step.salary_vnd || ''} 
+                            onChange={e => handleUpdateStep(idx, e.target.value)} 
+                            className="h-8 shadow-none" 
+                          />
+                        </td>
+                        <td className="border p-1 text-center">
+                          <Button variant="ghost" size="sm" className="h-6 w-6 text-red-500" onClick={() => handleRemoveStep(idx)}><Trash2 className="w-3 h-3"/></Button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>Hủy</Button>
+            <Button onClick={handleSave} disabled={upsertGrade.isPending}>
+              {upsertGrade.isPending ? 'Đang lưu...' : 'Lưu Cấu Hình'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
 export function MasterDataSettingsPanel() {
   const overview = useSettingsCatalogsOverview();
   const queryClient = useQueryClient();
@@ -585,7 +758,11 @@ export function MasterDataSettingsPanel() {
                 forceMount
                 className="data-[state=inactive]:hidden"
               >
-                <MasterDataBucketPanel bucket={bucket} />
+                {bucket === 'jobGrades' ? (
+                  <GradeMasterDataPanel />
+                ) : (
+                  <MasterDataBucketPanel bucket={bucket} />
+                )}
               </TabsContent>
             ))}
             <TabsContent value="jt" className="space-y-3">

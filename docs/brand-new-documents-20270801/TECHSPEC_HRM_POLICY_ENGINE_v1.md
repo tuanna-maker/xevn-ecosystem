@@ -500,6 +500,35 @@ function calculateInsurance(gradeSalaryVnd: bigint, config: InsuranceConfig): In
 
 ## 11. EVENT CONTRACTS (XBOS Integration)
 
+### 2.2 Bonus Policies (hrm_bonus_policies)
+
+Lưu template chính sách để gán (hoặc tính batch). Phải cấu hình các DTO validator cho API bằng Zod hoặc Class Validator thay vì Record<string, unknown>.
+
+```sql
+CREATE TABLE IF NOT EXISTS hrm_bonus_policies (
+  id              UUID          PRIMARY KEY,
+  company_id      TEXT          NOT NULL,
+  code            TEXT          NOT NULL,
+  name            TEXT          NOT NULL,
+  type            TEXT          NOT NULL, -- monthly/quarterly/kpi...
+  component_type  TEXT          NULL, -- map voi catalog
+  calculation_method TEXT       NOT NULL DEFAULT 'fixed',
+  base_value      BIGINT        NOT NULL DEFAULT 0,
+  formula         TEXT          NULL,
+  tiers           JSONB         NULL,
+  extra_data      JSONB         NULL, -- NOTE: PHẢI LÀ Array<{key, source, default_value}> theo chuẩn UI
+  conditions      JSONB         NULL,
+  effective_date  DATE          NOT NULL,
+  expiry_date     DATE          NULL,
+  status          TEXT          NOT NULL DEFAULT 'draft',
+  created_at      TIMESTAMPTZ   NOT NULL DEFAULT now(),
+  updated_at      TIMESTAMPTZ   NOT NULL DEFAULT now()
+);
+```
+
+#### Yêu cầu Validation (DTO Backend)
+Mọi API Insert/Update vào `hrm_bonus_policies` bắt buộc phải chạy qua một discriminated union validator (vd. `z.discriminatedUnion("component_type", [...])`) dựa trên `component_type` để đảm bảo `extra_data` có đủ các key bắt buộc (vd: province_code cho `trip_rate_tiered`). Tuyệt đối KHÔNG DÙNG `@Body() body: Record<string, unknown>`.
+
 ```typescript
 // Events published by HRM:
 PAYROLL_BATCH_COMPLETED: {

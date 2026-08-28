@@ -23,6 +23,8 @@ export type PayTaxProcessContext = {
   applyDependentDeduction: boolean;
   personalDeductionVnd: number;
   dependentDeductionPerUnitVnd: number;
+  flatRatePct?: number;
+  flatMinTaxableIncomeVnd?: number;
 };
 
 export type PayTncnBreakdown = {
@@ -51,14 +53,41 @@ export async function loadPayTaxProcessContext(
   settingsTax: SettingsTaxParamsService,
   companyId: string,
   authorization?: string,
+  db?: HrmDbService,
 ): Promise<PayTaxProcessContext> {
+  // 1. Try to load Flat Policy from DB if provided
+  let flatRatePct: number | undefined;
+  let flatMinTaxableIncomeVnd: number | undefined;
+
+  if (db) {
+    const activePolicies = await db.query(
+      `
+      SELECT p.id, c.component_type, c.params
+      FROM public.payroll_policies p
+      JOIN public.pay_income_components c ON c.policy_id = p.id
+      WHERE p.tenant_id = $1 AND p.pay_group_code = 'TAX' 
+        AND p.status = 'ACTIVE' 
+        AND p.deleted_at IS NULL AND c.deleted_at IS NULL
+      `,
+      [companyId]
+    );
+
+    const flatPolicy = activePolicies.rows.find(r => r.component_type === 'tax_flat');
+    if (flatPolicy && flatPolicy.params && flatPolicy.params.calculation_rules) {
+      const rules = flatPolicy.params.calculation_rules;
+      flatRatePct = rules.rate != null ? Number(rules.rate) : 10;
+      flatMinTaxableIncomeVnd = rules.min_taxable_income != null ? Number(rules.min_taxable_income) : 2000000;
+    }
+  }
+
+  // 2. Load Global Settings as fallback / progressive base
   const regime = await settingsTax.readRequiredTaxValue(
     companyId,
     PAY_TAX_REGIME,
     authorization,
   );
   const regimeCode = String(regime.code ?? '').trim();
-  if (regimeCode === 'other') {
+  if (regimeCode === 'other' && !flatRatePct) {
     return {
       regimeCode: 'other',
       applyPersonalDeduction: false,
@@ -100,11 +129,15 @@ export async function loadPayTaxProcessContext(
   }
 
   return {
+    // If flat policy is found in DB, it becomes capable of flat, but we preserve the core regime code 
+    // unless the logic overrides it. Actually, if flat exists, we just embed it.
     regimeCode: regimeCode || 'progressive_vn',
     applyPersonalDeduction: applyPersonal,
     applyDependentDeduction: applyDependent,
     personalDeductionVnd,
     dependentDeductionPerUnitVnd,
+    flatRatePct,
+    flatMinTaxableIncomeVnd,
   };
 }
 
@@ -134,7 +167,19 @@ export function computePayTncnBreakdown(input: {
   );
 
   let taxAmountVnd = 0;
-  if (input.taxContext.regimeCode === 'progressive_vn') {
+  let appliedRegime = input.taxContext.regimeCode;
+  let snapshotVersion = PAY_TNCN_BRACKET_SNAPSHOT_VERSION;
+
+  // If a Flat policy was active in the database and employee income crosses the threshold, apply Flat
+  if (
+    input.taxContext.flatRatePct != null &&
+    input.taxContext.flatMinTaxableIncomeVnd != null &&
+    gross >= input.taxContext.flatMinTaxableIncomeVnd
+  ) {
+    taxAmountVnd = roundMoney(gross * (input.taxContext.flatRatePct / 100));
+    appliedRegime = 'flat';
+    snapshotVersion = 'FLAT_DB_POLICY';
+  } else if (input.taxContext.regimeCode === 'progressive_vn') {
     taxAmountVnd = computeProgressiveVnV1Tax(postDeductionBaseVnd);
   }
 
@@ -144,8 +189,8 @@ export function computePayTncnBreakdown(input: {
     dependentDeductionVnd: dependent,
     postDeductionBaseVnd,
     taxAmountVnd,
-    payTaxRegimeCode: input.taxContext.regimeCode,
-    bracketSnapshotVersion: PAY_TNCN_BRACKET_SNAPSHOT_VERSION,
+    payTaxRegimeCode: appliedRegime,
+    bracketSnapshotVersion: snapshotVersion,
   };
 }
 

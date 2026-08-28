@@ -17,8 +17,6 @@ const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const CommandCenterPage = lazy(() => import('./pages/command-center/CommandCenterPage'));
 import { TenantScopeSync } from './components/layout/TenantScopeSync';
 import { TenantLegacyPathRedirect } from './components/layout/TenantLegacyPathRedirect';
-import { TenantQueryScopeSync } from './components/layout/TenantQueryScopeSync';
-import { TenantPathPrefixRedirect } from './components/layout/TenantPathPrefixRedirect';
 import { Outlet } from 'react-router-dom';
 import { useTenantScope } from './contexts/GlobalFilterContext';
 const CommandCenterInboxPage = lazy(() => import('./pages/command-center/CommandCenterInboxPage'));
@@ -76,40 +74,14 @@ const App: React.FC = () => {
                 }
               />
               <Route
-                path="/command-center"
+                path="/command-center/*"
                 element={
                   <RequireAuth>
-                    <TenantQueryScopeSync>
-                      <ExecutiveDashboardLayout />
-                    </TenantQueryScopeSync>
+                    <TenantLegacyPathRedirect />
                   </RequireAuth>
                 }
-              >
-                <Route path="inbox" element={<CommandCenterInboxPage />} />
-                <Route element={<CommandCenterPage />}>
-                  <Route index element={<></>} />
-                  <Route path="hrm" element={<Navigate to="dashboard" replace />} />
-                  <Route path="hrm/*" element={<HrmWorkspaceRoute />} />
-                </Route>
-              </Route>
+              />
 
-              {/* Legacy `/:tenantId/command-center/*` → canonical `?tenantId=` URL */}
-              <Route
-                path="/:tenantId/command-center/*"
-                element={
-                  <RequireAuth>
-                    <TenantPathPrefixRedirect />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="/:tenantId/command-center"
-                element={
-                  <RequireAuth>
-                    <TenantPathPrefixRedirect />
-                  </RequireAuth>
-                }
-              />
 
               {/* Legacy URLs (no ?tenantId=) — cockpit / dashboard still path-prefixed */}
               <Route
@@ -136,6 +108,14 @@ const App: React.FC = () => {
                   <Route index element={<UnifiedShellPage />} />
                   <Route path="cockpit" element={<ExecutiveDashboardPage />} />
                   <Route path="catalog-governance" element={<CatalogGovernancePage />} />
+                  <Route path="command-center">
+                    <Route path="inbox" element={<CommandCenterInboxPage />} />
+                    <Route element={<CommandCenterPage />}>
+                      <Route index element={<></>} />
+                      <Route path="hrm" element={<Navigate to="dashboard" replace />} />
+                      <Route path="hrm/*" element={<HrmWorkspaceRoute />} />
+                    </Route>
+                  </Route>
                 </Route>
 
                 {/* Main Layout with Sidebar - All Other Pages */}

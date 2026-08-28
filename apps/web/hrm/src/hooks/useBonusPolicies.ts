@@ -44,6 +44,20 @@ export interface BonusTier {
 
 
 
+export interface BonusExtraData {
+
+  key: string;
+
+  source: string;
+
+  default_value?: number;
+
+  description?: string;
+
+}
+
+
+
 export interface BonusPolicy {
 
   id: string;
@@ -56,6 +70,8 @@ export interface BonusPolicy {
 
   type: BonusType;
 
+  component_type: string | null;
+
   description: string | null;
 
   calculation_method: CalculationMethod;
@@ -67,6 +83,8 @@ export interface BonusPolicy {
   formula: string | null;
 
   tiers: BonusTier[] | null;
+
+  extra_data: BonusExtraData[] | null;
 
   conditions: string[] | null;
 
@@ -136,6 +154,8 @@ export interface BonusPolicyFormData {
 
   type: BonusType;
 
+  component_type?: string;
+
   description?: string;
 
   calculation_method: CalculationMethod;
@@ -147,6 +167,8 @@ export interface BonusPolicyFormData {
   formula?: string;
 
   tiers?: BonusTier[];
+
+  extra_data?: BonusExtraData[];
 
   conditions?: string[];
 
@@ -178,6 +200,8 @@ function mapPolicy(row: Record<string, unknown>): BonusPolicy {
 
     type: (row.type as BonusType) ?? 'other',
 
+    component_type: row.component_type ? String(row.component_type) : null,
+
     description: row.description ? String(row.description) : null,
 
     calculation_method: (row.calculation_method as CalculationMethod) ?? 'fixed',
@@ -189,6 +213,8 @@ function mapPolicy(row: Record<string, unknown>): BonusPolicy {
     formula: row.formula ? String(row.formula) : null,
 
     tiers: (row.tiers as BonusTier[]) ?? null,
+
+    extra_data: (row.extra_data as BonusExtraData[]) ?? null,
 
     conditions: (row.conditions as string[]) ?? null,
 

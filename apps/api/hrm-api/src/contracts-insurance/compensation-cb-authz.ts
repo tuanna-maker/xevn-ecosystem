@@ -163,7 +163,7 @@ export function hasCompensationCbMembership(
     role === 'member_ceo' ||
     role.includes('member_ceo')
   ) {
-    return false;
+    return true; // Sponsor requested: Tenant CEO MUST have access to C&B
   }
   return CB_PLATFORM_OWNER_ROLE_RE.test(role);
 }

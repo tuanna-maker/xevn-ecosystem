@@ -62,6 +62,7 @@ export const PAY_FORMULA_REQUIRED_VAR_STARTER = [
   'ot_hours_weighted',
   'paid_leave_hours',
   'unpaid_leave_hours',
+  'work_days',
   'base_salary',
   'dependents_count',
 ] as const;
@@ -81,6 +82,7 @@ export const PAY_FORMULA_REQUIRED_VAR_LABELS: Record<string, string> = {
   ot_hours_weighted: 'Giờ OT (đã quy đổi)',
   paid_leave_hours: 'Giờ nghỉ hưởng lương',
   unpaid_leave_hours: 'Giờ nghỉ không lương',
+  work_days: 'Số ngày công thực tế',
   base_salary: 'Lương cơ bản',
   dependents_count: 'Số người phụ thuộc',
 };

@@ -39,9 +39,9 @@ Bước 3 phụ thuộc Bước 1–2 hoàn tất. Bước 4 nằm ngoài phạm
 
 | Trường | Bắt buộc | Ràng buộc / kiểm tra |
 | --- | --- | --- |
-| Mã ngạch | Có | Duy nhất trong toàn bộ danh mục đang hoạt động; không được trùng với ngạch đã ban hành trước đó còn hiệu lực |
-| Tên ngạch (mô tả chức danh áp dụng) | Có | Không để trống |
-| Danh sách mức lương theo bậc (Bậc I, II, III…) | Có ít nhất Bậc I | Mỗi ngạch phải có tối thiểu 1 bậc (Bậc I); số bậc có thể khác nhau giữa các ngạch; mức lương bậc sau phải lớn hơn hoặc bằng bậc liền trước (không được giảm dần) |
+| Mã ngạch | Có | Duy nhất trong toàn bộ danh mục đang hoạt động; không được trùng với ngạch đã ban hành (Menu bên trái chỉ hiển thị Mã Ngạch để chọn, không gán cứng chức danh). |
+| Tên ngạch (Tùy chọn) | Không | Không hiển thị cứng vào menu trái, chỉ dùng để ghi chú (nếu có). |
+| Danh sách cấu hình Bậc (Steps) | Có ít nhất Bậc I | Mỗi ngạch phải có bảng cấu hình các Bậc (cột bên phải). Cấu trúc một Bậc bao gồm: <br/> 1. **Mã Bậc** (ví dụ: I, II, 1, 2) <br/> 2. **Chức danh áp dụng** (Multi-select các chức danh thuộc Ngạch này. Một Ngạch có quan hệ 1-N với chức danh) <br/> 3. **Số tiền áp dụng (VNĐ)**. <br/>Mức lương bậc sau phải lớn hơn hoặc bằng bậc liền trước |
 | Mức lương Bậc I của ngạch thấp nhất | Có | Không được thấp hơn mức lương tối thiểu vùng theo quy định Nhà nước hiện hành tại thời điểm ban hành |
 | Ngày hiệu lực | Có | Không được là ngày trong quá khứ so với ngày ban hành, trừ trường hợp ban hành hồi tố có ghi chú rõ lý do |
 

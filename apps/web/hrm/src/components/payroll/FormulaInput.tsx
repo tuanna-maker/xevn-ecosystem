@@ -132,11 +132,32 @@ const validateFormula = (
 // Get current word being typed for autocomplete
 const getCurrentWord = (value: string, cursorPos: number): { word: string; start: number } => {
   const beforeCursor = value.slice(0, cursorPos);
-  const match = beforeCursor.match(/[A-Z_][A-Z0-9_]*$/i);
+  // Match normal words or an opening bracket followed by text
+  const match = beforeCursor.match(/(\[[^\]]*$|[A-Z_][A-Z0-9_]*$)/i);
   if (match) {
-    return { word: match[0], start: cursorPos - match[0].length };
+    // If it's a bracket, remove the bracket for search word
+    const word = match[0].startsWith('[') ? match[0].slice(1) : match[0];
+    return { word, start: cursorPos - match[0].length };
   }
   return { word: '', start: cursorPos };
+};
+
+// Render highlighted text for chips
+const renderHighlightedText = (text: string) => {
+  if (!text) return null;
+  // Match [Any Text] or A-Z functions/vars
+  const parts = text.split(/(\[[^\]]+\])/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('[') && part.endsWith(']')) {
+      const inner = part.slice(1, -1);
+      return (
+        <span key={i} className="bg-xevn-primary/10 text-xevn-primary rounded-sm px-1 py-0.5 border border-xevn-primary/20">
+          {part}
+        </span>
+      );
+    }
+    return <span key={i} className="text-foreground">{part}</span>;
+  });
 };
 
 export const FormulaInput = ({
@@ -159,6 +180,7 @@ export const FormulaInput = ({
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(0);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   
   const availableCodes = useMemo(() => availableComponents.map(c => c.code), [availableComponents]);
   
@@ -284,7 +306,21 @@ export const FormulaInput = ({
   
   return (
     <div className="relative">
-      <div className="relative">
+      <div className={cn(
+             "relative flex min-h-[80px] w-full rounded-md border bg-background text-sm font-mono ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 overflow-hidden",
+             validation.errors.length > 0 && value ? "border-destructive focus-within:ring-destructive" : "border-input",
+             validation.warnings.length > 0 && validation.errors.length === 0 && value ? "border-amber-500 focus-within:ring-amber-500" : "",
+             className
+           )}
+      >
+        <div 
+          ref={overlayRef}
+          className="absolute inset-0 px-3 py-2 whitespace-pre-wrap break-words pointer-events-none overflow-y-auto overflow-x-hidden"
+          aria-hidden="true"
+        >
+          {renderHighlightedText(value)}
+          {!value && <span className="text-muted-foreground">{placeholder || t('formulaInput.placeholder')}</span>}
+        </div>
         <textarea
           ref={(el) => {
             inputRef.current = el;
@@ -303,14 +339,17 @@ export const FormulaInput = ({
               onBlur?.();
             }, 200);
           }}
+          onScroll={(e) => {
+            if (overlayRef.current) {
+              overlayRef.current.scrollTop = (e.target as HTMLTextAreaElement).scrollTop;
+            }
+          }}
           onKeyDown={handleKeyDown}
-          placeholder={placeholder || t('formulaInput.placeholder')}
           className={cn(
-            "flex min-h-[80px] w-full rounded-md border bg-background px-3 py-2 text-sm font-mono ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-            validation.errors.length > 0 && value ? "border-destructive" : "border-input",
-            validation.warnings.length > 0 && validation.errors.length === 0 && value ? "border-amber-500" : "",
-            className
+            "flex-1 w-full resize-y min-h-[80px] bg-transparent px-3 py-2 focus:outline-none",
+            "text-transparent caret-foreground",
           )}
+          style={{ color: 'transparent', caretColor: 'black' }}
         />
         
         {/* Validation status icon */}

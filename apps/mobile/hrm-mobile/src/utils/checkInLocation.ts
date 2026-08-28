@@ -71,6 +71,7 @@ export function buildCheckInSubmitBody(input: CheckInSubmitInput): Record<string
     if (Number.isFinite(lat) && Number.isFinite(lng)) {
       body.latitude = lat;
       body.longitude = lng;
+      body.check_in_method = 'gps';
     }
   }
 

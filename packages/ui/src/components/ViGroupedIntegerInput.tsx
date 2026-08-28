@@ -10,7 +10,7 @@
 
 import React from 'react';
 import { cn } from '../lib/utils';
-import { formatViGroupedInteger, parseViGroupedInteger } from '../lib/viNumberFormat';
+import { formatViGroupedInteger } from '../lib/viNumberFormat';
 
 export interface ViGroupedIntegerInputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'value' | 'onChange'> {

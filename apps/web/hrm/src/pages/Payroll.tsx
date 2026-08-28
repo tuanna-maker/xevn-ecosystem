@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @CODE-MEMORY
  * Screen:     /payroll ? B?ng l??ng (HR / payroll ops)
  * UC:         UC-HRM-PAY
@@ -104,7 +104,7 @@
  */
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Search,
   Download,
@@ -210,6 +210,7 @@ import { EmbedApiEmptyState } from '@/components/hrm/EmbedApiEmptyState';
 import { TaxPolicyTab } from '@/components/payroll/TaxPolicyTab';
 import { InsurancePolicyTab } from '@/components/payroll/InsurancePolicyTab';
 import { SalaryTemplatesTab } from '@/components/payroll/SalaryTemplatesTab';
+import { PaySheetTemplateSettingsPanel } from '@/components/settings/PaySheetTemplateSettingsPanel';
 import { AllowancePolicyTab } from '@/components/payroll/AllowancePolicyTab';
 import { KpiDataTab } from '@/components/payroll/KpiDataTab';
 import { OtherIncomeDataTab } from '@/components/payroll/OtherIncomeDataTab';
@@ -541,6 +542,7 @@ const paymentBatchesData: PaymentBatch[] = [];
 export default function Payroll() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { payslips: livePayslips, isLoading: livePayslipsLoading } = usePayrollPayslips();
 
   /** P0-c: race-prone tab/modal/form ? domain useReducer (shell/advance/taxUi/salary/batch). */
@@ -890,7 +892,8 @@ export default function Payroll() {
         key={tab.id}
         onClick={() => {
           if ('isLink' in tab && tab.isLink) {
-            navigate('/payroll/setup');
+            const query = searchParams.toString();
+            navigate(query ? `/payroll/setup?${query}` : '/payroll/setup');
           } else if (!tab.hasDropdown) {
             setActiveTab(tab.id);
           }
@@ -2774,7 +2777,7 @@ export default function Payroll() {
       case 'calc-advance':
         return <AdvanceRequestsTab />;
       case 'calc-template':
-        return <SalaryTemplatesTab />;
+        return <PaySheetTemplateSettingsPanel />;
       case 'calc-tax-settlement':
         // E2 AC-E2-P3-02 / SA Q1 ? no tax-settlement BE ? HIDE invent mutate UI
         return (

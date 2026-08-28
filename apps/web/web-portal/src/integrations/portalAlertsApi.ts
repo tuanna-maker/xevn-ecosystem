@@ -43,8 +43,8 @@ export async function fetchPortalAlerts(
       `catalog-governance.inbox:${tenantId}:${catalogCompanyId}:${user}`,
       () =>
         xbosGetData<{ items?: CatalogInboxItem[] }>(
-          `/catalog-governance/inbox?assigneeUserId=${encodeURIComponent(user)}`,
-          { scope: 'catalog-governance.inbox', tenantId, companyId: catalogCompanyId },
+          `/catalog-governance/inbox?assigneeUserId=${encodeURIComponent(user)}&tenantId=${encodeURIComponent(tenantId)}&companyId=${encodeURIComponent(catalogCompanyId)}`,
+          { scope: 'catalog-governance.inbox', tenantId, companyId: catalogCompanyId, suppressLogStatuses: [409] },
         ),
     );
     alerts.push(...(data?.items ?? []).slice(0, 8).map(mapCatalogInboxToPortalAlert));

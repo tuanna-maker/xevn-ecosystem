@@ -155,6 +155,11 @@ export const GlobalFilterProvider: React.FC<{ children: ReactNode }> = ({ childr
   const [usingMockTenantFallback, setUsingMockTenantFallback] = useState(false);
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setTenantScopeStatus('ready');
+      return;
+    }
+
     if (isAuthenticated && memberships.length) {
       const mapped = memberships.map(mapTenantToOption);
       setTenants(mapped);

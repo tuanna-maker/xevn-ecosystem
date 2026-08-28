@@ -38,6 +38,7 @@ export const PAY_FORMULA_ATT_HOUR_VARS = [
   'ot_hours_weighted',
   'paid_leave_hours',
   'unpaid_leave_hours',
+  'work_days',
 ] as const;
 
 export type PayFormulaEvalSign = 'earning' | 'deduction';

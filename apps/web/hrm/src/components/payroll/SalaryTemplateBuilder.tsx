@@ -70,6 +70,8 @@ interface ExtendedSalaryTemplateFormData extends SalaryTemplateFormData {
 
 interface ExtendedTemplateComponent extends TemplateComponentFormData {
   id?: string;
+  data_source_type?: string;
+  source_mapping_key?: string | null;
   formula: string;
   condition_formula: string;
   min_value: number | null;
@@ -184,6 +186,8 @@ export const SalaryTemplateBuilder = ({ template, onClose, onSave }: SalaryTempl
             is_required: c.is_required,
             sort_order: c.sort_order,
             id: c.id,
+            data_source_type: (c as any).data_source_type || 'FORMULA',
+            source_mapping_key: (c as any).source_mapping_key || null,
             formula: (c as any).formula || '',
             condition_formula: (c as any).condition_formula || '',
             min_value: (c as any).min_value,
@@ -228,6 +232,8 @@ export const SalaryTemplateBuilder = ({ template, onClose, onSave }: SalaryTempl
       default_value: component.default_value || 0,
       is_required: true,
       sort_order: templateComponents.length,
+      data_source_type: 'FORMULA',
+      source_mapping_key: null,
       formula: component.formula || '',
       condition_formula: '',
       min_value: null,
@@ -289,6 +295,8 @@ export const SalaryTemplateBuilder = ({ template, onClose, onSave }: SalaryTempl
             default_value: tc.default_value,
             is_required: tc.is_required,
             sort_order: index,
+            data_source_type: tc.data_source_type,
+            source_mapping_key: tc.source_mapping_key,
             formula: tc.formula || null,
             condition_formula: tc.condition_formula || null,
             min_value: tc.min_value,
@@ -937,27 +945,74 @@ export const SalaryTemplateBuilder = ({ template, onClose, onSave }: SalaryTempl
                   <Separator />
 
                   <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label>Giá trị mặc định</Label>
-                      <ViMoneyInput
-                        value={Number(selectedComponent.default_value) || 0}
-                        onValueChange={(n) =>
-                          handleUpdateComponent(selectedComponent.component_id, {
-                            default_value: n,
-                          })
-                        }
-                      />
-                    </div>
+                      <div className="space-y-2">
+                        <Label>Nguồn dữ liệu</Label>
+                        <Select
+                          value={selectedComponent.data_source_type || 'FORMULA'}
+                          onValueChange={(value) =>
+                            handleUpdateComponent(selectedComponent.component_id, {
+                              data_source_type: value,
+                            })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn nguồn dữ liệu" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="SYSTEM_CONTRACT">Từ Hệ thống (Hồ sơ/Hợp đồng)</SelectItem>
+                            <SelectItem value="TIMESHEET">Từ Máy chấm công (Timesheet)</SelectItem>
+                            <SelectItem value="INPUT_HUB">Từ File Nhập liệu ngoài (Input Hub)</SelectItem>
+                            <SelectItem value="FORMULA">Công thức tự định nghĩa</SelectItem>
+                            <SelectItem value="CONSTANT">Hằng số / Tự nhập lúc tính lương</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                    <div className="space-y-2">
-                      <Label>Công thức tính</Label>
-                      <FormulaInput
-                        value={selectedComponent.formula}
-                        onChange={(value) => handleUpdateComponent(selectedComponent.component_id, { formula: value })}
-                        placeholder="VD: =LUONG_CO_BAN*SO_NGAY_LAM_VIEC/26"
-                        availableComponents={allComponents.map(c => ({ code: c.code, name: c.name }))}
-                      />
-                    </div>
+                      {['SYSTEM_CONTRACT', 'TIMESHEET', 'INPUT_HUB'].includes(
+                        selectedComponent.data_source_type || 'FORMULA'
+                      ) && (
+                        <div className="space-y-2">
+                          <Label>Khóa ánh xạ</Label>
+                          <Input
+                            value={selectedComponent.source_mapping_key || ''}
+                            onChange={(e) =>
+                              handleUpdateComponent(selectedComponent.component_id, {
+                                source_mapping_key: e.target.value,
+                              })
+                            }
+                            placeholder="VD: base_salary, actual_working_days..."
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Nhập tên trường dữ liệu từ nguồn tương ứng.
+                          </p>
+                        </div>
+                      )}
+
+                      {selectedComponent.data_source_type === 'CONSTANT' && (
+                        <div className="space-y-2">
+                          <Label>Giá trị mặc định</Label>
+                          <ViMoneyInput
+                            value={Number(selectedComponent.default_value) || 0}
+                            onValueChange={(n) =>
+                              handleUpdateComponent(selectedComponent.component_id, {
+                                default_value: n,
+                              })
+                            }
+                          />
+                        </div>
+                      )}
+
+                      {(!selectedComponent.data_source_type || selectedComponent.data_source_type === 'FORMULA') && (
+                        <div className="space-y-2">
+                          <Label>Công thức tính</Label>
+                          <FormulaInput
+                            value={selectedComponent.formula}
+                            onChange={(value) => handleUpdateComponent(selectedComponent.component_id, { formula: value })}
+                            placeholder="VD: =LUONG_CO_BAN*SO_NGAY_LAM_VIEC/26"
+                            availableComponents={allComponents.map(c => ({ code: c.code, name: c.name }))}
+                          />
+                        </div>
+                      )}
 
                     <div className="space-y-2">
                       <Label>Điều kiện áp dụng</Label>

@@ -139,8 +139,14 @@ import { PaySalaryComponentList } from '@/components/settings/payroll/PaySalaryC
 import { PayFormulaSettingsPanel } from '@/components/settings/payroll/PayFormulaSettingsPanel';
 
 import { PaySalaryGroupSettingsPanel } from '@/components/settings/payroll/PaySalaryGroupSettingsPanel';
+import { PayPolicyGroupSettingsPanel } from '@/components/settings/payroll/PayPolicyGroupSettingsPanel';
+import { GradeListSettingsPanel } from '../components/settings/payroll/GradeListSettingsPanel';
+import { StepListSettingsPanel } from '../components/settings/payroll/StepListSettingsPanel';
+
 import { PayTaxTableSettingsPanel } from '@/components/settings/payroll/PayTaxTableSettingsPanel';
 import { PayPaySlipTemplateSettingsPanel } from '@/components/settings/payroll/PayPayslipTemplateSettingsPanel';
+import { PayrollGlobalParametersPanel } from '@/components/settings/payroll/PayrollGlobalParametersPanel';
+import { PaySystemDataSettingsPanel } from '@/components/settings/PaySystemDataSettingsPanel';
 import { ContractTypeSettingsPanel } from '@/components/settings/ContractTypeSettingsPanel';
 import { ContractTerminationReasonSettingsPanel } from '@/components/settings/ContractTerminationReasonSettingsPanel';
 import { WorkflowConfigSettingsPanel } from '@/components/settings/WorkflowConfigSettingsPanel';
@@ -150,6 +156,9 @@ import { AttOtCompTypeSettingsPanel } from '@/components/settings/AttOtCompTypeS
 import { AttShiftSettingsPanel } from '@/components/settings/AttShiftSettingsPanel';
 import { AttWorkRuleSettingsPanel } from '@/components/settings/AttWorkRuleSettingsPanel';
 import { AttScheduleGroupSettingsPanel } from '@/components/settings/AttScheduleGroupSettingsPanel';
+import { CatalogRecRejectionReasonsSettingsPanel } from '@/components/settings/CatalogRecRejectionReasonsSettingsPanel';
+import { CatalogRecPositionsSettingsPanel } from '@/components/settings/CatalogRecPositionsSettingsPanel';
+import { CatalogRecHealthRequirementsSettingsPanel } from '@/components/settings/CatalogRecHealthRequirementsSettingsPanel';
 
 
 
@@ -527,6 +536,7 @@ export default function Settings() {
         {settingsTab === 'merge-tokens' && <MergeTokenSettingsPanel />}
 
         {settingsTab === 'pay-sheet-tpl' && <PaySheetTemplateSettingsPanel />}
+        {settingsTab === 'pay-system-data' && <PaySystemDataSettingsPanel />}
 
 
 
@@ -600,6 +610,10 @@ export default function Settings() {
           <SettingsDefaultsPanel />
         </div>)}
 
+        {settingsTab === 'pay-global-params' && (<div className="space-y-4">
+          <PayrollGlobalParametersPanel />
+        </div>)}
+
         {/* --- Tab catalog-job-titles 2026-08-24 (PO-HRM-SETTINGS-JOB-TITLES-FE-01) --- */}
         {settingsTab === 'catalog-job-titles' && (
           <div className="space-y-4">
@@ -617,23 +631,14 @@ export default function Settings() {
           </div>
         )}
         {settingsTab === 'rec-rejection-reasons' && (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
-            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
-          </div>
-        )}
+            <CatalogRecRejectionReasonsSettingsPanel />
+          )}
         {settingsTab === 'rec-positions' && (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
-            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
-          </div>
-        )}
+            <CatalogRecPositionsSettingsPanel />
+          )}
         {settingsTab === 'rec-health-requirements' && (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
-            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
-          </div>
-        )}
+            <CatalogRecHealthRequirementsSettingsPanel />
+          )}
         {settingsTab === 'contract-types' && (
           <ContractTypeSettingsPanel />
         )}
@@ -659,9 +664,23 @@ export default function Settings() {
         {settingsTab === 'workflow-config' && (
           <WorkflowConfigSettingsPanel />
         )}
-        {settingsTab === 'pay-policy-packs' && (
-          <PolicyPackSetupScreen />
+
+        {/* G0-FE: Nhom Chinh sach */}
+        {settingsTab === 'pay-policy-groups' && (
+          <PayPolicyGroupSettingsPanel />
         )}
+
+        {/* G1-FE: Ngach luong */}
+        {settingsTab === 'pay-grades' && (
+          <GradeListSettingsPanel />
+        )}
+
+        {/* G2-FE: Bac luong per ngach */}
+        {settingsTab === 'pay-steps' && (
+          <StepListSettingsPanel />
+        )}
+
+
       </SettingsNavLayout>
     </div>
   );

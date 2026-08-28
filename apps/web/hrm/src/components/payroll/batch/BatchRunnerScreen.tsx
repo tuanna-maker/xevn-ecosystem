@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Screen:     HRM · Chạy lương (S6)
  * WorkItem:   HRM-POLICY-FE-S6
  * Coded:      2026-08-22
@@ -6,15 +6,12 @@
 import { useState } from "react";
 import { BatchAPI, type Payslip } from "../../../lib/api/hrm-policy-api";
 import { PayslipPanel } from "../payslip/PayslipPanel";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { PlayCircle, CheckCircle, ChevronDown, ChevronUp, Search, Loader2 } from "lucide-react";
 
 type BatchResult = { batch_id: string; employee_count: number; warnings: string[] };
-
-const S = {
-  card: { background: "#1a1f2e", borderRadius: 12, padding: 24, border: "1px solid #2a2f45", marginBottom: 16 } as React.CSSProperties,
-  btn: (c: string, disabled = false): React.CSSProperties => ({ background: disabled ? "#1e2540" : c, color: disabled ? "#475569" : "#fff", border: "none", borderRadius: 10, padding: "12px 24px", fontSize: 15, fontWeight: 700, cursor: disabled ? "not-allowed" : "pointer", transition: "all .2s" }),
-  input: { background: "#0f1117", border: "1px solid #334155", borderRadius: 8, color: "#e8eaf0", padding: "10px 16px", fontSize: 16 } as React.CSSProperties,
-  stat: (c: string): React.CSSProperties => ({ background: "#0f1117", borderRadius: 12, padding: "16px 20px", border: `1px solid ${c}44`, textAlign: "center" as const }),
-};
 
 export function BatchRunnerScreen() {
   const [period, setPeriod] = useState(() => new Date().toISOString().slice(0, 7));
@@ -57,100 +54,110 @@ export function BatchRunnerScreen() {
   };
 
   return (
-    <div>
+    <div className="space-y-6">
       {/* Run form */}
-      <div style={S.card}>
-        <h2 style={{ margin: "0 0 8px", color: "#a5b4fc" }}>🚀 Chạy lương tháng</h2>
-        <p style={{ color: "#64748b", margin: "0 0 24px", fontSize: 14 }}>
+      <Card className="p-6 bg-white border-xevn-border shadow-sm">
+        <h2 className="text-[20px] font-bold font-display text-xevn-text flex items-center gap-2 mb-1">
+          <PlayCircle className="w-5 h-5 text-xevn-primary" /> Chạy lương tháng
+        </h2>
+        <p className="text-sm text-xevn-textSecondary mb-6">
           Hệ thống sẽ tự động tính lương cho tất cả nhân viên theo chính sách đang ACTIVE của từng nhóm.
         </p>
-        <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
-          <div>
-            <label style={{ fontSize: 12, color: "#94a3b8", display: "block", marginBottom: 6 }}>Kỳ lương</label>
-            <input id="batch-period" type="month" style={{ ...S.input, width: 180 }} value={period} onChange={e => setPeriod(e.target.value)} />
+        <div className="flex gap-4 items-end flex-wrap">
+          <div className="space-y-1">
+            <label className="text-xs text-xevn-textSecondary font-medium">Kỳ lương</label>
+            <Input type="month" className="w-48 bg-white" value={period} onChange={e => setPeriod(e.target.value)} />
           </div>
-          <button style={{ ...S.btn("#6366f1", running), marginTop: 22 }} onClick={handleRun} disabled={running} id="btn-run-batch">
-            {running ? "⏳ Đang chạy lương..." : "🚀 Chạy lương"}
-          </button>
+          <Button className="bg-xevn-primary text-white font-medium px-6 h-10 gap-2" onClick={handleRun} disabled={running}>
+            {running ? <><Loader2 className="w-4 h-4 animate-spin"/> Đang chạy lương...</> : <><PlayCircle className="w-4 h-4"/> Bắt đầu chạy</>}
+          </Button>
         </div>
+        
         {running && (
-          <div style={{ marginTop: 20, background: "#0f1117", borderRadius: 10, padding: 16 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, color: "#818cf8" }}>
-              <div style={{ fontSize: 20, animation: "spin 1s linear infinite" }}>⚙️</div>
+          <div className="mt-6 bg-xevn-surface border border-xevn-border rounded-lg p-5">
+            <div className="flex items-center gap-3 text-xevn-primary font-medium mb-3">
+              <Loader2 className="w-5 h-5 animate-spin" />
               <span>Đang xử lý batch — vui lòng chờ...</span>
             </div>
-            <div style={{ marginTop: 12, height: 4, background: "#1e2540", borderRadius: 2, overflow: "hidden" }}>
-              <div style={{ height: "100%", background: "#6366f1", width: "60%", animation: "progress 2s ease-in-out infinite" }} />
+            <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+              <div className="h-full bg-xevn-primary w-[60%] rounded-full animate-pulse" />
             </div>
           </div>
         )}
-      </div>
+      </Card>
 
       {/* Result */}
       {result && (
-        <div style={S.card}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+        <Card className="p-6 bg-white border-xevn-border shadow-sm">
+          <div className="flex justify-between items-start mb-6">
             <div>
-              <h3 style={{ margin: "0 0 4px", color: approved ? "#4ade80" : "#a5b4fc" }}>
-                {approved ? "✅ Đã approve" : "✅ Hoàn thành batch"}
+              <h3 className={`text-lg font-bold flex items-center gap-2 ${approved ? 'text-green-600' : 'text-xevn-text'}`}>
+                <CheckCircle className="w-5 h-5" /> {approved ? "Đã duyệt bảng lương" : "Hoàn thành tính toán batch"}
               </h3>
-              <code style={{ fontSize: 12, color: "#64748b" }}>Batch ID: {result.batch_id}</code>
+              <p className="text-xs text-xevn-textSecondary mt-1 font-mono">Batch ID: {result.batch_id}</p>
             </div>
             {!approved && (
-              <button style={S.btn("#16a34a", approving)} onClick={handleApprove} disabled={approving} id="btn-approve-batch">
-                {approving ? "Đang approve..." : "✓ Approve lương"}
-              </button>
+              <Button className="bg-green-600 hover:bg-green-700 text-white gap-2" onClick={handleApprove} disabled={approving}>
+                {approving ? <><Loader2 className="w-4 h-4 animate-spin"/> Đang duyệt...</> : <><CheckCircle className="w-4 h-4"/> Duyệt bảng lương</>}
+              </Button>
             )}
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16, marginBottom: 20 }}>
-            <div style={S.stat("#4ade80")}>
-              <div style={{ fontSize: 36, fontWeight: 800, color: "#4ade80" }}>{result.employee_count}</div>
-              <div style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>Nhân viên đã tính</div>
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="bg-xevn-surface border border-xevn-border rounded-xl p-5 text-center">
+              <div className="text-4xl font-bold text-xevn-primary">{result.employee_count}</div>
+              <div className="text-sm text-xevn-textSecondary mt-1">Nhân viên đã tính</div>
             </div>
-            <div style={S.stat("#818cf8")}>
-              <div style={{ fontSize: 36, fontWeight: 800, color: "#818cf8" }}>{result.warnings.length}</div>
-              <div style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>Cảnh báo</div>
+            <div className="bg-xevn-surface border border-xevn-border rounded-xl p-5 text-center">
+              <div className={`text-4xl font-bold ${(result.warnings ?? []).length > 0 ? 'text-amber-500' : 'text-slate-400'}`}>{(result.warnings ?? []).length}</div>
+              <div className="text-sm text-xevn-textSecondary mt-1">Cảnh báo (Warnings)</div>
             </div>
-            <div style={S.stat("#fb923c")}>
-              <div style={{ fontSize: 36, fontWeight: 800, color: "#fb923c" }}>
+            <div className={`border rounded-xl p-5 text-center ${approved ? 'bg-green-50 border-green-200' : 'bg-blue-50 border-blue-200'}`}>
+              <div className={`text-2xl font-bold mt-2 ${approved ? 'text-green-600' : 'text-blue-600'}`}>
                 {approved ? "APPROVED" : "COMPLETED"}
               </div>
-              <div style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>Trạng thái</div>
+              <div className="text-sm text-xevn-textSecondary mt-1">Trạng thái Batch</div>
             </div>
           </div>
 
-          {result.warnings.length > 0 && (
-            <div>
-              <button style={{ ...S.btn("#334155"), fontSize: 13, padding: "8px 14px" }} onClick={() => setShowWarnings(s => !s)}>
-                {showWarnings ? "▲" : "▼"} {result.warnings.length} cảnh báo
+          {(result.warnings ?? []).length > 0 && (
+            <div className="border border-amber-200 rounded-lg overflow-hidden">
+              <button className="w-full bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800 flex justify-between items-center" onClick={() => setShowWarnings(s => !s)}>
+                <span>Có {(result.warnings ?? []).length} cảnh báo cần xem xét</span>
+                {showWarnings ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </button>
               {showWarnings && (
-                <div style={{ background: "#92400e22", borderRadius: 8, padding: 16, marginTop: 8, maxHeight: 200, overflowY: "auto" }}>
-                  {result.warnings.map((w, i) => <div key={i} style={{ fontSize: 13, color: "#fcd34d", marginBottom: 4 }}>⚠️ {w}</div>)}
+                <div className="p-4 bg-white max-h-60 overflow-y-auto space-y-2">
+                  {(result.warnings ?? []).map((w, i) => (
+                    <div key={i} className="text-sm text-amber-700 flex gap-2 items-start">
+                      <span className="mt-0.5">⚠️</span> <span>{w}</span>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
           )}
-        </div>
+        </Card>
       )}
 
       {/* Payslip lookup */}
-      <div style={S.card}>
-        <h3 style={{ margin: "0 0 16px", color: "#a5b4fc" }}>🔍 Tra cứu phiếu lương</h3>
-        <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-          <input id="payslip-emp-id" placeholder="Employee ID" style={{ ...S.input, flex: 1, minWidth: 200 }} value={payslipEmpId} onChange={e => setPayslipEmpId(e.target.value)} />
-          <button style={S.btn("#7c3aed", loadingPayslip)} onClick={handleGetPayslip} disabled={loadingPayslip} id="btn-get-payslip">
-            {loadingPayslip ? "Đang tải..." : "Xem phiếu lương"}
-          </button>
+      <Card className="p-6 bg-white border-xevn-border shadow-sm">
+        <h3 className="text-lg font-bold text-xevn-text mb-4 flex items-center gap-2">
+          <Search className="w-5 h-5 text-xevn-textSecondary" /> Tra cứu phiếu lương cá nhân
+        </h3>
+        <div className="flex gap-3 items-center flex-wrap">
+          <Input placeholder="Nhập mã nhân viên (VD: LX-001)" className="w-64 bg-white" value={payslipEmpId} onChange={e => setPayslipEmpId(e.target.value)} />
+          <Button variant="outline" className="border-xevn-primary text-xevn-primary hover:bg-xevn-primary/5" onClick={handleGetPayslip} disabled={loadingPayslip}>
+            {loadingPayslip ? <Loader2 className="w-4 h-4 animate-spin mr-2"/> : null}
+            Tra cứu
+          </Button>
         </div>
-        {payslip && <div style={{ marginTop: 24 }}><PayslipPanel payslip={payslip} /></div>}
-      </div>
-
-      <style>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes progress { 0% { width: 20%; } 50% { width: 80%; } 100% { width: 20%; } }
-      `}</style>
+        {payslip && (
+          <div className="mt-6 border-t border-xevn-border pt-6">
+            <PayslipPanel payslip={payslip} />
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

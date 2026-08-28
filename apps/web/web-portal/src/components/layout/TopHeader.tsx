@@ -61,7 +61,7 @@ import {
   membershipRoleDisplay,
   membershipTenantDisplay,
 } from '../../integrations/authSession';
-import { stripTenantPrefixFromPathname, withTenantQueryParam } from '../../modules/hrm/paths';
+import { tenantScopedPortalPath } from '../../modules/hrm/paths';
 
 const TopHeader: React.FC = () => {
   const navigate = useNavigate();
@@ -104,19 +104,12 @@ const TopHeader: React.FC = () => {
     setSwitchError(null);
     try {
       await selectMembership(tenant.tenantId);
-      const stripped = stripTenantPrefixFromPathname(location.pathname);
-      if (stripped === '/command-center' || stripped.startsWith('/command-center/')) {
-        navigate(
-          withTenantQueryParam(`${stripped}${location.search}`, tenant.tenantId) + location.hash,
-        );
+      const pathParts = location.pathname.split('/');
+      if (pathParts.length > 1 && pathParts[1]) {
+        pathParts[1] = tenant.tenantId;
+        navigate(pathParts.join('/') + location.search + location.hash);
       } else {
-        const pathParts = location.pathname.split('/');
-        if (pathParts.length > 1) {
-          pathParts[1] = tenant.tenantId;
-          navigate(pathParts.join('/') + location.search + location.hash);
-        } else {
-          navigate(`/${tenant.tenantId}/cockpit`);
-        }
+        navigate(`/${tenant.tenantId}/cockpit`);
       }
       setSelectedTenant(tenant);
       setIsTenantDropdownOpen(false);
@@ -140,7 +133,7 @@ const TopHeader: React.FC = () => {
       <header className="sticky top-0 z-40 flex h-14 w-full shrink-0 items-center justify-between border-b border-xevn-border bg-xevn-surface/80 xevn-safe-inline shadow-soft backdrop-blur-md">
         <div className="flex min-w-0 items-center gap-3">
           <Link
-            to={withTenantQueryParam('/command-center', selectedTenant.tenantId)}
+            to={tenantScopedPortalPath(selectedTenant.tenantId, '/command-center')}
             className="flex h-10 shrink-0 items-center gap-2.5 rounded-input pr-1 transition hover:opacity-90"
             data-testid="portal-brand-mark"
             aria-label="XeVN — về Command Center"

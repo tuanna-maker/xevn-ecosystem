@@ -33,7 +33,7 @@
  * must_keep: payroll_e2e_ready=false · hdsd-pay-sheet-tpl-* · U65
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Plus, Save, Trash2, LayoutTemplate } from 'lucide-react';
+import { Plus, Save, Trash2, LayoutTemplate, GripVertical } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterContext';
 import {
@@ -45,10 +45,15 @@ import {
   listSalaryComponents,
   putPaySheetTemplateLines,
   updatePaySheetTemplate,
+  listPaySystemData,
+  listAllEmployees,
+  listEffectivePayPositions,
   type HrmPayFormulaRecord,
   type HrmPaySheetTemplateRecord,
   type HrmSalaryComponentRow,
+  type HrmPaySystemDataRecord,
 } from '@/integrations/hrmApi';
+import { loadCompanyDepartments } from '@/lib/hrmDepartmentCatalog';
 import { toErrorMessage } from '@/lib/apiError';
 import {
   PAY_SHEET_TPL_APPLICABILITY,
@@ -77,6 +82,10 @@ import {
   SETTINGS_CATALOG_PAGE_SIZE,
 } from '@/lib/settingsCatalogPagination';
 import { SettingsCatalogScreenShell } from '@/components/settings/SettingsCatalogScreenShell';
+import { cn } from '@/lib/utils';
+import { Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
+import { HrmDragDropContext } from '@/components/contracts/HrmDragDropContext';
+import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
 import { SettingsCatalogPagination } from '@/components/settings/SettingsCatalogPagination';
 import { SettingsCatalogRowActions } from '@/components/settings/SettingsCatalogRowActions';
 import { SettingsDialogSelectContent } from '@/components/settings/SettingsDialogSelectContent';
@@ -116,6 +125,9 @@ type HeaderForm = {
   status: string;
   isDefault: boolean;
   applicabilityScope: string;
+  ouId?: string | null;
+  positionKey?: string | null;
+  employeeId?: string | null;
 };
 
 const emptyHeader = (): HeaderForm => ({
@@ -125,6 +137,9 @@ const emptyHeader = (): HeaderForm => ({
   status: 'draft',
   isDefault: false,
   applicabilityScope: 'company',
+  ouId: null,
+  positionKey: null,
+  employeeId: null,
 });
 
 function mapLinesToDrafts(
@@ -133,6 +148,8 @@ function mapLinesToDrafts(
     componentId: string;
     displayLabel?: string | null;
     sortOrder: number;
+    inputMethod?: string | null;
+    systemDataMappingId?: string | null;
     formulaOverrideDefinitionId?: string | null;
   }>,
 ): PaySheetLineDraft[] {
@@ -142,6 +159,8 @@ function mapLinesToDrafts(
     componentId: l.componentId,
     displayLabel: l.displayLabel ?? '',
     sortOrder: Number(l.sortOrder ?? i),
+    inputMethod: l.inputMethod ?? 'FORMULA',
+    systemDataMappingId: l.systemDataMappingId ?? '',
     formulaOverrideDefinitionId: l.formulaOverrideDefinitionId ?? '',
   }));
 }
@@ -154,6 +173,47 @@ export function PaySheetTemplateSettingsPanel() {
   const [items, setItems] = useState<HrmPaySheetTemplateRecord[]>([]);
   const [components, setComponents] = useState<HrmSalaryComponentRow[]>([]);
   const [formulas, setFormulas] = useState<HrmPayFormulaRecord[]>([]);
+  const [systemData, setSystemData] = useState<HrmPaySystemDataRecord[]>([]);
+  const [departments, setDepartments] = useState<any[]>([]);
+  const [positions, setPositions] = useState<any[]>([]);
+  const [employees, setEmployees] = useState<any[]>([]);
+
+  const departmentOptions = useMemo(() => {
+    return departments.map((d) => ({
+      value: d.id,
+      label: d.name || d.code || d.id,
+    }));
+  }, [departments]);
+
+  const positionOptions = useMemo(() => {
+    return positions.map((p) => ({
+      value: p.code,
+      label: p.label || p.code,
+    }));
+  }, [positions]);
+
+  const employeeOptions = useMemo(() => {
+    return employees.map((e) => ({
+      value: e.id,
+      label: `${e.full_name} (${e.employee_code})`,
+    }));
+  }, [employees]);
+
+  const systemDataOptions = useMemo(() => {
+    return systemData.map((s) => ({
+      value: s.id,
+      label: s.name || s.code || s.id,
+      code: s.code,
+    }));
+  }, [systemData]);
+
+  const componentOptions = useMemo(() => {
+    return components.map((c) => ({
+      value: c.id,
+      label: c.name || c.code || c.id,
+      code: c.code,
+    }));
+  }, [components]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -163,6 +223,27 @@ export function PaySheetTemplateSettingsPanel() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<HeaderForm>(emptyHeader);
   const [lineDrafts, setLineDrafts] = useState<PaySheetLineDraft[]>([createEmptyPaySheetLineDraft(0)]);
+
+  const [dndReady, setDndReady] = useState(false);
+
+  useEffect(() => {
+    if (!dialogOpen) {
+      setDndReady(false);
+      return;
+    }
+    let cancelled = false;
+    let innerRaf = 0;
+    const outerRaf = window.requestAnimationFrame(() => {
+      innerRaf = window.requestAnimationFrame(() => {
+        if (!cancelled) setDndReady(true);
+      });
+    });
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(outerRaf);
+      if (innerRaf) window.cancelAnimationFrame(innerRaf);
+    };
+  }, [dialogOpen]);
 
   const componentNameById = useMemo(() => {
     const m = new Map<string, string>();
@@ -175,12 +256,20 @@ export function PaySheetTemplateSettingsPanel() {
   const loadCatalogs = useCallback(async () => {
     if (!companyId) return;
     try {
-      const [compRes, formulaRes] = await Promise.all([
+      const [compRes, formulaRes, sysDataRes, deptRes, posRes, empRes] = await Promise.all([
         listSalaryComponents(companyId),
         listPayFormulas({ company_id: companyId, active_only: true }),
+        listPaySystemData(companyId),
+        loadCompanyDepartments(companyId).catch(() => ({ rows: [] })),
+        listEffectivePayPositions({ company_id: companyId }).catch(() => ({ data: [] })),
+        listAllEmployees({ company_id: companyId }).catch(() => ({ data: [] })),
       ]);
       setComponents(compRes.data ?? []);
       setFormulas(formulaRes.items ?? []);
+      setSystemData(sysDataRes || []);
+      setDepartments(deptRes.rows || []);
+      setPositions(posRes.data || []);
+      setEmployees(empRes.data || []);
     } catch (err) {
       // Catalog soft-fail — header list still works; picker may be empty.
       console.warn('[pay-sheet-tpl] catalog load', err);
@@ -254,6 +343,9 @@ export function PaySheetTemplateSettingsPanel() {
       status: row.status || 'draft',
       isDefault: Boolean(row.isDefault),
       applicabilityScope: row.applicabilityScope || 'company',
+      ouId: row.ouId || null,
+      positionKey: row.positionKey || null,
+      employeeId: row.employeeId || null,
     });
     if (!companyId) return;
     try {
@@ -300,6 +392,9 @@ export function PaySheetTemplateSettingsPanel() {
           status: form.status,
           isDefault: form.isDefault,
           applicabilityScope: form.applicabilityScope,
+          ouId: form.applicabilityScope === 'ou' ? form.ouId || null : null,
+          positionKey: form.applicabilityScope === 'position' ? form.positionKey || null : null,
+          employeeId: form.applicabilityScope === 'employee' ? form.employeeId || null : null,
         });
         toast({ title: 'Đã cập nhật mẫu', description: updated.name });
         setForm((f) => ({ ...f, code: updated.code, name: updated.name }));
@@ -312,6 +407,9 @@ export function PaySheetTemplateSettingsPanel() {
           status: form.status,
           isDefault: form.isDefault,
           applicabilityScope: form.applicabilityScope,
+          ouId: form.applicabilityScope === 'ou' ? form.ouId || undefined : undefined,
+          positionKey: form.applicabilityScope === 'position' ? form.positionKey || undefined : undefined,
+          employeeId: form.applicabilityScope === 'employee' ? form.employeeId || undefined : undefined,
         });
         toast({ title: 'Đã tạo mẫu', description: created.name });
         setEditingId(created.id);
@@ -394,6 +492,45 @@ export function PaySheetTemplateSettingsPanel() {
     });
   };
 
+  const addLineAfter = (key: string) => {
+    setLineDrafts((prev) => {
+      const idx = prev.findIndex((l) => l.key === key);
+      if (idx === -1) return prev;
+      const currentLine = prev[idx];
+      const currentOrder = Number(currentLine.sortOrder) || 0;
+      
+      const updatedPrev = prev.map((l) => {
+        const order = Number(l.sortOrder) || 0;
+        if (order > currentOrder) {
+          return { ...l, sortOrder: order + 1 };
+        }
+        return l;
+      });
+
+      const newLine = createEmptyPaySheetLineDraft(currentOrder + 1);
+      const next = [...updatedPrev];
+      next.splice(idx + 1, 0, newLine);
+      return next;
+    });
+  };
+
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+    const { source, destination } = result;
+    if (source.index === destination.index) return;
+    
+    setLineDrafts((prev) => {
+      const items = Array.from(prev);
+      const [reorderedItem] = items.splice(source.index, 1);
+      items.splice(destination.index, 0, reorderedItem);
+      
+      return items.map((item, idx) => ({
+        ...item,
+        sortOrder: idx,
+      }));
+    });
+  };
+
   const removeLine = (key: string) => {
     setLineDrafts((prev) => {
       const next = prev.filter((l) => l.key !== key);
@@ -436,12 +573,10 @@ export function PaySheetTemplateSettingsPanel() {
   );
 
   const editorBlock = (
-    <>
-      <div
-        className="grid grid-cols-12 gap-4 rounded-lg border border-xevn-border bg-slate-50/60 p-4"
-        data-testid="pay-sheet-tpl-editor"
-      >
-        <div className="col-span-12 space-y-2 sm:col-span-4">
+    <div className="flex h-[calc(100vh-140px)] gap-6" data-testid="pay-sheet-tpl-editor">
+      {/* Cột trái: Thông tin cơ bản (Không scroll) */}
+      <div className="w-[350px] flex-shrink-0 flex flex-col space-y-4 rounded-lg border border-xevn-border bg-slate-50/60 p-4">
+        <div className="space-y-2">
           <Label htmlFor="pay-sheet-tpl-code">Mã mẫu</Label>
           <Input
             id="pay-sheet-tpl-code"
@@ -452,7 +587,7 @@ export function PaySheetTemplateSettingsPanel() {
             disabled={Boolean(editingId)}
           />
         </div>
-        <div className="col-span-12 space-y-2 sm:col-span-4">
+        <div className="space-y-2">
           <Label htmlFor="pay-sheet-tpl-name">Tên mẫu</Label>
           <Input
             id="pay-sheet-tpl-name"
@@ -462,7 +597,7 @@ export function PaySheetTemplateSettingsPanel() {
             placeholder="Mẫu bảng lương chuẩn"
           />
         </div>
-        <div className="col-span-12 space-y-2 sm:col-span-4">
+        <div className="space-y-2">
           <Label>Trạng thái</Label>
           <Select value={form.status} onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}>
             <SelectTrigger data-testid="hdsd-pay-sheet-tpl-status" className="h-9">
@@ -477,11 +612,17 @@ export function PaySheetTemplateSettingsPanel() {
             </SettingsDialogSelectContent>
           </Select>
         </div>
-        <div className="col-span-12 space-y-2 sm:col-span-4">
+        <div className="space-y-2">
           <Label>Phạm vi áp dụng</Label>
           <Select
             value={form.applicabilityScope}
-            onValueChange={(v) => setForm((f) => ({ ...f, applicabilityScope: v }))}
+            onValueChange={(v) => setForm((f) => ({
+              ...f,
+              applicabilityScope: v,
+              ouId: null,
+              positionKey: null,
+              employeeId: null,
+            }))}
           >
             <SelectTrigger data-testid="hdsd-pay-sheet-tpl-scope" className="h-9">
               <SelectValue />
@@ -495,7 +636,49 @@ export function PaySheetTemplateSettingsPanel() {
             </SettingsDialogSelectContent>
           </Select>
         </div>
-        <div className="col-span-12 space-y-2 sm:col-span-8">
+
+        {form.applicabilityScope === 'ou' && (
+          <div className="space-y-2" data-testid="hdsd-pay-sheet-tpl-scope-ou-container">
+            <Label>Đơn vị / Phòng ban cụ thể</Label>
+            <CatalogSearchPicker
+              options={departmentOptions}
+              value={form.ouId || null}
+              onValueChange={(v) => setForm((f) => ({ ...f, ouId: v }))}
+              placeholder="Chọn đơn vị / phòng ban..."
+              searchPlaceholder="Tìm đơn vị..."
+              triggerClassName="h-9 w-full"
+            />
+          </div>
+        )}
+
+        {form.applicabilityScope === 'position' && (
+          <div className="space-y-2" data-testid="hdsd-pay-sheet-tpl-scope-position-container">
+            <Label>Chức danh cụ thể</Label>
+            <CatalogSearchPicker
+              options={positionOptions}
+              value={form.positionKey || null}
+              onValueChange={(v) => setForm((f) => ({ ...f, positionKey: v }))}
+              placeholder="Chọn chức danh..."
+              searchPlaceholder="Tìm chức danh..."
+              triggerClassName="h-9 w-full"
+            />
+          </div>
+        )}
+
+        {form.applicabilityScope === 'employee' && (
+          <div className="space-y-2" data-testid="hdsd-pay-sheet-tpl-scope-employee-container">
+            <Label>Nhân viên cụ thể</Label>
+            <CatalogSearchPicker
+              options={employeeOptions}
+              value={form.employeeId || null}
+              onValueChange={(v) => setForm((f) => ({ ...f, employeeId: v }))}
+              placeholder="Chọn nhân viên..."
+              searchPlaceholder="Tìm nhân viên..."
+              triggerClassName="h-9 w-full"
+            />
+          </div>
+        )}
+        <div className="space-y-2">
           <Label htmlFor="pay-sheet-tpl-desc">Mô tả</Label>
           <Textarea
             id="pay-sheet-tpl-desc"
@@ -505,7 +688,7 @@ export function PaySheetTemplateSettingsPanel() {
             rows={2}
           />
         </div>
-        <div className="col-span-12 flex flex-wrap items-center gap-4">
+        <div className="mt-auto pt-4 flex flex-col gap-4">
           <div className="flex items-center gap-2">
             <Switch
               checked={form.isDefault}
@@ -516,6 +699,7 @@ export function PaySheetTemplateSettingsPanel() {
           </div>
           <Button
             type="button"
+            className="w-full"
             onClick={() => void onSaveHeader()}
             disabled={saving}
             data-testid="hdsd-pay-sheet-tpl-save-header"
@@ -526,8 +710,9 @@ export function PaySheetTemplateSettingsPanel() {
         </div>
       </div>
 
-      <div className="space-y-3" data-testid="pay-sheet-tpl-lines-editor">
-        <div className="flex flex-wrap items-center justify-between gap-2">
+      {/* Cột phải: Danh sách cột (Scrollable) */}
+      <div className="flex-1 overflow-y-auto pr-2 space-y-4" data-testid="pay-sheet-tpl-lines-editor">
+        <div className="flex flex-wrap items-center justify-between gap-2 bg-white sticky top-0 py-2 z-10 border-b">
           <h3 className="text-sm font-semibold text-xevn-text">Cột mẫu (GĐ1 form)</h3>
           <div className="flex gap-2">
             <Button
@@ -562,120 +747,155 @@ export function PaySheetTemplateSettingsPanel() {
             </Button>
           </div>
         </div>
-        <p className="text-xs text-xevn-textMuted">
-          Override công thức: chọn định nghĩa đã phát hành (OV-C). Không kéo-thả canvas công thức
-          (GĐ2).
-        </p>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-16">TT</TableHead>
-              <TableHead>Thành phần</TableHead>
-              <TableHead>Nhãn hiển thị</TableHead>
-              <TableHead>Override công thức (FK)</TableHead>
-              <TableHead className="w-20" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {lineDrafts.map((line) => (
-              <TableRow key={line.key} data-testid={`pay-sheet-tpl-line-${line.key}`}>
-                <TableCell>
-                  <Input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    className="h-9"
-                    value={line.sortOrder}
-                    onChange={(e) =>
-                      updateLine(line.key, { sortOrder: Number(e.target.value.replace(/\D/g, '')) || 0 })
-                    }
-                    data-testid={`hdsd-pay-sheet-tpl-line-sort-${line.key}`}
-                  />
-                </TableCell>
-                <TableCell>
-                  <Select
-                    value={line.componentId || undefined}
-                    onValueChange={(v) => updateLine(line.key, { componentId: v })}
+
+        {dndReady ? (
+          <HrmDragDropContext onDragEnd={onDragEnd}>
+            <div className="border rounded-md divide-y overflow-hidden">
+              <div className="grid grid-cols-[140px_1fr_140px_140px_180px_48px] gap-2 bg-muted/50 px-3 py-2 text-xs font-medium text-muted-foreground border-b items-center">
+                <div>TT</div>
+                <div>Nhãn hiển thị (Thành phần)</div>
+                <div>Mã cột</div>
+                <div>Cách nhập</div>
+                <div>Tham chiếu</div>
+                <div className="text-center" />
+              </div>
+              <Droppable droppableId="template-lines">
+                {(provided) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className="divide-y min-h-[100px] bg-white"
                   >
-                    <SelectTrigger
-                      className="h-9"
-                      data-testid={`hdsd-pay-sheet-tpl-line-component-${line.key}`}
-                    >
-                      <SelectValue placeholder="Chọn thành phần" />
-                    </SelectTrigger>
-                    <SettingsDialogSelectContent>
-                      {components.length === 0 ? (
-                        <div
-                          className="max-w-[280px] p-2 text-center text-xs text-xevn-textSecondary"
-                          data-testid="hdsd-pay-sheet-tpl-nest-empty"
-                        >
-                          Chưa có thành phần lương. Tạo tại Payroll → Thành phần lương trước.
-                        </div>
-                      ) : (
-                        components.map((c) => (
-                          <SelectItem key={c.id} value={c.id}>
-                            {c.name} ({c.code})
-                          </SelectItem>
-                        ))
-                      )}
-                    </SettingsDialogSelectContent>
-                  </Select>
-                </TableCell>
-                <TableCell>
-                  <Input
-                    className="h-9"
-                    value={line.displayLabel}
-                    placeholder={
-                      line.componentId
-                        ? componentNameById.get(line.componentId) || 'Nhãn cột'
-                        : 'Nhãn cột (tuỳ chọn)'
-                    }
-                    onChange={(e) => updateLine(line.key, { displayLabel: e.target.value })}
-                    data-testid={`hdsd-pay-sheet-tpl-line-label-${line.key}`}
-                  />
-                </TableCell>
-                <TableCell>
-                  <Select
-                    value={line.formulaOverrideDefinitionId || '__none__'}
-                    onValueChange={(v) =>
-                      updateLine(line.key, {
-                        formulaOverrideDefinitionId: v === '__none__' ? '' : v,
-                      })
-                    }
-                  >
-                    <SelectTrigger
-                      className="h-9"
-                      data-testid={`hdsd-pay-sheet-tpl-line-ovc-${line.key}`}
-                    >
-                      <SelectValue placeholder="Không override" />
-                    </SelectTrigger>
-                    <SettingsDialogSelectContent>
-                      <SelectItem value="__none__">Không override</SelectItem>
-                      {formulas.map((f) => (
-                        <SelectItem key={f.id} value={f.id}>
-                          {f.label?.trim() || f.code} · v{f.version}
-                        </SelectItem>
-                      ))}
-                    </SettingsDialogSelectContent>
-                  </Select>
-                </TableCell>
-                <TableCell>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeLine(line.key)}
-                    data-testid={`hdsd-pay-sheet-tpl-line-remove-${line.key}`}
-                    aria-label="Xóa cột nháp"
-                  >
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+                    {lineDrafts.map((line, index) => (
+                      <Draggable key={line.key} draggableId={line.key} index={index}>
+                        {(draggableProvided, snapshot) => (
+                          <div
+                            ref={draggableProvided.innerRef}
+                            {...draggableProvided.draggableProps}
+                            data-testid={`pay-sheet-tpl-line-${line.key}`}
+                            className={cn(
+                              "grid grid-cols-[140px_1fr_140px_140px_180px_48px] gap-2 px-3 py-2 items-center bg-white transition-colors",
+                              snapshot.isDragging && "shadow-lg bg-accent/40 rounded border border-primary/20 z-50"
+                            )}
+                          >
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <div
+                                {...draggableProvided.dragHandleProps}
+                                className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded shrink-0 text-muted-foreground hover:text-foreground"
+                              >
+                                <GripVertical className="h-4 w-4" />
+                              </div>
+                              <Input
+                                type="text"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
+                                className="h-9 w-12 text-center shrink-0"
+                                value={line.sortOrder}
+                                onChange={(e) =>
+                                  updateLine(line.key, { sortOrder: Number(e.target.value.replace(/\D/g, '')) || 0 })
+                                }
+                                data-testid={`hdsd-pay-sheet-tpl-line-sort-${line.key}`}
+                              />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 rounded-full hover:bg-muted shrink-0 text-primary"
+                                onClick={() => addLineAfter(line.key)}
+                                title="Thêm cột phía dưới"
+                              >
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            <div>
+                              <CatalogSearchPicker
+                                options={componentOptions}
+                                value={line.componentId || null}
+                                onValueChange={(v) => {
+                                  const comp = components.find((c) => c.id === v);
+                                  updateLine(line.key, {
+                                    componentId: v,
+                                    displayLabel: comp ? comp.name : '',
+                                  });
+                                }}
+                                placeholder="Chọn nhãn hiển thị"
+                                searchPlaceholder="Tìm thành phần..."
+                                triggerClassName="h-9 w-full min-w-[180px]"
+                                data-testid={`hdsd-pay-sheet-tpl-line-component-${line.key}`}
+                              />
+                            </div>
+                            <div>
+                              <Input
+                                className="h-9 bg-muted w-full min-w-[100px]"
+                                value={components.find((c) => c.id === line.componentId)?.code || ''}
+                                readOnly
+                                placeholder="Mã tự động"
+                                data-testid={`hdsd-pay-sheet-tpl-line-code-${line.key}`}
+                              />
+                            </div>
+                            <div>
+                              <Select
+                                value={line.inputMethod || 'FORMULA'}
+                                onValueChange={(v) =>
+                                  updateLine(line.key, { inputMethod: v })
+                                }
+                              >
+                                <SelectTrigger className="h-9 w-full min-w-[120px]">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SettingsDialogSelectContent>
+                                  <SelectItem value="MANUAL">Nhập tay</SelectItem>
+                                  <SelectItem value="FORMULA">Công thức</SelectItem>
+                                  <SelectItem value="SYSTEM">Dữ liệu hệ thống</SelectItem>
+                                </SettingsDialogSelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              {line.inputMethod === 'MANUAL' ? (
+                                <span className="text-xs text-muted-foreground px-1">Nhập liệu thủ công</span>
+                              ) : line.inputMethod === 'SYSTEM' ? (
+                                <CatalogSearchPicker
+                                  options={systemDataOptions}
+                                  value={line.systemDataMappingId || null}
+                                  onValueChange={(v) =>
+                                    updateLine(line.key, {
+                                      systemDataMappingId: v,
+                                    })
+                                  }
+                                  placeholder="-- Chọn dữ liệu --"
+                                  searchPlaceholder="Tìm dữ liệu hệ thống..."
+                                  triggerClassName="h-9 w-full min-w-[140px]"
+                                />
+                              ) : (
+                                <span className="text-xs text-muted-foreground px-1">Công thức gốc</span>
+                              )}
+                            </div>
+                            <div className="text-center">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => removeLine(line.key)}
+                                data-testid={`hdsd-pay-sheet-tpl-line-remove-${line.key}`}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+          </HrmDragDropContext>
+        ) : (
+          <div className="text-center text-xs text-muted-foreground py-16">
+            Đang khởi tạo danh sách kéo thả...
+          </div>
+        )}
 
       {editingId && lineDrafts.some((l) => l.componentId) ? (
         <div
@@ -695,21 +915,12 @@ export function PaySheetTemplateSettingsPanel() {
                     componentName: componentNameById.get(l.componentId),
                   })}
                 </span>
-                <span className="text-muted-foreground">
-                  {formatPaySheetFormulaOverrideLabel({
-                    formulaOverrideDefinitionId: l.formulaOverrideDefinitionId || null,
-                    formulaOverrideCode: formulas.find((f) => f.id === l.formulaOverrideDefinitionId)
-                      ?.code,
-                    formulaOverrideVersion: formulas.find(
-                      (f) => f.id === l.formulaOverrideDefinitionId,
-                    )?.version,
-                  })}
-                </span>
               </div>
             ))}
         </div>
       ) : null}
-    </>
+      </div>
+    </div>
   );
 
   return (
@@ -797,18 +1008,13 @@ export function PaySheetTemplateSettingsPanel() {
 
       <Dialog open={dialogOpen} onOpenChange={(open) => (open ? setDialogOpen(true) : closeDialog())}>
         <DialogContent
-          className="max-h-[min(92vh,800px)] max-w-4xl overflow-y-auto"
+          className="max-h-[98vh] max-w-[98vw] flex flex-col gap-0"
           data-testid="pay-sheet-tpl-settings-dialog"
         >
-          <DialogHeader>
+          <DialogHeader className="shrink-0 mb-4">
             <DialogTitle>{editingId ? 'Sửa mẫu bảng lương' : 'Thêm mẫu bảng lương'}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-2">{editorBlock}</div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={closeDialog}>
-              Đóng
-            </Button>
-          </DialogFooter>
+          <div className="flex-1 overflow-hidden">{editorBlock}</div>
         </DialogContent>
       </Dialog>
     </div>

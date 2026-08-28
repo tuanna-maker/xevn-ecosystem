@@ -31,7 +31,6 @@
  */
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { isCommandCenterHrmPath } from '../../modules/hrm/commandCenterUrl';
 import { stripTenantPrefixFromPathname } from '../../modules/hrm/paths';
 import TopHeader from './TopHeader';
 
@@ -47,8 +46,7 @@ export function isCommandCenterShellPath(pathname: string): boolean {
  */
 const ExecutiveDashboardLayout: React.FC = () => {
   const { pathname } = useLocation();
-  const showMembershipChrome =
-    isCommandCenterShellPath(pathname) && !isCommandCenterHrmPath(pathname);
+  const showMembershipChrome = isCommandCenterShellPath(pathname);
 
   return (
     <div className="flex h-dvh w-full flex-col overflow-hidden bg-xevn-background text-xevn-text">

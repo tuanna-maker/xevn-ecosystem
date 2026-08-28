@@ -5,673 +5,402 @@
  * What: Precision Motion P04 insurance policy — dialog wide + title ≥20; ViMoneyInput vi-VN kept
  * Why: ADR §16 · FE-PAY P0
  * must_keep: useInsurancePolicyParticipants API; ViMoneyInput parse; no insurance rate invent
+ * 
+ * @CODE-MEMORY-CHANGE 2026-08-26
+ * Trace: XEVN_SRS_HRM_PAYROLL_POLICY_ENGINE_v1.md
+ * change_mode: UPGRADE
+ * What: Thay thế luồng quản lý Participants thủ công bằng Rule Engine tự động quét theo Điều kiện.
+ * Why: Đồng bộ cấu trúc XEVN_POLICY_CATALOG.md với Phụ cấp và Thuế. 
  */
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, ChevronDown, ChevronLeft, ChevronRight, Pencil, Trash2, Settings, ArrowUp, ArrowDown, Loader2 } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { CheckCircle2, FileText, Plus, Settings2, Loader2, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ViDateField } from '@/components/ui/ViDateField';
-import {
-  ViMoneyInput,
-  amountStringToNumber,
-  numberToAmountString,
-} from '@/components/ui/ViMoneyInput';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
-import { useInsurancePolicyParticipants, InsurancePolicyFormData } from '@/hooks/useInsurancePolicyParticipants';
-import { useEmployees } from '@/hooks/useEmployees';
-import { format } from 'date-fns';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ViMoneyInput } from '@/components/ui/ViMoneyInput';
+import { PolicyAPI, SettingsAPI } from '@/lib/api/hrm-policy-api';
+import { RuleConditionBuilder } from './RuleConditionBuilder';
+import { toast } from 'sonner';
 
-const formatCurrency = (value: number) =>
-  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
-
-// getInsuranceTypeName moved inside component to use t()
-
-// getStatusBadge moved inside component
+const useMasterDataFields = () => {
+  return useQuery({
+    queryKey: ['master-data-fields'],
+    queryFn: () => SettingsAPI.getMasterDataFields()
+  });
+};
 
 export function InsurancePolicyTab() {
   const { t } = useTranslation();
-  const { participants, isLoading, createManyParticipants, deleteParticipant, toggleStatus, isCreating } = useInsurancePolicyParticipants();
-  const { employees } = useEmployees();
-
-  const getInsuranceTypeName = (type: string) => {
-    switch (type) {
-      case 'social': return t('insurance.social', 'BHXH');
-      case 'health': return t('insurance.health', 'BHYT');
-      case 'unemployment': return t('insurance.unemployment', 'BHTN');
-      case 'all': return t('insurance.all', 'Full');
-      default: return type;
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <Badge className="bg-primary text-primary-foreground">{t('insurance.participating', 'Active')}</Badge>;
-      case 'inactive':
-        return <Badge variant="secondary" className="bg-muted text-muted-foreground">{t('insurance.notParticipating', 'Inactive')}</Badge>;
-      case 'expired':
-        return <Badge variant="destructive">{t('insurance.expired', 'Expired')}</Badge>;
-      default:
-        return <Badge variant="secondary">{status}</Badge>;
-    }
-  };
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<'participants' | 'pending' | 'settings'>('participants');
-  const [showDateFilter, setShowDateFilter] = useState(true);
-  const [dateFilter, setDateFilter] = useState('');
-  const [sortOrder, setSortOrder] = useState<'newest' | 'effective-date' | 'employee-id-asc' | 'employee-id-desc'>('newest');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive' | 'expired'>('all');
-  const [insuranceTypeFilter, setInsuranceTypeFilter] = useState<'all' | 'social' | 'health' | 'unemployment'>('all');
+  const queryClient = useQueryClient();
   
-  // Add participant dialog state
-  const [showAddDialog, setShowAddDialog] = useState(false);
-  const [addSearch, setAddSearch] = useState('');
-  const [addDepartmentFilter, setAddDepartmentFilter] = useState('all');
-  const [selectedToAdd, setSelectedToAdd] = useState<string[]>([]);
-  const [addInsuranceType, setAddInsuranceType] = useState<'social' | 'health' | 'unemployment' | 'all'>('all');
-  const [addEffectiveDate, setAddEffectiveDate] = useState('');
-  const [addBaseSalary, setAddBaseSalary] = useState('');
-
-  // Get unique departments
-  const departments = useMemo(() => {
-    const depts = new Set(employees.map(e => e.department).filter(Boolean));
-    return Array.from(depts) as string[];
-  }, [employees]);
-
-  // Filter participants
-  const filteredParticipants = useMemo(() => {
-    let result = [...participants];
-
-    // Search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(p => 
-        p.employee_name.toLowerCase().includes(query) ||
-        p.employee_code.toLowerCase().includes(query)
-      );
+  // 1. Fetch Insurance Policies from Database
+  const { data: dbPolicies = [], isLoading: isLoadingPolicies } = useQuery({
+    queryKey: ['pay-policies', 'INSURANCE'],
+    queryFn: async () => {
+      return await PolicyAPI.list({ pay_group_code: 'INSURANCE' });
     }
+  });
 
-    // Status filter
-    if (statusFilter !== 'all') {
-      result = result.filter(p => p.status === statusFilter);
-    }
+  const { data: fieldOptions = [] } = useMasterDataFields();
 
-    // Insurance type filter
-    if (insuranceTypeFilter !== 'all') {
-      result = result.filter(p => p.insurance_type === insuranceTypeFilter || p.insurance_type === 'all');
-    }
+  // 2. Local State for drafting/editing
+  const [policies, setPolicies] = useState<any[]>([]);
+  const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-    // Sort
-    switch (sortOrder) {
-      case 'newest':
-        result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-        break;
-      case 'effective-date':
-        result.sort((a, b) => {
-          const dateA = a.effective_date ? new Date(a.effective_date).getTime() : 0;
-          const dateB = b.effective_date ? new Date(b.effective_date).getTime() : 0;
-          return dateB - dateA;
-        });
-        break;
-      case 'employee-id-asc':
-        result.sort((a, b) => a.employee_code.localeCompare(b.employee_code));
-        break;
-      case 'employee-id-desc':
-        result.sort((a, b) => b.employee_code.localeCompare(a.employee_code));
-        break;
-    }
+  const dbPoliciesStr = JSON.stringify(dbPolicies);
 
-    return result;
-  }, [participants, searchQuery, statusFilter, insuranceTypeFilter, sortOrder]);
-
-  // Available employees to add (not already in participants)
-  const availableEmployees = useMemo(() => {
-    const existingCodes = new Set(participants.map(p => p.employee_code));
-    return employees.filter(e => !existingCodes.has(e.employee_code));
-  }, [employees, participants]);
-
-  // Filtered employees for add dialog
-  const filteredEmployeesToAdd = useMemo(() => {
-    return availableEmployees.filter(emp => {
-      const matchesSearch = emp.full_name.toLowerCase().includes(addSearch.toLowerCase()) ||
-        emp.employee_code.toLowerCase().includes(addSearch.toLowerCase());
-      const matchesDepartment = addDepartmentFilter === 'all' || emp.department === addDepartmentFilter;
-      return matchesSearch && matchesDepartment;
-    });
-  }, [availableEmployees, addSearch, addDepartmentFilter]);
-
-  const toggleEmployeeSelection = (id: string) => {
-    setSelectedEmployees(prev => 
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    );
-  };
-
-  const toggleSelectAll = () => {
-    if (selectedEmployees.length === filteredParticipants.length) {
-      setSelectedEmployees([]);
+  // Sync DB to Local State when loaded
+  useEffect(() => {
+    if (dbPolicies.length > 0) {
+      // Map DB structure to UI structure
+      const mapped = dbPolicies.map(p => {
+        const comp = p.components?.[0];
+        const params = comp?.params || {};
+        return {
+          id: p.id,
+          code: p.name.toUpperCase().replace(/\s/g, '_'),
+          name: p.name,
+          policy_type: comp?.component_type === 'insurance_statutory' ? 'statutory' : 'custom',
+          status: p.status,
+          effective_from: p.effective_from,
+          params: params.calculation_rules || { emp_rate: 0, er_rate: 0, cap_amount: 0 },
+          target_conditions: params.target_conditions || []
+        };
+      });
+      setPolicies(mapped);
     } else {
-      setSelectedEmployees(filteredParticipants.map(p => p.id));
+      setPolicies(prev => prev.length === 0 ? prev : []);
+      if (selectedPolicyId && !selectedPolicyId.includes('ins_new_')) {
+        setSelectedPolicyId(null);
+      }
     }
-  };
+  }, [dbPoliciesStr]);
 
-  const handleConfirmAdd = async () => {
-    if (selectedToAdd.length === 0) return;
+  const selectedPolicy = policies.find(p => p.id === selectedPolicyId);
 
-    const baseSalaryValue = parseFloat(addBaseSalary) || 0;
+  // --- Mutations ---
+  const savePolicyMutation = useMutation({
+    mutationFn: async (policyToSave: any) => {
+      const isNew = policyToSave.id.startsWith('ins_new_');
+      
+      let policyId = policyToSave.id;
+      if (isNew) {
+        const res: any = await PolicyAPI.create({
+          name: policyToSave.name,
+          pay_group_code: 'INSURANCE',
+          effective_from: policyToSave.effective_from,
+          status: 'DRAFT'
+        });
+        policyId = res.id || res.policy_id;
+      } else {
+        await PolicyAPI.update(policyId, {
+          name: policyToSave.name,
+          effective_from: policyToSave.effective_from,
+          description: `Bảo hiểm: ${policyToSave.name}`
+        });
+      }
 
-    const itemsToAdd: InsurancePolicyFormData[] = selectedToAdd.map(empId => {
-      const emp = employees.find(e => e.id === empId);
-      if (!emp) throw new Error('Employee not found');
-
-      return {
-        employee_id: emp.id,
-        employee_code: emp.employee_code,
-        employee_name: emp.full_name,
-        position: emp.position || undefined,
-        department: emp.department || undefined,
-        insurance_type: addInsuranceType,
-        base_salary: baseSalaryValue,
-        effective_date: addEffectiveDate || undefined,
-        status: 'active',
-        social_insurance_rate: addInsuranceType === 'all' || addInsuranceType === 'social' ? 8 : undefined,
-        health_insurance_rate: addInsuranceType === 'all' || addInsuranceType === 'health' ? 1.5 : undefined,
-        unemployment_insurance_rate: addInsuranceType === 'all' || addInsuranceType === 'unemployment' ? 1 : undefined,
-      };
-    });
-
-    await createManyParticipants(itemsToAdd);
-    setShowAddDialog(false);
-    setSelectedToAdd([]);
-    setAddSearch('');
-    setAddDepartmentFilter('all');
-    setAddInsuranceType('all');
-    setAddEffectiveDate('');
-    setAddBaseSalary('');
-  };
-
-  const handleDelete = async (id: string) => {
-    if (confirm('Bạn có chắc chắn muốn xóa người tham gia này?')) {
-      await deleteParticipant(id);
+      await PolicyAPI.addComponent(policyId, {
+        component_type: policyToSave.policy_type === 'statutory' ? 'insurance_statutory' : 'insurance_custom',
+        name: 'Luật tính Bảo hiểm',
+        sort_order: 1,
+        is_deduction: true,
+        input_source: 'system',
+        params: {
+          calculation_rules: policyToSave.params,
+          target_conditions: policyToSave.target_conditions
+        }
+      });
+      
+      if (isNew && policyToSave.status === 'ACTIVE') {
+         await PolicyAPI.toggleStatus(policyId);
+      }
+      
+      return policyId;
+    },
+    onSuccess: () => {
+      toast.success('Đã lưu Cấu hình Bảo hiểm vào Database thành công!');
+      queryClient.invalidateQueries({ queryKey: ['pay-policies', 'INSURANCE'] });
+      setIsSheetOpen(false);
+      setSelectedPolicyId(null);
+    },
+    onError: (err: any) => {
+      toast.error(`Lỗi khi lưu DB: ${err.message}`);
     }
+  });
+
+  const toggleStatusMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await PolicyAPI.toggleStatus(id);
+    },
+    onSuccess: () => {
+      toast.success('Đã cập nhật trạng thái chính sách!');
+      queryClient.invalidateQueries({ queryKey: ['pay-policies', 'INSURANCE'] });
+    },
+    onError: (err: any) => {
+      toast.error(`Lỗi khi cập nhật trạng thái: ${err.message}`);
+    }
+  });
+
+  const handleSaveToDB = () => {
+    if (!selectedPolicy) return;
+    savePolicyMutation.mutate(selectedPolicy);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex h-[calc(100vh-120px)] p-6">
-        <div className="flex-1 space-y-4">
-          <Skeleton className="h-10 w-64" />
-          <Skeleton className="h-96 w-full" />
-        </div>
-      </div>
-    );
+  const handleAddNewPolicy = () => {
+    const newId = `ins_new_${Date.now()}`;
+    const newPolicy = {
+      id: newId,
+      code: `INS_NEW_${Math.floor(Math.random() * 1000)}`,
+      name: 'Chính sách Bảo hiểm mới',
+      policy_type: 'statutory',
+      status: 'ACTIVE',
+      effective_from: new Date().toISOString().split('T')[0],
+      params: {
+        emp_rate: 8,
+        er_rate: 17.5,
+        cap_amount: 0
+      },
+      target_conditions: []
+    };
+    setPolicies([...policies, newPolicy]);
+    setSelectedPolicyId(newId);
+    setIsSheetOpen(true);
+  };
+
+  const handleUpdatePolicyField = (field: string, value: any) => {
+    if (!selectedPolicyId) return;
+    setPolicies(policies.map(p => {
+      if (p.id === selectedPolicyId) {
+        if (field === 'policy_type') {
+          // Reset default rates on type change
+          let er = 0, em = 0;
+          if (value === 'statutory') { er = 8; em = 17.5; }
+          return { ...p, [field]: value, params: { ...p.params, emp_rate: er, er_rate: em } };
+        }
+        return { ...p, [field]: value };
+      }
+      return p;
+    }));
+  };
+
+  const handleUpdateParams = (field: string, value: any) => {
+    if (!selectedPolicyId) return;
+    setPolicies(policies.map(p => p.id === selectedPolicyId ? { ...p, params: { ...p.params, [field]: value } } : p));
+  };
+
+  if (isLoadingPolicies) {
+    return <div className="flex h-full items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-blue-500" /></div>;
   }
 
   return (
-    <div className="flex h-[calc(100vh-120px)]">
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="p-6 border-b">
-          <div className="flex items-center justify-between">
-            <h1 className="text-[20px] font-bold font-display text-xevn-text" data-testid="pay-insurance-policy-precision">
-              Chính sách bảo hiểm
-            </h1>
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder="Tìm kiếm người tham gia"
-                  className="pl-10 w-64"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button className="bg-primary gap-2">
-                    Thêm người tham gia
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-popover border shadow-lg z-50">
-                  <DropdownMenuItem onClick={() => setShowAddDialog(true)}>
-                    Thêm từ danh sách nhân viên
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    Nhập từ Excel
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-
-          {/* Tabs */}
-          <div className="flex items-center gap-6 mt-4 border-b -mx-6 px-6">
-            <button
-              className={cn(
-                "pb-3 text-sm font-medium border-b-2 transition-colors",
-                activeTab === 'participants' 
-                  ? "border-primary text-primary" 
-                  : "border-transparent text-muted-foreground hover:text-foreground"
-              )}
-              onClick={() => setActiveTab('participants')}
-            >
-              NGƯỜI THAM GIA
-            </button>
-            <button
-              className={cn(
-                "pb-3 text-sm font-medium border-b-2 transition-colors",
-                activeTab === 'pending' 
-                  ? "border-primary text-primary" 
-                  : "border-transparent text-muted-foreground hover:text-foreground"
-              )}
-              onClick={() => setActiveTab('pending')}
-            >
-              CHỜ XỬ LÝ
-            </button>
-            <button
-              className={cn(
-                "pb-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-1",
-                activeTab === 'settings' 
-                  ? "border-primary text-primary" 
-                  : "border-transparent text-muted-foreground hover:text-foreground"
-              )}
-              onClick={() => setActiveTab('settings')}
-            >
-              <Settings className="w-4 h-4" />
-              CÀI ĐẶT
-            </button>
-          </div>
+    <div className="flex h-full flex-col bg-slate-50/50 p-6 space-x-4">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-[20px] font-bold font-display text-xevn-text">
+            Insurance Rules Engine
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">Quản lý đối tượng đóng Bảo hiểm hoàn toàn tự động bằng Điều kiện</p>
         </div>
-
-        {/* Table */}
-        {activeTab === 'participants' && (
-          <div className="flex-1 overflow-auto">
-            <table className="w-full">
-              <thead className="bg-muted/50 sticky top-0">
-                <tr>
-                  <th className="w-10 p-3 text-left">
-                    <Checkbox
-                      checked={selectedEmployees.length === filteredParticipants.length && filteredParticipants.length > 0}
-                      onCheckedChange={toggleSelectAll}
-                    />
-                  </th>
-                  <th className="w-12 p-3 text-center text-xs font-medium text-muted-foreground"></th>
-                  <th className="p-3 text-left text-xs font-medium text-muted-foreground">NHÂN SỰ</th>
-                  <th className="p-3 text-left text-xs font-medium text-muted-foreground">LOẠI BẢO HIỂM</th>
-                  <th className="p-3 text-left text-xs font-medium text-muted-foreground">SỐ BẢO HIỂM</th>
-                  <th className="p-3 text-right text-xs font-medium text-muted-foreground">MỨC ĐÓNG</th>
-                  <th className="p-3 text-center text-xs font-medium text-muted-foreground">TRẠNG THÁI</th>
-                  <th className="p-3 text-left text-xs font-medium text-muted-foreground">NGƯỜI TẠO</th>
-                  <th className="p-3 text-center text-xs font-medium text-muted-foreground w-24"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredParticipants.length === 0 ? (
-                  <tr>
-                    <td colSpan={9} className="p-8 text-center text-muted-foreground">
-                      Chưa có người tham gia bảo hiểm
-                    </td>
-                  </tr>
-                ) : (
-                  filteredParticipants.map((participant, index) => (
-                    <tr key={participant.id} className="border-b hover:bg-muted/30">
-                      <td className="p-3">
-                        <Checkbox
-                          checked={selectedEmployees.includes(participant.id)}
-                          onCheckedChange={() => toggleEmployeeSelection(participant.id)}
-                        />
-                      </td>
-                      <td className="p-3 text-center text-muted-foreground">
-                        {String(index + 1).padStart(2, '0')}
-                      </td>
-                      <td className="p-3">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-10 w-10">
-                            <AvatarFallback className="bg-muted text-muted-foreground">
-                              {participant.employee_name.split(' ').pop()?.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium">{participant.employee_name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {participant.employee_code} • {participant.position || 'N/A'}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="p-3">
-                        <div>
-                          <p className="text-sm font-medium">{getInsuranceTypeName(participant.insurance_type)}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {participant.effective_date ? `${t('insurance.from', 'From')} ${format(new Date(participant.effective_date), 'dd/MM/yyyy')}` : t('insurance.notSet', 'Not set')}
-                          </p>
-                        </div>
-                      </td>
-                      <td className="p-3">
-                        <div className="space-y-1">
-                          {participant.social_insurance_number && (
-                            <p className="text-xs"><span className="text-muted-foreground">BHXH:</span> {participant.social_insurance_number}</p>
-                          )}
-                          {participant.health_insurance_number && (
-                            <p className="text-xs"><span className="text-muted-foreground">BHYT:</span> {participant.health_insurance_number}</p>
-                          )}
-                          {!participant.social_insurance_number && !participant.health_insurance_number && (
-                            <p className="text-xs text-muted-foreground">Chưa có</p>
-                          )}
-                        </div>
-                      </td>
-                      <td className="p-3 text-right">
-                        <p className="font-medium">{formatCurrency(participant.base_salary)}</p>
-                      </td>
-                      <td className="p-3 text-center">
-                        {getStatusBadge(participant.status)}
-                      </td>
-                      <td className="p-3">
-                        <div>
-                          <p className="text-sm">{participant.created_by || 'Hệ thống'}</p>
-                          <p className="text-xs text-muted-foreground">{participant.created_by_position || ''}</p>
-                        </div>
-                      </td>
-                      <td className="p-3">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="gap-1">
-                              Sửa
-                              <ChevronDown className="w-3 h-3" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="bg-popover border shadow-lg z-50">
-                            <DropdownMenuItem onClick={() => toggleStatus(participant.id)}>
-                              <Pencil className="w-4 h-4 mr-2" />
-                              {participant.status === 'active' ? 'Vô hiệu hóa' : 'Kích hoạt'}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(participant.id)}>
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Xóa
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-
-            {/* Pagination */}
-            <div className="flex items-center justify-between px-4 py-3 border-t bg-card sticky bottom-0">
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" className="h-8 w-8" disabled>
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                <Button variant="default" size="sm" className="h-8 w-8 p-0">
-                  1
-                </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8" disabled>
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
-              <span className="text-sm text-muted-foreground">
-                Hiển thị kết quả 1 - {filteredParticipants.length} của {filteredParticipants.length}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'pending' && (
-          <div className="flex-1 flex items-center justify-center">
-            <Card className="p-8 text-center">
-              <p className="text-muted-foreground">Không có yêu cầu nào đang chờ xử lý</p>
-            </Card>
-          </div>
-        )}
-
-        {activeTab === 'settings' && (
-          <div className="flex-1 flex items-center justify-center">
-            <Card className="p-8 text-center">
-              <p className="text-muted-foreground">Cài đặt chính sách bảo hiểm đang được phát triển</p>
-            </Card>
-          </div>
-        )}
+        <Button onClick={handleAddNewPolicy} className="h-9 px-4 shadow-sm">
+          <Plus className="w-4 h-4 mr-1" /> Tạo chính sách mới
+        </Button>
       </div>
 
-      {/* Right Sidebar Filters */}
-      <div className="w-72 border-l p-4 bg-muted/30 overflow-y-auto">
-        {/* Ngày áp dụng */}
-        <Collapsible open={showDateFilter} onOpenChange={setShowDateFilter} className="mb-6">
-          <CollapsibleTrigger asChild>
-            <button className="flex items-center justify-between w-full text-sm font-medium mb-3 text-muted-foreground hover:text-foreground transition-colors">
-              <span>NGÀY ÁP DỤNG</span>
-              <ChevronRight className={cn("w-4 h-4 transition-transform duration-200", showDateFilter && "rotate-90")} />
-            </button>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div className="relative">
-              <ViDateField
-                value={dateFilter}
-                onValueChange={setDateFilter}
-                className="pr-10"
-              />
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
-
-        {/* Thứ tự hiển thị */}
-        <div className="mb-6">
-          <h4 className="text-sm font-medium mb-3 text-muted-foreground">THỨ TỰ HIỂN THỊ</h4>
-          <RadioGroup value={sortOrder} onValueChange={(v) => setSortOrder(v as typeof sortOrder)} className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="newest" id="ins-sort-newest" />
-              <Label htmlFor="ins-sort-newest" className="font-normal cursor-pointer text-sm">Mới tạo</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="effective-date" id="ins-sort-effective" />
-              <Label htmlFor="ins-sort-effective" className="font-normal cursor-pointer text-sm">Ngày hiệu lực</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="employee-id-asc" id="ins-sort-id-asc" />
-              <Label htmlFor="ins-sort-id-asc" className="font-normal cursor-pointer text-sm flex items-center gap-1">
-                ID nhân viên <ArrowUp className="w-3 h-3" />
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="employee-id-desc" id="ins-sort-id-desc" />
-              <Label htmlFor="ins-sort-id-desc" className="font-normal cursor-pointer text-sm flex items-center gap-1">
-                ID nhân viên <ArrowDown className="w-3 h-3" />
-              </Label>
-            </div>
-          </RadioGroup>
-        </div>
-
-        {/* Trạng thái tham gia */}
-        <div className="mb-6">
-          <h4 className="text-sm font-medium mb-3 text-muted-foreground">TRẠNG THÁI THAM GIA</h4>
-          <RadioGroup value={statusFilter} onValueChange={(v) => setStatusFilter(v as typeof statusFilter)} className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="all" id="ins-status-all" />
-              <Label htmlFor="ins-status-all" className="font-normal cursor-pointer text-sm">Tất cả</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="active" id="ins-status-active" />
-              <Label htmlFor="ins-status-active" className="font-normal cursor-pointer text-sm">Đang tham gia</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="inactive" id="ins-status-inactive" />
-              <Label htmlFor="ins-status-inactive" className="font-normal cursor-pointer text-sm">Không tham gia</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="expired" id="ins-status-expired" />
-              <Label htmlFor="ins-status-expired" className="font-normal cursor-pointer text-sm">Hết hạn</Label>
-            </div>
-          </RadioGroup>
-        </div>
-
-        {/* Loại bảo hiểm */}
-        <div className="mb-6">
-          <h4 className="text-sm font-medium mb-3 text-muted-foreground">LOẠI BẢO HIỂM</h4>
-          <RadioGroup value={insuranceTypeFilter} onValueChange={(v) => setInsuranceTypeFilter(v as typeof insuranceTypeFilter)} className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="all" id="ins-type-all" />
-              <Label htmlFor="ins-type-all" className="font-normal cursor-pointer text-sm">Tất cả</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="social" id="ins-type-social" />
-              <Label htmlFor="ins-type-social" className="font-normal cursor-pointer text-sm">BHXH</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="health" id="ins-type-health" />
-              <Label htmlFor="ins-type-health" className="font-normal cursor-pointer text-sm">BHYT</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="unemployment" id="ins-type-unemployment" />
-              <Label htmlFor="ins-type-unemployment" className="font-normal cursor-pointer text-sm">BHTN</Label>
-            </div>
-          </RadioGroup>
-        </div>
+      <div className="bg-white rounded-md border shadow-sm overflow-hidden flex-1">
+        <Table>
+          <TableHeader className="bg-slate-50">
+            <TableRow>
+              <TableHead className="w-[300px]">Tên chính sách</TableHead>
+              <TableHead>Loại</TableHead>
+              <TableHead>Trạng thái</TableHead>
+              <TableHead>Ngày áp dụng</TableHead>
+              <TableHead className="text-right">Mã DB</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {policies.map((policy) => (
+              <TableRow 
+                key={policy.id} 
+                className="cursor-pointer hover:bg-slate-50 transition-colors"
+                onClick={() => { setSelectedPolicyId(policy.id); setIsSheetOpen(true); }}
+              >
+                <TableCell className="font-semibold text-slate-800">
+                  {policy.name}
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center text-slate-600 text-xs">
+                    <Settings2 className="w-3.5 h-3.5 mr-1" />
+                    {policy.policy_type === 'statutory' ? 'Luật định' : 'Tuỳ chỉnh'}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={policy.id.includes('ins_new_') ? 'secondary' : (policy.status === 'ACTIVE' ? 'default' : 'secondary')} className={`text-[10px] uppercase shadow-none ${policy.status === 'ACTIVE' && !policy.id.includes('ins_new_') ? 'bg-green-600 hover:bg-green-700' : ''}`}>
+                    {policy.id.includes('ins_new_') ? 'Bản nháp' : (policy.status === 'ACTIVE' ? 'Đang áp dụng' : 'Tạm ngưng')}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-slate-500 text-sm">
+                  {policy.effective_from || '—'}
+                </TableCell>
+                <TableCell className="text-right font-mono text-xs text-slate-400">
+                  {policy.id.substring(0, 12)}...
+                </TableCell>
+              </TableRow>
+            ))}
+            {policies.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-12 text-slate-400">
+                  <FileText className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                  <p>Chưa có chính sách bảo hiểm nào. Hãy tạo mới.</p>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
 
-      {/* Add Participant Dialog */}
-      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="sm:max-w-[920px] max-h-[80vh] overflow-hidden flex flex-col" data-testid="pay-insurance-add-dialog-precision">
-          <DialogHeader>
-            <DialogTitle className="text-[20px] font-bold font-display">Thêm người tham gia bảo hiểm</DialogTitle>
-          </DialogHeader>
-          
-          <div className="flex gap-4 mb-4">
-            <div className="flex-1">
-              <Input
-                placeholder="Tìm kiếm nhân viên..."
-                value={addSearch}
-                onChange={(e) => setAddSearch(e.target.value)}
-              />
-            </div>
-            <Select value={addDepartmentFilter} onValueChange={setAddDepartmentFilter}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Phòng ban" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tất cả phòng ban</SelectItem>
-                {departments.map(dept => (
-                  <SelectItem key={dept} value={dept}>{dept}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <div>
-              <Label>Loại bảo hiểm</Label>
-              <Select value={addInsuranceType} onValueChange={(v) => setAddInsuranceType(v as typeof addInsuranceType)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Bảo hiểm đầy đủ</SelectItem>
-                  <SelectItem value="social">BHXH</SelectItem>
-                  <SelectItem value="health">BHYT</SelectItem>
-                  <SelectItem value="unemployment">BHTN</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Ngày hiệu lực</Label>
-              <ViDateField
-                value={addEffectiveDate}
-                onValueChange={setAddEffectiveDate}
-              />
-            </div>
-            <div>
-              <Label>Mức đóng (VND)</Label>
-              <ViMoneyInput
-                placeholder="15.000.000"
-                value={amountStringToNumber(addBaseSalary)}
-                onValueChange={(n) => setAddBaseSalary(numberToAmountString(n))}
-              />
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-auto border rounded-md">
-            <table className="w-full">
-              <thead className="bg-muted/50 sticky top-0">
-                <tr>
-                  <th className="w-10 p-2">
-                    <Checkbox
-                      checked={selectedToAdd.length === filteredEmployeesToAdd.length && filteredEmployeesToAdd.length > 0}
-                      onCheckedChange={() => {
-                        if (selectedToAdd.length === filteredEmployeesToAdd.length) {
-                          setSelectedToAdd([]);
-                        } else {
-                          setSelectedToAdd(filteredEmployeesToAdd.map(e => e.id));
-                        }
-                      }}
+      {/* RIGHT: Policy Details Popup (Sheet) */}
+      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+        <SheetContent side="right" aria-describedby={undefined} className="w-full sm:max-w-[1400px] flex flex-col p-0 border-l shadow-2xl">
+          <SheetTitle className="sr-only">Chi tiết bảo hiểm</SheetTitle>
+          {selectedPolicy && (
+            <>
+              <SheetHeader className="p-6 border-b bg-slate-50/80">
+                <div className="flex justify-between items-start w-full">
+                  <div className="space-y-3 w-3/4">
+                    <Input 
+                      value={selectedPolicy.name} 
+                      onChange={(e) => handleUpdatePolicyField('name', e.target.value)}
+                      className="text-xl font-bold text-slate-800 border-slate-200 bg-white px-3 py-6 shadow-sm focus-visible:ring-1" 
+                      placeholder="Nhập tên chính sách..."
                     />
-                  </th>
-                  <th className="p-2 text-left text-xs font-medium text-muted-foreground">Mã NV</th>
-                  <th className="p-2 text-left text-xs font-medium text-muted-foreground">Họ tên</th>
-                  <th className="p-2 text-left text-xs font-medium text-muted-foreground">Phòng ban</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredEmployeesToAdd.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="p-4 text-center text-muted-foreground">
-                      Không có nhân viên phù hợp
-                    </td>
-                  </tr>
-                ) : (
-                  filteredEmployeesToAdd.map(emp => (
-                    <tr key={emp.id} className="border-b hover:bg-muted/30">
-                      <td className="p-2">
-                        <Checkbox
-                          checked={selectedToAdd.includes(emp.id)}
-                          onCheckedChange={() => {
-                            setSelectedToAdd(prev => 
-                              prev.includes(emp.id) 
-                                ? prev.filter(id => id !== emp.id)
-                                : [...prev, emp.id]
-                            );
-                          }}
+                    <div className="flex items-center space-x-3 text-sm text-slate-500 px-1">
+                      <div className="flex items-center space-x-2">
+                        <span>Mã DB:</span>
+                        <strong className="text-xs text-slate-400">{selectedPolicy.id.substring(0, 15)}...</strong>
+                      </div>
+                      <span>•</span>
+                      <div className="flex items-center space-x-2">
+                        <span>Ngày áp dụng:</span>
+                        <Input 
+                          type="date"
+                          value={selectedPolicy.effective_from} 
+                          onChange={(e) => handleUpdatePolicyField('effective_from', e.target.value)}
+                          className="h-7 w-36 text-xs bg-white border-slate-200 px-2"
                         />
-                      </td>
-                      <td className="p-2 text-sm">{emp.employee_code}</td>
-                      <td className="p-2 text-sm">{emp.full_name}</td>
-                      <td className="p-2 text-sm text-muted-foreground">{emp.department || 'N/A'}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                      <span>•</span>
+                      <div className="flex items-center space-x-2">
+                        <span>Loại:</span>
+                        <Select value={selectedPolicy.policy_type} onValueChange={(val) => handleUpdatePolicyField('policy_type', val)}>
+                          <SelectTrigger className="h-7 w-[160px] text-xs border-slate-200">
+                            <SelectValue placeholder="Chọn loại BH" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="compulsory_vn">BH Bắt buộc VN</SelectItem>
+                            <SelectItem value="health_premium">BHYT Cao cấp</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <span>•</span>
+                      <div className="flex items-center space-x-2">
+                        <span>Trạng thái:</span>
+                        <Select value={selectedPolicy.status} onValueChange={(val) => handleUpdatePolicyField('status', val)}>
+                          <SelectTrigger className="h-7 w-[120px] text-xs border-slate-200">
+                            <SelectValue placeholder="Trạng thái" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ACTIVE">Đang áp dụng</SelectItem>
+                            <SelectItem value="INACTIVE">Tạm ngưng</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex space-x-2 shrink-0">
+                      <Button variant="outline" className="h-9 px-6 font-semibold" onClick={() => toggleStatusMutation.mutate(selectedPolicy.id)} disabled={toggleStatusMutation.isPending}>
+                        {selectedPolicy.status === 'ACTIVE' ? 'Tạm ngưng' : 'Kích hoạt'}
+                      </Button>
+                    <Button className="h-9 px-6 bg-blue-600 hover:bg-blue-700 font-semibold shadow-sm" onClick={handleSaveToDB} disabled={savePolicyMutation.isPending}>
+                      {savePolicyMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle2 className="w-4 h-4 mr-2"/>}
+                      Lưu xuống Database
+                    </Button>
+                  </div>
+                </div>
+              </SheetHeader>
 
-          <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={() => setShowAddDialog(false)}>
-              Hủy
-            </Button>
-            <Button 
-              onClick={handleConfirmAdd} 
-              disabled={selectedToAdd.length === 0 || isCreating}
-            >
-              {isCreating && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Thêm {selectedToAdd.length > 0 && `(${selectedToAdd.length})`}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* CỘT 1: ĐỐI TƯỢNG ÁP DỤNG */}
+                <div className="space-y-6">
+                  <RuleConditionBuilder 
+                    conditions={selectedPolicy.target_conditions} 
+                    fieldOptions={fieldOptions}
+                    onChange={(newConds) => {
+                      setPolicies(policies.map(p => p.id === selectedPolicyId ? { ...p, target_conditions: newConds } : p));
+                    }} 
+                  />
+                </div>
+
+                {/* CỘT 2: QUY TẮC TÍNH TOÁN */}
+                <div className="space-y-4 lg:border-l lg:pl-8">
+                  <div className="flex items-center gap-2 border-b pb-2">
+                    <FileText className="w-5 h-5 text-blue-600" />
+                    <h3 className="font-semibold text-lg text-slate-800">Tham số Tính toán (Calculation Logic)</h3>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 p-4 border border-slate-200 rounded-md bg-white shadow-sm">
+                    <div className="space-y-1.5">
+                      <Label>Tỷ lệ Nhân viên đóng (%)</Label>
+                      <Input 
+                        value={selectedPolicy.params.employee_rate || ''} 
+                        onChange={(e) => handleUpdateParams('employee_rate', Number(e.target.value))}
+                        className="bg-white h-9 border-slate-200" type="number" 
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Tỷ lệ Công ty đóng (%)</Label>
+                      <Input 
+                        value={selectedPolicy.params.employer_rate || ''} 
+                        onChange={(e) => handleUpdateParams('employer_rate', Number(e.target.value))}
+                        className="bg-white h-9 border-slate-200" type="number" 
+                      />
+                    </div>
+                  </div>
+
+                  <div className="p-4 border border-slate-200 rounded-md bg-white shadow-sm">
+                    <div className="space-y-1.5">
+                      <Label>Căn cứ tính phí</Label>
+                      <Select value={selectedPolicy.params.base_type} onValueChange={(val) => handleUpdateParams('base_type', val)}>
+                        <SelectTrigger className="w-full bg-white border-slate-200"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="contract">Mức lương đóng BHXH trên Hợp đồng</SelectItem>
+                          <SelectItem value="basic_salary">Lương cơ sở (Pháp định)</SelectItem>
+                          <SelectItem value="fixed_amount">Mức tiền cố định</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Info banner */}
+                  <div className="flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+                    <Info className="w-4 h-4 mt-0.5 shrink-0" />
+                    <span>Dựa trên Điều kiện đối tượng và Cấu hình tỷ lệ ở trên, hệ thống sẽ tự động quét và khấu trừ/tích lũy đúng số tiền BHXH cho từng đợt lương. KHÔNG CẦN CHỌN TAY TỪNG NHÂN VIÊN.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

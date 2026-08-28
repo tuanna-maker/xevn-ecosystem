@@ -650,7 +650,7 @@ export async function loadContractCreateContext(
 
     },
 
-    source: pkg || emp ? 'partial' : 'mock',
+    source: 'partial',
 
   };
 

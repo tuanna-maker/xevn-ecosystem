@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTenantScope } from '../../contexts/GlobalFilterContext';
-import { withTenantQueryParam } from '../../modules/hrm/paths';
+
 import {
   Building2,
   Settings,
@@ -286,13 +286,9 @@ const Sidebar: React.FC = () => {
     const isExpanded = isMenuExpanded(item.id);
     const tenantPrefix = `/${selectedTenant?.tenantId || ''}`;
     
-    // Resolve path function
     const resolvePath = (path?: string) => {
       if (!path) return '';
       if (!path.startsWith('/')) return path;
-      if (path.startsWith('/command-center')) {
-        return withTenantQueryParam(path, selectedTenant?.tenantId);
-      }
       return `${tenantPrefix}${path}`.replace(/\/+/g, '/');
     };
 

@@ -87,7 +87,7 @@ export function CatalogJobTitlesSettingsPanel() {
     try {
       const rows = await listJobTitles({
         company_id: companyId,
-        status: 'active',
+        status: 'all',
       });
       setItems(rows);
     } catch (err) {

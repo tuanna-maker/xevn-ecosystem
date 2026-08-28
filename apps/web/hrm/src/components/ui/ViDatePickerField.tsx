@@ -85,7 +85,7 @@ export function ViDatePickerField({
             <CalendarIcon className="h-4 w-4 opacity-70" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className={cn("w-auto p-0 bg-background z-[300]", contentClassName)} align="end">
+        <PopoverContent className={cn("w-auto p-0 bg-background", contentClassName)} align="end">
           <Calendar
             mode="single"
             selected={selected}

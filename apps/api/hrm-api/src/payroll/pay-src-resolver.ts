@@ -106,6 +106,7 @@ export type PaySrcColumnDef = {
   formula_definition_id?: string | null;
   override_applied?: boolean;
   sign?: PayFormulaEvalSign;
+  formula_override_json?: any;
 };
 
 export type PaySrcResolvedLine = {
@@ -347,6 +348,7 @@ export function parsePeriodSnapshotColumns(
         sort_order: Number(col.sort_order ?? idx),
         formula_definition_id: col.formula_definition_id ?? null,
         override_applied: col.override_applied === true,
+        formula_override_json: col.formula_override_json ?? null,
       };
       return def;
     })

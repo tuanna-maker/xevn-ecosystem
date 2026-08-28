@@ -46,8 +46,24 @@ export function resolveAttendanceLeaveDisplayLabel(
   return typeLabel || statusLabel;
 }
 
-/** True when record is a leave funnel day marker (status leave / on_leave alias). */
-export function isAttendanceLeaveStatus(status: string | null | undefined): boolean {
+/** True when record is a leave funnel day marker (status leave / on_leave alias or catalog leave key). */
+export function isAttendanceLeaveStatus(
+  status: string | null | undefined,
+  record?: { leave_request_id?: string | null }
+): boolean {
   const s = (status ?? '').trim().toLowerCase();
-  return s === 'leave' || s === 'on_leave';
+  if (
+    s === 'leave' ||
+    s === 'on_leave' ||
+    s === 'an' ||
+    s === 'om' ||
+    s === 'ts' ||
+    s === 'tt' ||
+    s === 'kl' ||
+    s === 'nb' ||
+    s === 'dt'
+  ) {
+    return true;
+  }
+  return !!record?.leave_request_id;
 }

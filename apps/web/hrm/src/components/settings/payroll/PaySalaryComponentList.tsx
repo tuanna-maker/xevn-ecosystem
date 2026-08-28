@@ -27,7 +27,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { SettingsDialogSelectContent } from '@/components/settings/SettingsDialogSelectContent';
-import { PayDataFieldFormulaInput } from '@/components/payroll/PayDataFieldFormulaInput';
 import {
   formatSalaryFormulaReadable,
   payFormulaPickerSearchOptsFromSalaryComponents,
@@ -43,11 +42,7 @@ import {
   type SalaryComponentFormData,
 } from '@/hooks/useSalaryComponents';
 
-const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <div className={`bg-white rounded-[12px] shadow-sm border border-gray-100 p-6 ${className}`}>
-    {children}
-  </div>
-);
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 const Badge = ({
   children,
@@ -77,6 +72,8 @@ type FormState = {
   is_taxable: boolean;
   in_bhxh_base: boolean;
   formula: string;
+  data_source_type: string;
+  source_mapping_key: string;
 };
 
 const emptyForm = (): FormState => ({
@@ -86,6 +83,8 @@ const emptyForm = (): FormState => ({
   is_taxable: false,
   in_bhxh_base: false,
   formula: '',
+  data_source_type: 'FORMULA',
+  source_mapping_key: '',
 });
 
 function displayFormulaReadable(raw: string | undefined): string {
@@ -136,6 +135,8 @@ export const PaySalaryComponentList = () => {
         is_taxable: item.is_taxable,
         in_bhxh_base: item.is_insurance_base,
         formula: item.formula ?? '',
+        data_source_type: item.data_source_type ?? 'FORMULA',
+        source_mapping_key: item.source_mapping_key ?? '',
       });
     } else {
       setEditingItem(null);
@@ -156,6 +157,8 @@ export const PaySalaryComponentList = () => {
     is_taxable: formData.is_taxable,
     is_insurance_base: formData.in_bhxh_base,
     formula: formData.formula.trim() || undefined,
+    data_source_type: formData.data_source_type,
+    source_mapping_key: formData.data_source_type !== 'FORMULA' ? formData.source_mapping_key.trim() || undefined : undefined,
     default_value: 0,
     applied_to: 'all',
     is_active: true,
@@ -198,50 +201,47 @@ export const PaySalaryComponentList = () => {
   const loading = isLoading || catalogsLoading;
 
   return (
-    <Card>
-      <div className="flex justify-between items-center mb-6">
+    <Card className="h-[calc(100vh-140px)] flex flex-col">
+      <CardHeader className="flex flex-row items-center justify-between shrink-0">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">Danh mục Thành phần lương</h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <CardTitle>Danh mục Thành phần lương</CardTitle>
+          <CardDescription className="mt-1">
             Mỗi thành phần: chọn <strong>trường dữ liệu</strong> theo tên tiếng Việt + phép tính. Tab
             Công thức lương gộp các mã TP.
-          </p>
+          </CardDescription>
         </div>
         <Button
           onClick={() => handleOpenDialog()}
-          className="bg-blue-600 hover:bg-blue-700 rounded-[12px] shadow-sm"
+          className="bg-blue-600 hover:bg-blue-700"
         >
           + Thêm thành phần
         </Button>
-      </div>
+      </CardHeader>
+      <CardContent className="flex-1 flex flex-col min-h-0">
+        {error ? (
+          <p className="text-sm text-red-600 mb-4">{error}</p>
+        ) : null}
 
-      {error ? (
-        <p className="text-sm text-red-600 mb-4">{error}</p>
-      ) : null}
-
-      <div className="overflow-x-auto">
+        <div className="overflow-auto flex-1 border rounded-xl relative bg-white">
         <table className="w-full text-left text-sm">
-          <thead>
-            <tr className="border-b border-gray-200 text-gray-500">
+          <thead className="sticky top-0 bg-gray-50 z-10 shadow-[0_1px_0_0_#e5e7eb]">
+            <tr className="text-gray-500">
               <th className="pb-3 font-medium">Mã</th>
               <th className="pb-3 font-medium">Tên hiển thị</th>
               <th className="pb-3 font-medium">Loại</th>
-              <th className="pb-3 font-medium">Công thức</th>
-              <th className="pb-3 font-medium">Tính thuế TNCN</th>
-              <th className="pb-3 font-medium">Đóng BHXH</th>
               <th className="pb-3 font-medium text-right">Thao tác</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {loading ? (
               <tr>
-                <td colSpan={7} className="py-8 text-center text-gray-500">
+                <td colSpan={4} className="py-8 text-center text-gray-500">
                   Đang tải...
                 </td>
               </tr>
             ) : components.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-8 text-center text-gray-500">
+                <td colSpan={4} className="py-8 text-center text-gray-500">
                   Chưa có thành phần lương.
                 </td>
               </tr>
@@ -252,19 +252,6 @@ export const PaySalaryComponentList = () => {
                   <td className="py-4">{c.name}</td>
                   <td className="py-4">
                     {resolvePayTypeLabel(payTypeOptions, c.component_type) || c.component_type}
-                  </td>
-                  <td className="py-4 font-mono text-xs text-blue-800 max-w-[200px]">
-                    {displayFormulaReadable(c.formula)}
-                  </td>
-                  <td className="py-4">
-                    <Badge color={c.is_taxable ? 'blue' : 'gray'}>
-                      {c.is_taxable ? 'Có tính thuế' : 'Không tính thuế'}
-                    </Badge>
-                  </td>
-                  <td className="py-4">
-                    <Badge color={c.is_insurance_base ? 'green' : 'gray'}>
-                      {c.is_insurance_base ? 'Tính BHXH' : 'Không tính BHXH'}
-                    </Badge>
                   </td>
                   <td className="py-4 text-right">
                     <Button
@@ -285,7 +272,7 @@ export const PaySalaryComponentList = () => {
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent
-          className="sm:max-w-[980px] w-[95vw] rounded-[16px]"
+          className="sm:max-w-md rounded-[16px]"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           <DialogHeader>
@@ -294,9 +281,9 @@ export const PaySalaryComponentList = () => {
             </DialogTitle>
           </DialogHeader>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(280px,340px)_1fr] gap-0 py-1">
+          <div className="flex flex-col gap-4 py-4">
             {/* Cột trái — thông tin chung */}
-            <div className="flex flex-col gap-3 lg:pr-6">
+            <div className="flex flex-col gap-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
                 Thông tin thành phần
               </p>
@@ -347,53 +334,6 @@ export const PaySalaryComponentList = () => {
                 </Select>
               </div>
 
-              <div className="flex flex-col gap-3 pt-2 border-t border-gray-100">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="is_taxable"
-                    checked={formData.is_taxable}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, is_taxable: Boolean(checked) })
-                    }
-                  />
-                  <label htmlFor="is_taxable" className="text-sm font-medium leading-snug">
-                    Thành phần có tính Thuế TNCN (Taxable)
-                  </label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="in_bhxh_base"
-                    checked={formData.in_bhxh_base}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, in_bhxh_base: Boolean(checked) })
-                    }
-                  />
-                  <label htmlFor="in_bhxh_base" className="text-sm font-medium leading-snug">
-                    Thành phần dùng làm căn cứ đóng BHXH
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            {/* Cột phải — công thức */}
-            <div className="flex flex-col gap-2 lg:border-l lg:border-gray-200 lg:pl-6 mt-4 lg:mt-0 pt-4 lg:pt-0 border-t lg:border-t-0 border-gray-200">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-0.5">
-                  Công thức
-                </p>
-                <p className="text-[11px] text-muted-foreground leading-snug">
-                  Chọn trường theo tên tiếng Việt — đơn vị chấm công/lương hiện tại là <strong>giờ</strong>.
-                </p>
-              </div>
-              <PayDataFieldFormulaInput
-                key={editingItem?.id ?? 'new-component'}
-                variant="sidebar"
-                value={formData.formula}
-                onChange={handleFormulaChange}
-                extraVarHints={formulaPickerOpts.extraVarHints}
-                salaryComponentHints={formulaPickerOpts.salaryComponents}
-                placeholder="=Chọn trường bên dưới hoặc gõ công thức…"
-              />
             </div>
           </div>
 
@@ -411,6 +351,7 @@ export const PaySalaryComponentList = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </CardContent>
     </Card>
   );
 };

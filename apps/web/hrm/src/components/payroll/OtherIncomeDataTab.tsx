@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @CODE-MEMORY
  * Screen:     HRM · Tiền lương · Dữ liệu → Thu nhập khác
  * WorkItem:   PO-HRM-PAY-DATA-INCOME-FE-01
@@ -15,16 +15,10 @@ import { Label } from '@/components/ui/label';
 
 type IncomeRecord = { id:string; employee_code:string; employee_name:string; type:string; amount:number; note:string; period:string; taxable:boolean };
 
-const MOCK: IncomeRecord[] = [
-  { id:'1', employee_code:'LX-001', employee_name:'Nguyễn Văn An', type:'Thưởng doanh số', amount:2500000, note:'Vượt KPI tháng 8', period:'2026-08', taxable:true },
-  { id:'2', employee_code:'VP-001', employee_name:'Phạm Thị Dung', type:'Thưởng cải tiến', amount:1000000, note:'Sáng kiến tiết kiệm chi phí', period:'2026-08', taxable:true },
-  { id:'3', employee_code:'DP-001', employee_name:'Lê Minh Cường', type:'Hỗ trợ làm thêm', amount:500000, note:'OT cuối tuần', period:'2026-08', taxable:false },
-];
-
 const fmt = (v: number) => new Intl.NumberFormat('vi-VN').format(v);
 
 export function OtherIncomeDataTab() {
-  const [records, setRecords] = useState(MOCK);
+  const [records, setRecords] = useState<IncomeRecord[]>([]);
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ employee_code:'', employee_name:'', type:'', amount:'', note:'', taxable:true });
