@@ -83,7 +83,8 @@ import {
 } from '@/lib/settingsCatalogPagination';
 import { SettingsCatalogScreenShell } from '@/components/settings/SettingsCatalogScreenShell';
 import { cn } from '@/lib/utils';
-import { Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
+
 import { HrmDragDropContext } from '@/components/contracts/HrmDragDropContext';
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
 import { SettingsCatalogPagination } from '@/components/settings/SettingsCatalogPagination';
@@ -749,9 +750,9 @@ export function PaySheetTemplateSettingsPanel() {
         </div>
 
         {dndReady ? (
-          <HrmDragDropContext onDragEnd={onDragEnd}>
-            <div className="border rounded-md divide-y overflow-hidden">
-              <div className="grid grid-cols-[140px_1fr_140px_140px_180px_48px] gap-2 bg-muted/50 px-3 py-2 text-xs font-medium text-muted-foreground border-b items-center">
+          <DragDropContext onDragEnd={onDragEnd}>
+            <div className="border rounded-md divide-y overflow-x-auto">
+              <div className="grid grid-cols-[100px_minmax(180px,1.2fr)_minmax(140px,1fr)_130px_minmax(180px,1.4fr)_40px] gap-2.5 bg-muted/50 px-3 py-2 text-xs font-medium text-muted-foreground border-b items-center min-w-[800px]">
                 <div>TT</div>
                 <div>Nhãn hiển thị (Thành phần)</div>
                 <div>Mã cột</div>
@@ -764,7 +765,7 @@ export function PaySheetTemplateSettingsPanel() {
                   <div
                     {...provided.droppableProps}
                     ref={provided.innerRef}
-                    className="divide-y min-h-[100px] bg-white"
+                    className="divide-y min-h-[100px] bg-white min-w-[800px]"
                   >
                     {lineDrafts.map((line, index) => (
                       <Draggable key={line.key} draggableId={line.key} index={index}>
@@ -772,16 +773,18 @@ export function PaySheetTemplateSettingsPanel() {
                           <div
                             ref={draggableProvided.innerRef}
                             {...draggableProvided.draggableProps}
+                            style={draggableProvided.draggableProps.style}
                             data-testid={`pay-sheet-tpl-line-${line.key}`}
                             className={cn(
-                              "grid grid-cols-[140px_1fr_140px_140px_180px_48px] gap-2 px-3 py-2 items-center bg-white transition-colors",
-                              snapshot.isDragging && "shadow-lg bg-accent/40 rounded border border-primary/20 z-50"
+                              "grid grid-cols-[100px_minmax(180px,1.2fr)_minmax(140px,1fr)_130px_minmax(180px,1.4fr)_40px] gap-2.5 px-3 py-2 items-center bg-white border-b transition-colors",
+                              snapshot.isDragging && "shadow-xl bg-accent/60 rounded-md border border-primary/40 z-[9999] opacity-95 scale-[1.01]"
                             )}
                           >
-                            <div className="flex items-center gap-1.5 shrink-0">
+                            <div className="flex items-center gap-1 shrink-0">
                               <div
                                 {...draggableProvided.dragHandleProps}
-                                className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded shrink-0 text-muted-foreground hover:text-foreground"
+                                className="cursor-grab active:cursor-grabbing p-1.5 hover:bg-muted rounded shrink-0 text-muted-foreground hover:text-foreground touch-none select-none"
+                                title="Kéo thả để di chuyển dòng"
                               >
                                 <GripVertical className="h-4 w-4" />
                               </div>
@@ -789,7 +792,7 @@ export function PaySheetTemplateSettingsPanel() {
                                 type="text"
                                 inputMode="numeric"
                                 pattern="[0-9]*"
-                                className="h-9 w-12 text-center shrink-0"
+                                className="h-9 w-11 text-center shrink-0 text-xs px-1"
                                 value={line.sortOrder}
                                 onChange={(e) =>
                                   updateLine(line.key, { sortOrder: Number(e.target.value.replace(/\D/g, '')) || 0 })
@@ -807,7 +810,7 @@ export function PaySheetTemplateSettingsPanel() {
                                 <Plus className="h-4 w-4" />
                               </Button>
                             </div>
-                            <div>
+                            <div className="min-w-0">
                               <CatalogSearchPicker
                                 options={componentOptions}
                                 value={line.componentId || null}
@@ -820,27 +823,27 @@ export function PaySheetTemplateSettingsPanel() {
                                 }}
                                 placeholder="Chọn nhãn hiển thị"
                                 searchPlaceholder="Tìm thành phần..."
-                                triggerClassName="h-9 w-full min-w-[180px]"
+                                triggerClassName="h-9 w-full"
                                 data-testid={`hdsd-pay-sheet-tpl-line-component-${line.key}`}
                               />
                             </div>
-                            <div>
+                            <div className="min-w-0">
                               <Input
-                                className="h-9 bg-muted w-full min-w-[100px]"
+                                className="h-9 bg-muted w-full font-mono text-xs overflow-ellipsis"
                                 value={components.find((c) => c.id === line.componentId)?.code || ''}
                                 readOnly
                                 placeholder="Mã tự động"
                                 data-testid={`hdsd-pay-sheet-tpl-line-code-${line.key}`}
                               />
                             </div>
-                            <div>
+                            <div className="min-w-0">
                               <Select
                                 value={line.inputMethod || 'FORMULA'}
                                 onValueChange={(v) =>
                                   updateLine(line.key, { inputMethod: v })
                                 }
                               >
-                                <SelectTrigger className="h-9 w-full min-w-[120px]">
+                                <SelectTrigger className="h-9 w-full text-xs">
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SettingsDialogSelectContent>
@@ -850,9 +853,9 @@ export function PaySheetTemplateSettingsPanel() {
                                 </SettingsDialogSelectContent>
                               </Select>
                             </div>
-                            <div>
+                            <div className="min-w-0">
                               {line.inputMethod === 'MANUAL' ? (
-                                <span className="text-xs text-muted-foreground px-1">Nhập liệu thủ công</span>
+                                <span className="text-xs text-muted-foreground px-1 block truncate">Nhập liệu thủ công</span>
                               ) : line.inputMethod === 'SYSTEM' ? (
                                 <CatalogSearchPicker
                                   options={systemDataOptions}
@@ -864,10 +867,10 @@ export function PaySheetTemplateSettingsPanel() {
                                   }
                                   placeholder="-- Chọn dữ liệu --"
                                   searchPlaceholder="Tìm dữ liệu hệ thống..."
-                                  triggerClassName="h-9 w-full min-w-[140px]"
+                                  triggerClassName="h-9 w-full"
                                 />
                               ) : (
-                                <span className="text-xs text-muted-foreground px-1">Công thức gốc</span>
+                                <span className="text-xs text-muted-foreground px-1 block truncate">Công thức gốc</span>
                               )}
                             </div>
                             <div className="text-center">
@@ -890,7 +893,7 @@ export function PaySheetTemplateSettingsPanel() {
                 )}
               </Droppable>
             </div>
-          </HrmDragDropContext>
+          </DragDropContext>
         ) : (
           <div className="text-center text-xs text-muted-foreground py-16">
             Đang khởi tạo danh sách kéo thả...
