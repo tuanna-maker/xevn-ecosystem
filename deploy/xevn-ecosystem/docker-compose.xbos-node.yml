@@ -2,3 +2,15 @@ services:
   xbos-be:
     # Nest start:dev watch can compile without leaving dist/main — use build+node for VPS auth restore.
     command: sh -lc "corepack enable && cd /app/apps/api/xbos-api && rm -rf dist tsconfig.build.tsbuildinfo && pnpm run build && node dist/main.js"
+
+  hrm-be:
+    command: sh -lc "corepack enable && cd /app/apps/api/hrm-api && rm -rf dist tsconfig.build.tsbuildinfo && pnpm run build && node dist/main.js"
+
+  hrm-be-2:
+    command: sh -lc "corepack enable && cd /app/apps/api/hrm-api && rm -rf dist tsconfig.build.tsbuildinfo && pnpm run build && node dist/main.js"
+
+  hrm-be-3:
+    command: sh -lc "corepack enable && cd /app/apps/api/hrm-api && rm -rf dist tsconfig.build.tsbuildinfo && pnpm run build && node dist/main.js"
+
+  hrm-be-4:
+    command: sh -lc "corepack enable && cd /app/apps/api/hrm-api && rm -rf dist tsconfig.build.tsbuildinfo && pnpm run build && node dist/main.js"
