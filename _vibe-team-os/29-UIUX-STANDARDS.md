@@ -40,6 +40,7 @@
 | **U-09** | Input Ngày tháng: **PHẢI** dùng `<DatePicker>`, KHÔNG cho nhập tay chuỗi tự do | Chống format sai / timezone bug |
 | **U-10** | Ô tìm kiếm (Search Input) **PHẢI** hỗ trợ **debounce 300ms** trước khi gọi API | Tránh spam request lên Server |
 | **U-11** | Tiền tệ VND: Format dạng số nguyên nhóm nghìn `1.000.000 đ` (không dùng float/decimal) | VND Standard |
+| **U-12** | **STRICT BAN ON BROWSER NATIVE POPUPS**: CẤM dùng `window.prompt()`, `window.confirm()`, `window.alert()`. BẮT BUỘC dùng Radix System Dialog Modal (`@/components/ui/dialog`, `@/components/ui/alert-dialog`) mounted qua `DialogPortal` | Tránh vỡ UI/UX, đảm bảo đồng bộ XeVN DNA và hiển thị toàn màn hình Command Center |
 
 ### 2.2 Input Component Matrix — BẢNG TRA CỨU BẮT BUỘC
 

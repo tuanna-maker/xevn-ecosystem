@@ -1,4 +1,4 @@
-﻿# AGENTS.md — xevn-ecosystem
+# AGENTS.md — xevn-ecosystem
 
 Bạn là agent trong repo **XeVN Ecosystem** (XBOS + HRM + portal + mobile). Đọc file này **trước** mọi thay đổi.
 
@@ -99,3 +99,4 @@ Xem `docs/program/PATH_CANONICAL_LOCK.md`.
 
 > Ly do: Agent cha can biet chinh xac nguyen nhan de fix, khong chi biet "subagent failed".
 - **COMMAND CENTER PORTAL DIALOG RULE**: Mọi Popup Modal trong ứng dụng HRM BẮT BUỘC dùng `@/components/ui/dialog` (`Dialog` + `DialogContent`) để Radix `DialogPortal` mount ra `document.body` toàn màn hình Command Center. CẤM dùng `<div className="fixed inset-0">` tự chế làm popup bị lọt thỏm trong iframe.
+- **STRICT BAN ON BROWSER NATIVE POPUPS (`window.prompt`, `window.confirm`, `window.alert`)**: CẤM TUỆT ĐỐI dùng `window.prompt()`, `window.confirm()`, `window.alert()` mặc định của trình duyệt trong toàn bộ hệ thống (Web Portal, HRM, XBOS). Tất cả thao tác nhập dữ liệu, xác nhận hành động hay thông báo BẮT BUỘC dựng System Modal Popup riêng bằng Radix UI (`@/components/ui/dialog`, `@/components/ui/alert-dialog`) hoặc Toast (`sonner`).

@@ -9,6 +9,18 @@
 import { useEffect, useRef, useState } from "react";
 import type { Policy, PolicyGroup } from "../../../lib/api/hrm-policy-api";
 import { PolicyAPI } from "../../../lib/api/hrm-policy-api";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 type Props = {
   group: PolicyGroup;
@@ -168,6 +180,17 @@ export function PolicyListPanel({ group, onBack, onEdit, onCreate }: Props) {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // System Dialog states
+  const [cloneTarget, setCloneTarget] = useState<Policy | null>(null);
+  const [cloneName, setCloneName] = useState("");
+  const [cloneEffectiveFrom, setCloneEffectiveFrom] = useState("");
+
+  const [confirmTarget, setConfirmTarget] = useState<{
+    type: "toggle" | "delete";
+    policy: Policy;
+  } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const load = () => {
     setLoading(true);
     PolicyAPI.list({
@@ -205,40 +228,68 @@ export function PolicyListPanel({ group, onBack, onEdit, onCreate }: Props) {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const handleToggleStatus = async (p: Policy) => {
+  const openCloneModal = (p: Policy) => {
     setOpenMenuId(null);
-    const actionText = p.status === "ACTIVE" ? "Hủy kích hoạt" : "Kích hoạt";
-    if (!confirm(`${actionText} chính sách "${p.name}"?`)) return;
+    setCloneTarget(p);
+    setCloneName(`${p.name} (Copy)`);
+    setCloneEffectiveFrom(new Date().toISOString().slice(0, 10));
+  };
+
+  const handleConfirmClone = async () => {
+    if (!cloneTarget) return;
+    if (!cloneName.trim()) {
+      toast.error("Vui lòng nhập tên chính sách mới");
+      return;
+    }
+    if (!cloneEffectiveFrom.trim()) {
+      toast.error("Vui lòng chọn ngày hiệu lực từ");
+      return;
+    }
+    setIsSubmitting(true);
     try {
-      await PolicyAPI.toggleStatus(p.id);
+      await PolicyAPI.clone(cloneTarget.id, {
+        name: cloneName.trim(),
+        effective_from: cloneEffectiveFrom.trim(),
+      });
+      toast.success(`Đã nhân bản chính sách "${cloneName.trim()}" thành công`);
+      setCloneTarget(null);
       load();
     } catch (e: unknown) {
-      alert((e as { message?: string }).message ?? `Lỗi ${actionText.toLowerCase()}`);
+      toast.error((e as { message?: string }).message ?? "Lỗi khi nhân bản chính sách");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleClone = async (p: Policy) => {
+  const openToggleModal = (p: Policy) => {
     setOpenMenuId(null);
-    const name = prompt("Tên chính sách mới:", `${p.name} (Copy)`);
-    if (!name) return;
-    const from = prompt("Hiệu lực từ (YYYY-MM-DD):", new Date().toISOString().slice(0, 10));
-    if (!from) return;
-    try {
-      await PolicyAPI.clone(p.id, { name, effective_from: from });
-      load();
-    } catch (e: unknown) {
-      alert((e as { message?: string }).message ?? "Lỗi clone");
-    }
+    setConfirmTarget({ type: "toggle", policy: p });
   };
 
-  const handleDelete = async (p: Policy) => {
+  const openDeleteModal = (p: Policy) => {
     setOpenMenuId(null);
-    if (!confirm(`Xóa chính sách nháp "${p.name}"?`)) return;
+    setConfirmTarget({ type: "delete", policy: p });
+  };
+
+  const handleConfirmAction = async () => {
+    if (!confirmTarget) return;
+    const { type, policy } = confirmTarget;
+    setIsSubmitting(true);
     try {
-      await PolicyAPI.delete(p.id);
+      if (type === "toggle") {
+        const actionText = policy.status === "ACTIVE" ? "Hủy kích hoạt" : "Kích hoạt";
+        await PolicyAPI.toggleStatus(policy.id);
+        toast.success(`Đã ${actionText.toLowerCase()} chính sách "${policy.name}" thành công`);
+      } else {
+        await PolicyAPI.delete(policy.id);
+        toast.success(`Đã xóa chính sách nháp "${policy.name}" thành công`);
+      }
+      setConfirmTarget(null);
       load();
     } catch (e: unknown) {
-      alert((e as { message?: string }).message ?? "Lỗi xóa chính sách");
+      toast.error((e as { message?: string }).message ?? "Thao tác thất bại");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -384,19 +435,19 @@ export function PolicyListPanel({ group, onBack, onEdit, onCreate }: Props) {
                           <button style={S.actionItem} onClick={() => { setOpenMenuId(null); onEdit(p); }}>
                             ✏️ Xem / Chỉnh sửa
                           </button>
-                          <button style={S.actionItem} onClick={() => handleClone(p)}>
+                          <button style={S.actionItem} onClick={() => openCloneModal(p)}>
                             📋 Sơ đồ / Copy
                           </button>
                           <button
                             style={{ ...S.actionItem, color: p.status === "ACTIVE" ? "#d97706" : "#16a34a" }}
-                            onClick={() => handleToggleStatus(p)}
+                            onClick={() => openToggleModal(p)}
                           >
                             {p.status === "ACTIVE" ? "⏸ Hủy kích hoạt" : "⚡ Kích hoạt"}
                           </button>
                           {p.status !== "ACTIVE" && (
                             <button
                               style={{ ...S.actionItem, color: "#ef4444" }}
-                              onClick={() => handleDelete(p)}
+                              onClick={() => openDeleteModal(p)}
                             >
                               🗑️ Xóa chính sách
                             </button>
@@ -411,6 +462,93 @@ export function PolicyListPanel({ group, onBack, onEdit, onCreate }: Props) {
           </table>
         )}
       </div>
+
+      {/* Modal Clone / Nhân bản chính sách */}
+      <Dialog open={!!cloneTarget} onOpenChange={(open) => !open && setCloneTarget(null)}>
+        <DialogContent className="sm:max-w-[480px]">
+          <DialogHeader>
+            <DialogTitle>Nhân bản chính sách lương</DialogTitle>
+            <DialogDescription>
+              Tạo bản sao mới cho chính sách "{cloneTarget?.name}". Vui lòng kiểm tra và thiết lập thông tin ban đầu.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-3">
+            <div className="grid gap-2">
+              <Label htmlFor="clone-name" className="text-sm font-semibold text-slate-800">
+                Tên chính sách mới <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="clone-name"
+                value={cloneName}
+                onChange={(e) => setCloneName(e.target.value)}
+                placeholder="Nhập tên chính sách..."
+                autoFocus
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="clone-from" className="text-sm font-semibold text-slate-800">
+                Hiệu lực từ (YYYY-MM-DD) <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="clone-from"
+                type="date"
+                value={cloneEffectiveFrom}
+                onChange={(e) => setCloneEffectiveFrom(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setCloneTarget(null)} disabled={isSubmitting}>
+              Hủy
+            </Button>
+            <Button
+              onClick={handleConfirmClone}
+              disabled={isSubmitting}
+              className="bg-emerald-700 hover:bg-emerald-800 text-white"
+            >
+              {isSubmitting ? "Đang tạo..." : "Xác nhận nhân bản"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Confirm Action (Kích hoạt / Hủy kích hoạt / Xóa) */}
+      <Dialog open={!!confirmTarget} onOpenChange={(open) => !open && setConfirmTarget(null)}>
+        <DialogContent className="sm:max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle>
+              {confirmTarget?.type === "delete"
+                ? "Xác nhận xóa chính sách"
+                : confirmTarget?.policy.status === "ACTIVE"
+                ? "Xác nhận hủy kích hoạt"
+                : "Xác nhận kích hoạt chính sách"}
+            </DialogTitle>
+            <DialogDescription>
+              {confirmTarget?.type === "delete"
+                ? `Bạn có chắc chắn muốn xóa chính sách nháp "${confirmTarget?.policy.name}"? Hành động này không thể hoàn tác.`
+                : confirmTarget?.policy.status === "ACTIVE"
+                ? `Bạn có chắc chắn muốn hủy kích hoạt chính sách "${confirmTarget?.policy.name}"?`
+                : `Bạn có chắc chắn muốn kích hoạt chính sách "${confirmTarget?.policy.name}"?`}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-2 gap-2">
+            <Button variant="outline" onClick={() => setConfirmTarget(null)} disabled={isSubmitting}>
+              Hủy
+            </Button>
+            <Button
+              variant={confirmTarget?.type === "delete" ? "destructive" : "default"}
+              onClick={handleConfirmAction}
+              disabled={isSubmitting}
+            >
+              {isSubmitting
+                ? "Đang xử lý..."
+                : confirmTarget?.type === "delete"
+                ? "Xóa chính sách"
+                : "Xác nhận"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
