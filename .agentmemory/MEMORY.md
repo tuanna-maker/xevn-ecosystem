@@ -511,3 +511,88 @@ Tất cả migration **additive** trong `PositionsService.ensureSchema()` — ch
 ### Traceability
 - **FE:** `apps/web/hrm/src/components/payroll/policy/ComponentFormBuilder.tsx`, `apps/web/hrm/src/components/payroll/policy/PolicyBuilderScreen.tsx`
 - **Spec thiết kế:** `docs/brand-new-documents-20270801/UIUX_SPEC_HRM_POLICY_ENGINE_v1.md`, `docs/brand-new-documents-20270801/implementation_policy_plan.md`
+
+
+---
+
+## Lesson Learned 2026-09-03 — Missing React Hook Import Validation
+- **Incident:** Runtime error `Uncaught ReferenceError: useQuery is not defined` in `<Payroll>` component due to missing `import { useQuery } from '@tanstack/react-query'`.
+- **Root Cause:** Rollup bundling in Vite did not break at build time, but runtime execution failed due to missing import statement.
+- **Rule Added:** Mandatory check for all React hooks and symbol imports at the top of modified files. Never declare completion without verifying AST symbol import validity.
+
+
+---
+
+## Lesson Learned & Mandatory Rule 2026-09-03 — FE/BE Port Alignment & Mandatory Dual Build Check
+- **Root Cause Analysis:** 
+  1. `hrm-policy-api.ts` had a hardcoded fallback `http://localhost:3001/api/hrm`. Since the backend runs on port `:28001` (proxied by Vite at `/api/hrm`), browser requests to `:3001` threw `ECONNREFUSED`. This caused `PolicyGroupAPI.list()` to fail silently and fall back to the static menu array.
+  2. Fixed `HRM_API` base URL to `"/api/hrm"` in `hrm-policy-api.ts`.
+- **Mandatory Dual Build Rule:**
+  - After any code modification, run both `npx vite build` (FE) and `npm run build` (BE) to guarantee 0 build errors across the entire codebase.
+
+## Rule #13: Mandatory Full-Stack Specification Pre-Verification (Learned 2026-09-03)
+1. Trước khi thực hiện BẤT KỲ thay đổi code nào (dù là tạo mới feature, fix bug, hay mở rộng tính năng), BẮT BUỘC phải thực hiện đối chiếu dứt điểm theo đúng chuỗi tài liệu:
+   SRS -> TechSpec -> API Contract -> UI/UX Spec.
+2. TUYỆT ĐỐI KHÔNG nhảy vào sửa code/type/UI bừa bãi khi chưa xác minh đối chiếu toàn bộ các file spec liên quan trong `docs/program/` hoặc `_vibe-team-os/`.
+3. Tất cả các tài liệu UI/UX đã được gộp thành Single Source of Truth duy nhất tại `_vibe-team-os/29-UIUX-STANDARDS.md`.
+
+## Rule #14: SOLID FE Dialog & Portal Standards in Command Center (Learned 2026-09-03)
+1. **CẤM** bọc Popup Modal bằng thẻ `<div className="fixed inset-0">` tự chế khi chạy trong bối cảnh Command Center Embed / Iframe context. Việc này sẽ bị bó hẹp bên trong container con ("lọt thỏm trong ô vuông bé").
+2. **BẮT BUỘC** dùng primitive `@/components/ui/dialog` (`<Dialog>` + `<DialogContent className="max-w-[96vw] w-[1450px] h-[93vh]">`). Radix `DialogPortal` sẽ mount trực tiếp lên `document.body` (Parent Portal), tràn 100% cửa sổ Command Center.
+
+## Rule #15: Standard 3-Column Matrix Layout of Policy Engine Builder
+1. **Giao diện Cấu hình Chính sách (`PolicyBuilderScreen.tsx`) BẮT BUỘC đúng 3 cột song song:**
+   - **Cột 1 (Trái):** `Định nghĩa Chính sách` (Tên, 4 thẻ kiểu cấu trúc Bảng lương 1 chiều/2 chiều/Flat/Công thức, Phạm vi áp dụng).
+   - **Cột 2 (Giữa):** `Quy tắc & Điều kiện (Rules)` (Các điều kiện phụ thuộc, `Targeting Rules` theo Chức danh/Phòng ban/HĐ).
+   - **Cột 3 (Phải):** `Cấu hình Bảng giá trị (Tariff Matrix)` (Bảng ngạch bậc 2 chiều, chọn Ngạch, Bậc I-VI, mức lương VND, nút Thêm bậc/Thêm Ngạch mới).
+2. **Thanh Header Topbar:** `←` `Thiết lập chính sách: [Tên]` `[ACTIVE/DRAFT]` `Mã: GRADE • v1` bên trái | `[Đóng]` `[Hoàn tất & Lưu Chính sách]` (Nút màu xanh đậm nổi bật) bên phải.
+
+## Rule #16: Logistics Coordination (ĐPHH) Salary Policies & System Config Matrix (Learned 2026-09-03)
+1. **Bảng lương 10 Bậc Điều phối Hàng hóa (GRADE):**
+   - Bậc 1: 4.800.000 VNĐ | Bậc 2: 5.520.000 VNĐ | Bậc 3: 6.240.000 VNĐ | Bậc 4: 6.690.000 VNĐ | Bậc 5: 7.680.000 VNĐ
+   - Bậc 6: 8.400.000 VNĐ | Bậc 7: 9.120.000 VNĐ | Bậc 8: 9.840.000 VNĐ | Bậc 9: 10.560.000 VNĐ | Bậc 10: 11.280.000 VNĐ
+   - Áp dụng tính BHXH, Phép năm & Thâm niên cho Nhân viên ĐPHH chính thức.
+2. **Quỹ lương KPI theo Khu vực (LUONG):**
+   - Khu vực Hà Nội: 4.000.000 VNĐ/tháng | Khu vực Tỉnh: 3.000.000 VNĐ/tháng.
+   - Ngoại lệ VP Trần Đại Nghĩa: Mức cứng 8.000.000 VNĐ/tháng (Áp dụng từ 01/04/2025).
+3. **Thưởng Doanh thu Hoa hồng Giao / Nhận (THUONG - QĐ 1031):**
+   - Hàng gửi: <150M (7.5%), 150-200M (8.5%), 200-300M (9.5%), >=300M (10.5%).
+   - Hàng nhận: <300M (2.0%), >=300M (3.0%).
+4. **Thưởng Vượt định mức & Ship Kiêm nhiệm (THUONG):**
+   - Vượt mốc bưu cục >15%: Thưởng 20% * (DTHG - Mốc bưu cục).
+   - Ship kiêm nhiệm Tỉnh: 70% cước | Ship HN: 25% cước + Thưởng nỗ lực nhóm (4M - 16M).
+5. **Thử việc ĐPHH (LUONG - QĐ 02/2025):**
+   - Lương KPI/Lương cứng = 0 VNĐ. Lương doanh thu = 85% * Lương doanh thu Nhân viên Chính thức.
+
+## Rule #17: Separation of Base Salary Tariff Policy vs Step Progression Policy (Learned 2026-09-03)
+1. **Phân định rõ 2 Chính sách riêng biệt:**
+   - **Chính sách 1 - Bảng Lương Cơ bản theo Bậc (`GRADE`):** Là bảng ma trận tra cứu mức lương cơ bản (Tariff Lookup Table) cho từng Bậc (Bậc 1: 4.8M ... Bậc 10: 11.28M). Không chứa quy tắc xét nâng bậc.
+   - **Chính sách 2 - Quy tắc Xét Nâng Bậc Lương Hằng Năm (`STEP_PROG`):** Là chính sách quy định quy tắc chuyển Bậc $N 
+ightarrow N+1$.
+2. **Quy chuẩn Chi tiết về Nâng Bậc Lương:**
+   - **Kỳ đánh giá nâng bậc:** Định kỳ **HÀNG NĂM** (Xét duyệt vào ngày **01/01** hằng năm).
+   - **KPI xét nâng bậc:** Là **KPI Bình quân 12 Tháng của Năm** (Tổng KPI 12 tháng / 12) đạt $\ge 80\%$ (Bậc 1-3), $\ge 85\%$ (Bậc 4-6), $\ge 90\%$ (Bậc 7-10).
+   - **Thời điểm hiệu lực:** Mức lương mới áp dụng từ **01/01 của năm tài chính tiếp theo**.
+   - **Đặc cách nâng bậc trước thời hạn:** KPI năm $\ge 95\%$ + Bằng khen Cty $
+ightarrow$ Nâng bậc sớm 6 tháng.
+
+## Rule #18: Hierarchy Policy Eligibility Engine & Location-Based Salary Matrix (Learned 2026-09-03)
+1. **Công thức Lương Ngạch-Bậc theo Khu vực (Location-based Base Salary Matrix):**
+   - `=IF(D10="YB", 7500000, IF(ISNUMBER(SEARCH("HN", D10)), 8000000, 7000000))`
+   - Yên Bái (YB): 7.500.000 VNĐ | Hà Nội (HN): 8.000.000 VNĐ | Các tỉnh khác (Ninh Bình, Nam Định, Thái Bình...): 7.000.000 VNĐ.
+2. **Chuẩn Kiến trúc ERP HRM Quốc tế (Workday / SAP SuccessFactors / MISA AMIS / Fast):**
+   - **Thứ tự Ghi đè Ưu tiên Policy Eligibility (Hierarchical Overriding Rules):**
+     1. `Cá nhân (Individual Assignment)` (Ưu tiên 1 - Cao nhất)
+     2. `Chi nhánh / Văn phòng (Branch / Office)` (Ưu tiên 2)
+     3. `Khu vực / Vùng miền (Location / Zone)` (Ưu tiên 3)
+     4. `Chức danh / Phòng ban (Position / Dept)` (Ưu tiên 4)
+     5. `Toàn công ty (Global)` (Ưu tiên 5 - Mặc định)
+   - Khi chạy Bảng lương tháng, Engine tự động quét và áp dụng chính sách có tầng ưu tiên chi tiết hơn để ghi đè (override) chính sách ở tầng tổng quát.
+
+## Rule #19: Prohibit Free-Text for Master Catalogs & Enforce Strict Select Dropdowns (Learned 2026-09-03)
+1. **Cấm Điền Free-Text Cho Dữ Liệu Danh Mục Master (No Free-Text for Master Catalogs):**
+   - Tất cả dữ liệu danh mục: Khu vực / Vùng miền (`locations`), Chi nhánh / Bưu cục (`branches`), Chức danh (`job_titles`), Loại hợp đồng (`contract_types`) **BẮT BUỘC** quản lý tập trung tại **Settings ➔ Danh mục Cài đặt (`/hr/settings-catalogs`)** với đầy đủ chức năng CRUD (Tạo, Sửa, Xóa, Bật/Tắt status).
+2. **Ép Buộc Chọn Từ Dropdown (Strict Select Only):**
+   - Trên màn hình Cấu hình Chính sách (`PolicyBuilderScreen` / `RuleConditionBuilder`), Hợp đồng, Hồ sơ Nhân sự, các ô chọn Khu vực, Chi nhánh, Chức danh **CHỈ CHO PHÉP CHỌN TỪ DROPDOWN / CHECKBOX LIST**, tuyệt đối **CẤM** cho nhập dạng Free-text gõ chữ tự do.
+   - Nếu phát sinh Khu vực / Chi nhánh mới, người dùng phải vào menu **Settings ➔ Danh mục Cài đặt** để tạo mới trước, sau đó hệ thống tự động đổ vào Dropdown select.
+

@@ -1,0 +1,39 @@
+# Display Label — Cấm lộ raw key ra UI (Sponsor lock U72)
+
+> **Sponsor (2026-07-27):** «Các trường thông tin khi hiện ra ngoài phải hiện trường được định nghĩa rõ ràng — không hiện trường dạng key lên đâu.»
+
+## Cấm tuyệt đối (mọi màn hình)
+
+| Cấm | Phải làm |
+|-----|---------|
+| `row.entity_type` → render trực tiếp | Map qua `ENTITY_TYPE_LABELS[row.entity_type]` |
+| `row.status` là slug → render | Catalog label tiếng Việt |
+| UUID/slug FK → render | Tên đầy đủ từ context/store |
+| `true` / `false` | «Có» / «Không» hoặc badge |
+| null/undefined → blank | `—` (em dash) |
+| Timestamp số nguyên | `dd/MM/yyyy` |
+
+## BA — mỗi FR bắt buộc
+
+Mỗi trường trong SRS phải mô tả đủ 5 mục:
+1. Nguồn field (bảng/API/catalog)
+2. Label tiếng Việt
+3. Dạng giá trị nguồn (enum key, UUID, bool…)
+4. Dạng hiển thị UI
+5. Khi null/empty
+
+## QA gate
+
+- [ ] Không cột/cell nào hiển thị raw key, UUID, enum slug, `true/false`
+- [ ] null/empty → `—`
+- [ ] Label khớp SRS BA định nghĩa
+
+## QC
+
+Raw key trên screenshot → **NO-GO `label-leak`**
+
+## Liên kết
+
+- OS: `_vibe-team-os/22-DISPLAY-LABEL-RULE.md`
+- U72: `docs/program/TEAM_USER_REQUIREMENTS.md`
+- `spec-db-api-design-gate.mdc`

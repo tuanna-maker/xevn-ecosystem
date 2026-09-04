@@ -1,0 +1,201 @@
+
+=========================================
+FILE: 2022.04.01 Quy chế lương điều phối.pdf
+=========================================
+
+--- Page 1 ---
+
+--- Page 2 ---
+
+--- Page 3 ---
+
+--- Page 4 ---
+
+--- Page 5 ---
+
+
+=========================================
+FILE: 2024.04.22 Chính sách thưởng doanh thu giao hàng cho Điều phối hàng hoá.pdf
+=========================================
+
+--- Page 1 ---
+
+--- Page 2 ---
+
+--- Page 3 ---
+
+
+=========================================
+FILE: 2024.04.22 Chính sách thưởng doanh thu giao hàng cho Điều phối hàng hoá.pdf
+=========================================
+
+--- Page 1 ---
+
+--- Page 2 ---
+
+--- Page 3 ---
+
+
+=========================================
+FILE: 2024.07.10 Điều chỉnh tỷ lệ hưởng doanh thu giao hàng của Điều phối hàng hoá.pdf
+=========================================
+
+--- Page 1 ---
+
+
+=========================================
+FILE: 2024.10.03 Điều chỉnh tỷ lệ hưởng hoa hồng doanh thu hàng gửi, hàng nhận.pdf
+=========================================
+
+--- Page 1 ---
+
+--- Page 2 ---
+
+
+=========================================
+FILE: 2025.02.18 Điều chỉnh cách tính lương Điều phối hàng hóa thử việc.pdf
+=========================================
+
+--- Page 1 ---
+
+
+=========================================
+FILE: 2025.04.04 Điều chỉnh thời gian làm việc và mức lương ĐP HH VP Trần Đại Nghĩa.pdf
+=========================================
+
+--- Page 1 ---
+
+
+=========================================
+FILE: 2025.08.22 Điều chỉnh cách tính lương ship của điều phối hàng hoá.pdf
+=========================================
+
+--- Page 1 ---
+
+
+=========================================
+FILE: Tệp xuất từ Gemini vào lúc lúc 14_08_34 GMT+7 3 tháng 9, 2026.docx
+=========================================
+Chào bạn, với vai trò là một Senior Business Analyst (BA), tôi đã tiến hành bốc tách toàn bộ dữ liệu từ các văn bản nghiệp vụ hiện hành của Công ty TNHH X.E Việt Nam, kết hợp với mô hình hóa cấu trúc dữ liệu theo chuẩn các hệ thống ERP HRM tiên tiến trên thế giới (như SAP SuccessFactors, Oracle Fusion HCM, Workday).
+Dưới đây là tài liệu tổng hợp chuyên sâu cấu trúc chính sách lương dành cho bộ phận Điều phối hàng hóa nhằm phục vụ mục đích cấu hình hệ thống Core HRM một cách linh hoạt nhất.
+PHẦN 1: TỔNG HỢP CHI TIẾT CHÍNH SÁCH LƯƠNG HIỆN HÀNH (BÓC TÁCH TỪ TÀI LIỆU)
+1. Công thức tổng quát tính lương
+Tổng lương của nhân viên được tính theo cấu trúc mã nguồn:
+$$\text{Tổng lương} = \text{Lương KPI} + \text{Lương Doanh thu} + \text{Thưởng} + \text{Phụ cấp} + \text{Lương thêm giờ} - \text{Các khoản giảm trừ}$$
+2. Các cấu phần tiền lương chi tiết
+2.1. Lương KPI (Cố định theo vùng miền & Ngày công)
+Công thức: $L_{KPI} = \frac{Q_{KPI} \times T}{N_{cc}}$
+Trong đó: $Q_{KPI}$ là Quỹ lương KPI theo khu vực; $T$ là Thời gian làm việc thực tế; $N_{cc}$ là ngày công chuẩn trong tháng.
+Bảng tham số Quỹ lương KPI ($Q_{KPI}$):
+Khu vực Hà Nội: 4.000.000 VNĐ.
+Khu vực Tỉnh: 3.000.000 VNĐ.
+Lương tăng ca: Tính theo quy định công ty và dựa trên Quỹ lương KPI này.
+Ngoại lệ (VP Trần Đại Nghĩa): Kể từ ngày 01/04/2025, áp dụng mức lương cứng trọn gói 8.000.000 VNĐ/tháng, thời gian làm việc cố định 9 giờ/ca/ngày.
+2.2. Lương Doanh thu (Biến đổi theo hiệu suất văn phòng)
+Chia làm 2 cấu phần chính dựa trên doanh thu của từng địa điểm Văn phòng (VP):
+A. Doanh thu hàng gửi ($L_{DTHG}$):
+Công thức: $L_{DTHG} = %HH \times D_{HG} \times T$
+Đơn giá doanh thu trên giờ công ($D_{HG}$): $D_{HG} = \frac{\sum DTHG}{\sum T_{(n+i)}}$ (Tổng doanh thu hàng gửi văn phòng / Tổng giờ làm của tất cả nhân viên tại văn phòng đó).
+Mức % Hoa hồng mới (%HH) (Cập nhật theo QĐ 1031 từ ngày 01/10/2024):
+Doanh thu < 150 triệu: 7,5%.
+Doanh thu từ 150 triệu đến < 200 triệu: 8,5%.
+Doanh thu từ 200 triệu đến < 300 triệu: 9,5%.
+Doanh thu $\ge$ 300 triệu: 10,5%.
+B. Doanh thu hàng nhận ($L_{DTHN}$):
+Công thức: $L_{DTHN} = %HH_{mới} \times D_{HN} \times T$
+Đơn giá doanh thu nhận trên giờ công ($D_{HN}$): $D_{HN} = \frac{\sum DTHN}{\sum T_{(n+i)}}$.
+Mức % Hoa hồng mới (%HH) (Cập nhật theo QĐ 1031 từ ngày 01/10/2024):
+Doanh thu < 300 triệu: 2,0%.
+Doanh thu $\ge$ 300 triệu: 3,0%.
+2.3. Chính sách Thưởng & Trợ cấp
+Thưởng vượt mốc doanh thu hàng gửi (Tính cho Tập thể VP): Nếu doanh thu hàng gửi tại VP vượt 15% so với mốc quy định, toàn bộ nhân viên điều phối tại điểm đó hưởng 20% phần doanh thu chênh lệch vượt mốc. Lũy tiến tương tự cho các mốc liền kề tiếp theo.
+Ma trận mốc doanh thu tính thưởng (Đơn vị: Triệu đồng):
+
+Chính sách Thưởng kiêm nhiệm Giao hàng (Shipper - Áp dụng từ 22/04/2024):
+Thưởng giao hàng: 25% $\times$ Doanh thu giao hàng thực tế của cá nhân.
+Thưởng nỗ lực nhóm (Mức thưởng Team chia theo doanh thu bưu cục):
+< 25 triệu: Thưởng 0.
+25 - < 35 triệu: Thưởng 4 triệu.
+35 - < 50 triệu: Thưởng 6 triệu.
+50 - < 75 triệu: Thưởng 8 triệu.
+75 - < 100 triệu: Thưởng 12 triệu.
+$\ge$ 100 triệu: Thưởng 16 triệu.
+Đặc lệ vùng miền đối với cước Ship Giao/Nhận tận nơi tại các VP Tỉnh: Được tăng tỷ lệ hưởng lên 70% trên tổng cước thực tế (Áp dụng từ 01/09/2025 cho các VP: Nam Định, Thái Bình, Ninh Bình, Việt Trì, Phù Ninh, Phú Thọ, Yên Bái) và không áp dụng các mức thưởng nhóm hay tính doanh thu thông thường khác.
+2.4. Khai báo Bậc thang Thang bảng lương cơ bản (Mục đích tính Phép năm/Khen thưởng)
+Hệ thống gồm 10 bậc lũy tiến áp dụng riêng cho Nhân viên Điều phối:
+Bậc 1: Hệ số 1.00 $\rightarrow$ 4.800.000 VNĐ
+Bậc 2: Hệ số 1.15 $\rightarrow$ 5.520.000 VNĐ
+Bậc 3: Hệ số 1.30 $\rightarrow$ 6.240.000 VNĐ
+Bậc 4: Hệ số 1.45 $\rightarrow$ 6.690.000 VNĐ
+Bậc 5: Hệ số 1.60 $\rightarrow$ 7.680.000 VNĐ
+Bậc 6: Hệ số 1.75 $\rightarrow$ 8.400.000 VNĐ
+Bậc 7: Hệ số 1.90 $\rightarrow$ 9.120.000 VNĐ
+Bậc 8: Hệ số 2.05 $\rightarrow$ 9.840.000 VNĐ
+Bậc 9: Hệ số 2.20 $\rightarrow$ 10.560.000 VNĐ
+Bậc 10: Hệ số 2.35 $\rightarrow$ 11.280.000 VNĐ
+2.5. Các quy tắc giảm trừ (Deduction Rules)
+Giảm trừ lỗi vi phạm nội quy/quy trình chấm công.
+Khấu trừ bồi thường vật chất (Thất lạc, biến dạng hàng hóa) tính trực tiếp theo giá trị thiệt hại thực tế phát sinh.
+PHẦN 2: MÔ HÌNH HÓA THÀNH CÁC LOẠI POLICY TRÊN CÁC HỆ THỐNG ERP HRM TOÀN CẦU
+Nghiên cứu kiến trúc từ SAP SuccessFactors (Compensation Module) và Workday (Compensation Eligibility Rules), toàn bộ chính sách trên của X.E Việt Nam cần được cô đọng và phân loại thành 5 nhóm chính sách chính sau để khai báo động trên hệ thống:
+Loại 1: Base Compensation Policy (Chính sách Lương cơ bản/Cố định)
+Đối tượng áp dụng: Toàn bộ nhân viên điều phối (Chính thức).
+Rule/Condition (Quy tắc điều kiện):
+Mỗi nhân viên gắn liền với một "Bậc lương" (Pay Grade) từ Bậc 1 - 10.
+Điều kiện nâng bậc: Thâm niên liên tục $\ge$ 2 năm AND Hiệu suất KPI bình quân đạt từ 80% - 90% trở lên AND Không vi phạm kỷ luật nặng. Có cơ chế "Nâng lương sớm" (Override Rule) dành cho cá nhân có thành tích đặc biệt xuất sắc.
+Tariff/Rate: Fixed Amount theo ma trận Thang bảng lương (Từ 4,8 triệu đến 11,28 triệu VNĐ).
+Loại 2: Variable Pay Policy - KPI Linkage (Lương Biến đổi theo Ngày công & Khu vực)
+Đối tượng áp dụng: Nhân viên điều phối chính thức.
+Rule/Condition: Tính dựa trên Location (Vị trí làm việc của nhân viên) để lấy tham số đầu vào.
+Tariff/Matrix:
+Nếu Location = "Hà Nội" $\rightarrow$ Quỹ lương = 4.000.000 VNĐ.
+Nếu Location = "Tỉnh" $\rightarrow$ Quỹ lương = 3.000.000 VNĐ.
+Công thức động toán học: (Quỹ lương / Ngày công chuẩn) * Ngày công thực tế.
+Loại 3: Revenue-Share Policy (Chính sách Hoa hồng Doanh thu nhóm/Địa điểm)
+Đây là cấu phần phức tạp nhất, ERP gọi là Group Incentive Plan, tính toán dựa trên kết quả của một Tổ chức (Văn phòng) rồi phân bổ lại cho cá nhân dựa trên số giờ công làm việc.
+Đối tượng áp dụng: Nhóm nhân viên làm việc chung tại 1 văn phòng.
+Rule/Condition:
+Bước 1: Tính tổng doanh thu và tổng giờ làm của toàn Văn phòng để ra Đơn giá ($D_{HG}$, $D_{HN}$).
+Bước 2: Dò tìm mức tỷ lệ % hoa hồng dựa trên Mốc Bậc Thang Doanh thu Văn phòng.
+Tariff/Slab (Mốc bậc thang động):
+Hàng gửi: Dưới 150Tr (7.5%) $\rightarrow$ 150Tr - <200Tr (8.5%) $\rightarrow$ 200Tr - <300Tr (9.5%) $\rightarrow$ Trên 300Tr (10.5%).
+Hàng nhận: Dưới 300Tr (2%) $\rightarrow$ Trên 300Tr (3%).
+Loại 4: Bonus Eligibility Policy (Chính sách Thưởng Vượt định mức & Kiêm nhiệm)
+Hệ thống ERP cấu hình phần này dưới dạng Incentive Compensation Plan (Chi trả khi đạt/vượt mục tiêu KPI Doanh số).
+Mô hình thưởng Vượt định mức Tập thể (Volume Bonus):
+Condition: Tổng doanh thu gửi của văn phòng vượt Mốc thưởng quy định trên 15%.
+Tariff: 20% $\times$ (Doanh thu thực tế - Mốc quy định). Ma trận mốc quy định thay đổi động theo từng Văn phòng ID.
+Mô hình thưởng Kiêm nhiệm Giao hàng (Cross-role Commission):
+Condition: Nhân viên Điều phối thực hiện giao nhận ngoài ca/kiêm nhiệm.
+Phân loại vùng miền (Location-based Rule):
+Nếu Location Type = "Tỉnh" $\rightarrow$ Tariff = 70% cước ship cá nhân (Không tính các loại thưởng nhóm khác).
+Nếu Location Type = "Hà Nội" $\rightarrow$ Tariff = 25% doanh thu cá nhân + Cộng thưởng nỗ lực nhóm (Lũy tiến từ 4 triệu đến 16 triệu VNĐ tùy doanh số bưu cục).
+Loại 5: Employment Status Policy (Chính sách theo Trạng thái nhân sự)
+Chính sách phân lớp để override (ghi đè) quyền lợi dựa trên loại hợp đồng.
+Đối tượng áp dụng: Nhân viên thử việc (Employment Status = "Probation").
+Rule/Condition:
+Trước 01/12/2024: Hưởng 85% Tổng thu nhập sau tính của nhân viên chính thức.
+Sau 01/12/2024 (Áp dụng theo QĐ mới): Ghi đè bằng 0 đối với Lương KPI/Lương cứng, chỉ được tính toán dựa trên chính sách Lương doanh thu và áp tỷ lệ hưởng bằng 85% so với nhân viên chính thức.
+KHUYẾN NGHỊ ĐỂ THIẾT KẾ BỘ KHAI BÁO CHÍNH SÁCH ĐỘNG (FLEXIBLE POLICY ENGINE)
+Để hệ thống HRM tương lai của bạn đáp ứng được sự thay đổi liên tục của các Quyết định/Phụ lục (như việc điều chỉnh từ QĐ năm 2022 sang các QĐ năm 2024, 2025), bộ quy tắc cốt lõi (Rule Engine) cần được thiết kế dưới dạng Tham số hóa hoàn toàn (Parameterization):
+Tách biệt "Công thức" và "Tham số": Tuyệt đối không viết cứng (hard-code) các con số như 7.5%, 4.000.000 VNĐ hay mốc 150 triệu vào code hệ thống. Tất cả phải là biến số được gọi ra từ bảng lưu trữ cấu hình theo thời gian (Effective-dated tables).
+Thiết lập thuộc tính Ngày hiệu lực (Effective Date): Mọi chính sách lương/thưởng khi khai báo phải luôn đi kèm trường dữ liệu Ngày bắt đầu hiệu lực (ví dụ: QĐ 1031 có hiệu lực từ 01/10/2024, Đề xuất tăng cước tỉnh áp dụng từ 01/9/2025). Khi chạy bảng lương tháng nào, hệ thống sẽ tự động quét chính sách có hiệu lực tại thời điểm đó để tính.
+Cấu trúc dữ liệu phân tầng (Hierarchical Setup): Cho phép khai báo chính sách theo thứ tự ưu tiên: Toàn công ty $\rightarrow$ Vùng miền (Hà Nội/Tỉnh) $\rightarrow$ Văn phòng cụ thể (Trần Đại Nghĩa) $\rightarrow$ Cá nhân. Chính sách ở tầng thấp hơn và chi tiết hơn sẽ tự động ghi đè (override) chính sách ở tầng trên.
+Bạn có muốn tôi hỗ trợ thiết kế chi tiết luồng luân chuyển dữ liệu (Data Flow) giữa bộ phận Vận tải, Kế toán và Nhân sự để tối ưu hóa việc đối soát bảng lương tự động trên hệ thống không?
+Nguồn:
+2022.04.01 Quy chế lương điều phối.pdf
+2025.04.04 Điều chỉnh thời gian làm việc và mức lương ĐP HH VP Trần Đại Nghĩa.pdf
+2024.10.03 Điều chỉnh tỷ lệ hưởng hoa hồng doanh thu hàng gửi, hàng nhận.pdf
+2024.04.22 Chính sách thưởng doanh thu giao hàng cho Điều phối hàng hoá.pdf
+2025.08.22 Điều chỉnh cách tính lương ship của điều phối hàng hoá.pdf
+2024.07.10 Điều chỉnh tỷ lệ hưởng doanh thu giao hàng của Điều phối hàng hoá.pdf
+2025.02.18 Điều chỉnh cách tính lương Điều phối hàng hóa thử việc.pdf
+Văn phòng | Mốc 1 | Mốc 2 | Mốc 3
+Ngọc Hồi | 80 | 92 | 105
+Phố Vọng | 200 | 230 | 265
+Rạp Xiếc | 160 | 184 | 212
+Big C | 200 | 230 | 265
+Thọ Tháp | 100 | 115 | 132
+Ninh Bình | 160 | 184 | 212
+Nam Định | 180 | 207 | 238
+Thái Bình | 130 | 150 | 172
