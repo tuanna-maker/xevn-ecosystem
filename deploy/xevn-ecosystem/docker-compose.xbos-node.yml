@@ -4,13 +4,14 @@ services:
     command: sh -lc "corepack enable && cd /app/apps/api/xbos-api && rm -rf dist tsconfig.build.tsbuildinfo && pnpm run build && node dist/main.js"
 
   hrm-be:
+    # Single builder for hrm-api — avoids concurrent dist/ write race condition between replicas
     command: sh -lc "corepack enable && cd /app/apps/api/hrm-api && rm -rf dist tsconfig.build.tsbuildinfo && pnpm run build && node dist/main.js"
 
   hrm-be-2:
-    command: sh -lc "corepack enable && cd /app/apps/api/hrm-api && rm -rf dist tsconfig.build.tsbuildinfo && pnpm run build && node dist/main.js"
+    command: sh -lc "corepack enable && cd /app/apps/api/hrm-api && node dist/main.js"
 
   hrm-be-3:
-    command: sh -lc "corepack enable && cd /app/apps/api/hrm-api && rm -rf dist tsconfig.build.tsbuildinfo && pnpm run build && node dist/main.js"
+    command: sh -lc "corepack enable && cd /app/apps/api/hrm-api && node dist/main.js"
 
   hrm-be-4:
-    command: sh -lc "corepack enable && cd /app/apps/api/hrm-api && rm -rf dist tsconfig.build.tsbuildinfo && pnpm run build && node dist/main.js"
+    command: sh -lc "corepack enable && cd /app/apps/api/hrm-api && node dist/main.js"
