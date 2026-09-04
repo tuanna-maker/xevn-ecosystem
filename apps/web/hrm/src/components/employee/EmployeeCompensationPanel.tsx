@@ -122,20 +122,30 @@ const emptyAllowances = (): AllowanceDraft[] => [
   { allowance_code: 'PHU_CAP_XANG', amount: '', component_code: '' },
 ];
 
-/** Prefer Nest membership; else leave empty (no invent when Nest empty / miss). */
+/** Prefer Nest membership; preserve explicit line code case-insensitively so picker stays selected. */
 function preferNestComponentCode(
   allowanceCode: string,
   nestOptions: readonly { value: string; code?: string }[],
   explicit?: string | null,
 ): string {
   const explicitTrim = (explicit ?? '').trim();
-  if (explicitTrim && isCodeInNestSalaryCatalog(nestOptions, explicitTrim)) {
-    return explicitTrim;
+  if (explicitTrim) {
+    const matched = nestOptions.find(
+      (o) =>
+        o.value.toLowerCase() === explicitTrim.toLowerCase() ||
+        (o.code && o.code.toLowerCase() === explicitTrim.toLowerCase()),
+    );
+    return matched ? matched.value : explicitTrim;
   }
   const derived =
     deriveComponentCode({ line_type: 'allowance', allowance_code: allowanceCode }) ?? '';
-  if (derived && isCodeInNestSalaryCatalog(nestOptions, derived)) {
-    return derived;
+  if (derived) {
+    const matched = nestOptions.find(
+      (o) =>
+        o.value.toLowerCase() === derived.toLowerCase() ||
+        (o.code && o.code.toLowerCase() === derived.toLowerCase()),
+    );
+    return matched ? matched.value : derived;
   }
   return '';
 }

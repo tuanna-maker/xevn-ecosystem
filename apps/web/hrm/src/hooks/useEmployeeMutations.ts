@@ -217,6 +217,9 @@ export function useEmployeeMutations(opts?: { onMutated?: () => void | Promise<v
           );
           return false;
         }
+        if (jobTitleKey !== undefined && writeFields.custom_fields) {
+          delete writeFields.custom_fields.job_title_label;
+        }
         await updateEmployeeApi(id, {
           email: data.email ?? undefined,
           full_name: data.full_name ?? undefined,

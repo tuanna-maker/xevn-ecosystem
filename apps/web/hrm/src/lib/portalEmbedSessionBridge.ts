@@ -4,6 +4,7 @@ import {
   type PortalSessionPayload,
 } from '@/lib/portalAuthBridge';
 import { getHrmPortalMode } from '@/lib/hrmPortalMode';
+import { isAllowedEmbedOrigin } from '@/lib/portalEmbedNavBridge';
 
 /** Keep aligned with apps/web/web-portal/src/modules/hrm/portalEmbedSessionBridge.ts */
 export const PORTAL_EMBED_SESSION_PUSH = 'xevn.portal.embed.session.push';
@@ -31,7 +32,7 @@ function isPushMessage(data: unknown): data is PortalEmbedSessionPushMessage {
 
 function requestSessionFromParent(): void {
   if (typeof window === 'undefined' || window.parent === window) return;
-  window.parent.postMessage({ type: PORTAL_EMBED_SESSION_REQUEST, v: 1 }, window.location.origin);
+  window.parent.postMessage({ type: PORTAL_EMBED_SESSION_REQUEST, v: 1 }, '*');
 }
 
 /**
@@ -42,7 +43,7 @@ export function initPortalEmbedSessionBridge(): void {
   if (typeof window === 'undefined') return;
 
   window.addEventListener('message', (event: MessageEvent) => {
-    if (event.origin !== window.location.origin) return;
+    if (!isAllowedEmbedOrigin(event.origin)) return;
     if (!isPushMessage(event.data)) return;
     applyPortalSession({
       accessToken: event.data.accessToken,

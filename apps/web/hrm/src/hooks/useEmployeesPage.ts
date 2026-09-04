@@ -55,6 +55,7 @@ export const EMPLOYEES_PAGE_QUERY_KEY = 'employees-page' as const;
 export type EmployeesPageFilters = {
   keyword?: string;
   status?: string;
+  department?: string;
   page?: number;
   pageSize?: number;
   includeArchived?: boolean;
@@ -73,6 +74,7 @@ export function buildEmployeesPageQueryKey(
     pageSize,
     filters.keyword?.trim() || '',
     filters.status && filters.status !== 'all' ? filters.status : '',
+    filters.department && filters.department !== 'all' ? filters.department : '',
     filters.includeArchived ?? false,
   ] as const;
 }
@@ -110,6 +112,8 @@ export function useEmployeesPage(
   const keyword = filters.keyword?.trim() || undefined;
   const status =
     filters.status && filters.status !== 'all' ? filters.status : undefined;
+  const department =
+    filters.department && filters.department !== 'all' ? filters.department : undefined;
   const includeArchived = filters.includeArchived ?? false;
 
   const queryKey = buildEmployeesPageQueryKey(targetCompanyId, {
@@ -117,6 +121,7 @@ export function useEmployeesPage(
     pageSize,
     keyword,
     status,
+    department,
     includeArchived,
   });
 
@@ -133,8 +138,9 @@ export function useEmployeesPage(
           page_size: pageSize,
           keyword,
           status,
+          department,
           include_archived: includeArchived || undefined,
-        });
+        } as any);
         return {
           employees: mapPage(res.data ?? []),
           total: res.total ?? 0,

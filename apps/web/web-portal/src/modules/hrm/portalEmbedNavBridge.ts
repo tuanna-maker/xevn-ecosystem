@@ -15,6 +15,6 @@ export function buildPortalEmbedNavigateMessage(path: string): PortalEmbedNaviga
 
 export function postPortalEmbedNavigate(target: Window | null | undefined, path: string): boolean {
   if (!target || target === window) return false;
-  target.postMessage(buildPortalEmbedNavigateMessage(path), window.location.origin);
+  target.postMessage(buildPortalEmbedNavigateMessage(path), '*');
   return true;
 }

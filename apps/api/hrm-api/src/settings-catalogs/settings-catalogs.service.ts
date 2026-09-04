@@ -94,7 +94,7 @@
  * must_keep: XBOS pull REF · F-ATT-CAT-LVT/EFF · U65 no seed
  * LastVerified: hrm-settings-leave-type-sot.spec.ts
  */
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import {
@@ -1307,23 +1307,36 @@ export class SettingsCatalogsService {
     tenantId: string,
     body: SettingsCatalogItemMutationDto,
   ) {
+    const companyId = body.company_id || body.companyId || 'main';
+    const categoryKey =
+      body.category_key || body.categoryKey || body.catalogKey || 'job_titles';
+    const itemKey = body.item_key || body.itemKey || body.code || '';
+    const itemName = body.item_name || body.itemName || body.label || itemKey;
+    const itemValue = body.item_value ?? body.itemValue ?? undefined;
     const status = body.status === 'draft' ? 'draft' : 'active';
+
+    if (!itemKey) {
+      throw new BadRequestException(
+        'Mã danh mục (item_key / code) không được để trống.',
+      );
+    }
+
     const result = await this.appendExtensionItems(
       tenantId,
-      body.company_id,
-      body.category_key,
+      companyId,
+      categoryKey,
       [
         {
-          code: body.item_key,
-          label: body.item_name,
-          unit: body.item_value ?? undefined,
+          code: itemKey,
+          label: itemName,
+          unit: itemValue,
           status,
         },
       ],
     );
     return {
       upserted: result.upserted,
-      item_key: body.item_key,
+      item_key: itemKey,
       category_key: result.storageKey,
       status,
     };
@@ -1337,18 +1350,20 @@ export class SettingsCatalogsService {
    */
   async deleteCatalogItem(
     tenantId: string,
-    body: Pick<
-      SettingsCatalogItemMutationDto,
-      'company_id' | 'category_key' | 'item_key'
-    >,
+    body: any,
   ) {
     await this.ensureExtensionSchema();
     const t = tenantId.trim().toLowerCase();
-    const c = body.company_id.trim().toLowerCase();
-    const inputKey = this.normalizeCatalogKey(body.category_key);
+    const rawCompanyId = body.company_id || body.companyId || 'main';
+    const rawCategoryKey =
+      body.category_key || body.categoryKey || body.catalogKey || 'job_titles';
+    const rawItemKey = body.item_key || body.itemKey || body.code || '';
+
+    const c = rawCompanyId.trim().toLowerCase();
+    const inputKey = this.normalizeCatalogKey(rawCategoryKey);
     assertLeaveTypesExtensionMutateForbidden(inputKey);
     const fam = resolveCatalogFamily(inputKey);
-    const code = body.item_key.trim();
+    const code = rawItemKey.trim();
     const tryKeys = isE1bMasterCatalogKey(inputKey)
       ? catalogAliasTryList(inputKey)
       : [inputKey];

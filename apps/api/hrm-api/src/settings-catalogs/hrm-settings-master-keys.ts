@@ -43,6 +43,16 @@ type CatalogFamilyDef = {
 
 const CATALOG_FAMILIES: readonly CatalogFamilyDef[] = [
   {
+    familyId: 'location',
+    aliases: ['locations', 'regions', 'khu_vuc'],
+    storageKey: 'locations',
+  },
+  {
+    familyId: 'branch',
+    aliases: ['branches', 'buu_coc', 'van_phong'],
+    storageKey: 'branches',
+  },
+  {
     familyId: 'pos_titles',
     aliases: ['job_titles', 'positions', 'employee_positions'],
     storageKey: 'job_titles',

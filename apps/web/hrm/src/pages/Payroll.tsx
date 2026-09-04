@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 /**
  * @CODE-MEMORY
  * Screen:     /payroll ? B?ng l??ng (HR / payroll ops)
@@ -208,6 +209,8 @@ import { EssPayslipsPanel } from '@/components/payroll/EssPayslipsPanel';
 import { PayrollAttendanceTab } from '@/components/payroll/PayrollAttendanceTab';
 import { EmbedApiEmptyState } from '@/components/hrm/EmbedApiEmptyState';
 import { TaxPolicyTab } from '@/components/payroll/TaxPolicyTab';
+import { PolicyGroupAPI, type PolicyGroup } from '@/lib/api/hrm-policy-api';
+import { PolicyListScreen } from '@/components/payroll/policy/PolicyListScreen';
 import { InsurancePolicyTab } from '@/components/payroll/InsurancePolicyTab';
 import { SalaryTemplatesTab } from '@/components/payroll/SalaryTemplatesTab';
 import { PaySheetTemplateSettingsPanel } from '@/components/settings/PaySheetTemplateSettingsPanel';
@@ -321,16 +324,29 @@ const getIncomeStructureData = (t: any) => [
   { name: t('payroll.incomeStructure.occasionBonus'), value: 0.7, color: '#4B5563' },
 ];
 
-// Policy dropdown items - will use translations
-const getPolicyMenuItems = (t: any) => [
-  { id: 'tax', label: t('payroll.taxPolicy.title') },
-  { id: 'insurance', label: t('payroll.insurancePolicy.title') },
-  { id: 'payroll-groups', label: 'Phân nhóm bảng lương' },
-  { id: 'allowance', label: t('payroll.allowancePolicy') },
-  { id: 'bonus', label: t('payroll.bonusPolicy') },
-  { id: 'sales', label: t('payroll.salesSummary') },
-  { id: 'policy-engine', label: 'Engine chính sách lương' },
-];
+// Policy dropdown items - Only load policy groups defined in Settings + Engine
+const getPolicyMenuItems = (t: any, groups: PolicyGroup[] = []) => {
+  if (groups && groups.length > 0) {
+    const dynamicItems = groups.map(g => ({
+      id: g.code,
+      label: `${g.icon ? g.icon + ' ' : ''}${g.name_vi}`,
+    }));
+    return [
+      ...dynamicItems,
+      { id: 'policy-engine', label: 'Engine chính sách lương (Tất cả)' },
+    ];
+  }
+
+  return [
+    { id: 'LUONG', label: '💰 Lương' },
+    { id: 'THUONG', label: '🏆 Thưởng' },
+    { id: 'GIA', label: '🎁 Phụ cấp & Giá' },
+    { id: 'PHAT', label: '⚠️ Phạt & Khấu trừ' },
+    { id: 'BHXH', label: '🏥 BHXH & BHYT' },
+    { id: 'THUE', label: '📊 Thuế TNCN' },
+    { id: 'policy-engine', label: 'Engine chính sách lương (Tất cả)' },
+  ];
+};
 
 // Data dropdown items - will use translations
 const getDataMenuItems = (t: any) => [
@@ -876,7 +892,14 @@ export default function Payroll() {
   // Memoized navigation items with translations
   const topTabs = getTopTabs(t);
   const stepCards = getStepCards(t);
-  const policyMenuItems = getPolicyMenuItems(t);
+  const { data: policyGroups = [] } = useQuery<PolicyGroup[]>({
+    queryKey: ['pay-policy-groups'],
+    queryFn: async () => {
+      try { return await PolicyGroupAPI.list(); } catch { return []; }
+    },
+    staleTime: 60000,
+  });
+  const policyMenuItems = getPolicyMenuItems(t, policyGroups);
   const dataMenuItems = getDataMenuItems(t);
   const calculateMenuItems = getCalculateMenuItems(t);
   const salaryDistributionData = getSalaryDistributionData(t);
@@ -2747,18 +2770,8 @@ export default function Payroll() {
         return <AllowancePolicyTab />;
       default:
         return (
-          <div
-            className="p-6 xevn-safe-inline"
-            data-testid={activePolicySubTab === 'allowance' ? 'pay-allowance-stub-precision' : 'pay-policy-stub-precision'}
-          >
-            <Card className="rounded-card border border-xevn-border bg-xevn-surface p-8 text-center space-y-3">
-              <h2 className="text-[20px] font-bold font-display text-xevn-text">
-                {policyMenuItems.find(m => m.id === activePolicySubTab)?.label}
-              </h2>
-              <p className="text-sm text-xevn-textSecondary max-w-lg mx-auto">
-                {t('payroll.common.featureInDev', { name: policyMenuItems.find(m => m.id === activePolicySubTab)?.label })}
-              </p>
-            </Card>
+          <div className="p-4 bg-white rounded-xl shadow-sm border border-gray-100">
+            <PolicyListScreen defaultGroupCode={activePolicySubTab} />
           </div>
         );
     }

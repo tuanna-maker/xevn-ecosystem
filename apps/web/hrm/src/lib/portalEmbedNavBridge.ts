@@ -18,12 +18,27 @@ function isNavigateMessage(data: unknown): data is PortalEmbedNavigateMessage {
   );
 }
 
+export function isAllowedEmbedOrigin(origin: string): boolean {
+  if (typeof window === 'undefined') return false;
+  if (origin === window.location.origin) return true;
+  try {
+    const url = new URL(origin);
+    const host = url.hostname;
+    if (host === 'localhost' || host === '127.0.0.1' || host.endsWith('.localhost')) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+  return false;
+}
+
 /** Parent → iframe soft navigation (no iframe remount). */
 export function initPortalEmbedNavBridge(onNavigate: (path: string) => void): () => void {
   if (typeof window === 'undefined') return () => undefined;
 
   const handler = (event: MessageEvent) => {
-    if (event.origin !== window.location.origin) return;
+    if (!isAllowedEmbedOrigin(event.origin)) return;
     if (!isNavigateMessage(event.data)) return;
     onNavigate(event.data.path);
   };

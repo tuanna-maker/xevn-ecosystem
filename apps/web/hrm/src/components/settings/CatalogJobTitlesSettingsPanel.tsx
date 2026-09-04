@@ -13,6 +13,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterContext';
+import { useGrades } from '@/hooks/useGrades';
 import {
   listJobTitles,
   retireJobTitle,
@@ -52,12 +53,14 @@ import { toast } from '@/hooks/use-toast';
 type FormState = {
   code: string;
   label: string;
+  gradeCode: string;
   status: string;
 };
 
 const emptyForm = (): FormState => ({
   code: '',
   label: '',
+  gradeCode: '',
   status: 'active',
 });
 
@@ -69,6 +72,7 @@ export function CatalogJobTitlesSettingsPanel() {
   const { currentCompanyId } = useAuth();
   const { listCompanyId } = useHrmOperatingUnitFilter();
   const companyId = listCompanyId || currentCompanyId;
+  const { grades } = useGrades();
 
   const [items, setItems] = useState<HrmJobTitleRecord[]>([]);
   const [loading, setLoading] = useState(false);
@@ -133,6 +137,7 @@ export function CatalogJobTitlesSettingsPanel() {
     setForm({
       code: row.code,
       label: row.label,
+      gradeCode: row.grade_code || row.unit || '',
       status: row.status || 'active',
     });
     setDialogOpen(true);
@@ -151,6 +156,7 @@ export function CatalogJobTitlesSettingsPanel() {
     }
     const code = form.code.trim().toLowerCase();
     const label = form.label.trim();
+    const gradeCode = form.gradeCode.trim();
     if (!code) {
       toast({ title: 'Thiếu mã chức danh', variant: 'destructive' });
       return;
@@ -167,6 +173,14 @@ export function CatalogJobTitlesSettingsPanel() {
       toast({ title: 'Thiếu tên chức danh', variant: 'destructive' });
       return;
     }
+    if (!gradeCode) {
+      toast({
+        title: 'Chưa chọn Ngạch lương áp dụng',
+        description: 'Quy định nghiệp vụ: Mỗi Chức danh bắt buộc gắn tương ứng với 1 Mã Ngạch duy nhất.',
+        variant: 'destructive',
+      });
+      return;
+    }
 
     setSaving(true);
     try {
@@ -174,11 +188,12 @@ export function CatalogJobTitlesSettingsPanel() {
         companyId,
         code,
         label,
+        gradeCode,
         status: (form.status as 'active' | 'draft') || 'active',
       });
       toast({
         title: editingCode ? 'Đã cập nhật chức danh' : 'Đã tạo chức danh',
-        description: `${code} — ${label}`,
+        description: `${code} — ${label} (Ngạch: ${gradeCode})`,
       });
       closeDialog();
       await loadRows();
@@ -218,7 +233,7 @@ export function CatalogJobTitlesSettingsPanel() {
       <SettingsCatalogScreenShell
         compact
         title="Chức danh công việc"
-        description="Danh sách chức danh theo đơn vị — dùng để tạo JD và YCTD."
+        description="Danh sách chức danh theo đơn vị — gắn với Ngạch lương dùng để tạo JD, YCTD và xếp Lương."
         testId="settings-catalog-job-titles"
         searchValue={q}
         onSearchChange={setQ}
@@ -243,11 +258,12 @@ export function CatalogJobTitlesSettingsPanel() {
             {error}
           </p>
         ) : null}
-        <Table data-testid="settings-catalog-job-titles-table" className="min-w-[480px]">
+        <Table data-testid="settings-catalog-job-titles-table" className="min-w-[580px]">
           <TableHeader>
             <TableRow>
               <TableHead>Mã</TableHead>
               <TableHead>Tên chức danh</TableHead>
+              <TableHead>Ngạch lương áp dụng</TableHead>
               <TableHead>Nguồn</TableHead>
               <TableHead className="text-right">Thao tác</TableHead>
             </TableRow>
@@ -255,41 +271,56 @@ export function CatalogJobTitlesSettingsPanel() {
           <TableBody>
             {loading && items.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-sm text-muted-foreground">
+                <TableCell colSpan={5} className="text-sm text-muted-foreground">
                   Đang tải…
                 </TableCell>
               </TableRow>
             ) : paginated.slice.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="py-8 text-center text-sm text-muted-foreground">
+                <TableCell colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
                   {items.length === 0
                     ? 'Chưa có chức danh — bấm «Thêm chức danh» để bắt đầu.'
                     : 'Không có dòng khớp tìm kiếm.'}
                 </TableCell>
               </TableRow>
             ) : (
-              paginated.slice.map((row) => (
-                <TableRow
-                  key={row.code}
-                  data-testid={`settings-catalog-job-titles-row-${row.code}`}
-                >
-                  <TableCell className="font-mono text-xs">{row.code}</TableCell>
-                  <TableCell className="font-medium">{row.label}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="text-xs">
-                      {row.origin === 'xbos' ? 'XBOS' : 'HRM'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <SettingsCatalogRowActions
-                      editTestId={`hdsd-job-titles-edit-${row.code}`}
-                      retireTestId={`hdsd-job-titles-retire-${row.code}`}
-                      onEdit={() => openEdit(row)}
-                      onRetire={() => void onRetire(row)}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))
+              paginated.slice.map((row) => {
+                const gCode = row.grade_code || row.unit;
+                const matchingGrade = (grades || []).find(
+                  (g: any) => g.grade_code === gCode || g.code === gCode
+                );
+                return (
+                  <TableRow
+                    key={row.code}
+                    data-testid={`settings-catalog-job-titles-row-${row.code}`}
+                  >
+                    <TableCell className="font-mono text-xs font-bold text-slate-800">{row.code}</TableCell>
+                    <TableCell className="font-medium">{row.label}</TableCell>
+                    <TableCell>
+                      {gCode ? (
+                        <Badge variant="outline" className="text-xs font-semibold bg-indigo-50 text-indigo-700 border-indigo-200">
+                          {matchingGrade ? `${matchingGrade.grade_name || matchingGrade.name} (${gCode})` : gCode}
+                        </Badge>
+                      ) : (
+                        <span className="text-xs text-amber-600 italic">Chưa gán ngạch</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="text-xs">
+                        {row.origin === 'xbos' ? 'XBOS' : 'HRM'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <SettingsCatalogRowActions
+                        editTestId={`hdsd-job-titles-edit-${row.code}`}
+                        retireTestId={`hdsd-job-titles-retire-${row.code}`}
+                        onEdit={() => openEdit(row)}
+                        onRetire={() => void onRetire(row)}
+                      />
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>
@@ -332,6 +363,30 @@ export function CatalogJobTitlesSettingsPanel() {
                   onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))}
                 />
               </div>
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="job-title-grade">Ngạch lương áp dụng *</Label>
+              <select
+                id="job-title-grade"
+                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring font-medium text-slate-800"
+                value={form.gradeCode}
+                onChange={(e) => setForm((f) => ({ ...f, gradeCode: e.target.value }))}
+              >
+                <option value="">-- Chọn Ngạch lương duy nhất cho chức danh --</option>
+                {(grades || []).map((g: any) => {
+                  const code = g.grade_code || g.code;
+                  const name = g.grade_name || g.name || code;
+                  return (
+                    <option key={g.id || code} value={code}>
+                      {name} ({code})
+                    </option>
+                  );
+                })}
+              </select>
+              <p className="text-xs text-slate-500">
+                Mỗi Chức danh tương ứng với 1 Mã Ngạch lương duy nhất theo chuẩn nghiệp vụ.
+              </p>
             </div>
           </div>
           <DialogFooter className="gap-2 sm:gap-0">

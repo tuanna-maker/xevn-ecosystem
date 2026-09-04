@@ -290,7 +290,9 @@ function toUiRecord(row: HrmAttendanceRecord, fallback?: Partial<AttendanceRecor
   };
 }
 
-export function useAttendanceRecords(dateFilter?: string) {
+export function useAttendanceRecords(
+  dateFilterOrOptions?: string | { from_date?: string; to_date?: string; employee_id?: string }
+) {
   const [records, setRecords] = useState<AttendanceRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [todayRecord, setTodayRecord] = useState<AttendanceRecord | null>(null);
@@ -301,18 +303,44 @@ export function useAttendanceRecords(dateFilter?: string) {
   const h = (key: string, opts?: any): string => t(`hk.attendance.${key}`, opts) as string;
   const today = new Date().toISOString().split('T')[0];
 
+  const fromDate = typeof dateFilterOrOptions === 'string' ? dateFilterOrOptions : dateFilterOrOptions?.from_date;
+  const toDate = typeof dateFilterOrOptions === 'string' ? dateFilterOrOptions : dateFilterOrOptions?.to_date;
+  const filterEmployeeId = typeof dateFilterOrOptions === 'object' ? dateFilterOrOptions?.employee_id : undefined;
+
   const fetchRecords = useCallback(async () => {
     if (!currentCompanyId) { setRecords([]); setIsLoading(false); return; }
     try {
       setIsLoading(true);
       const response = await listAttendanceRecords({
         company_id: currentCompanyId,
-        from_date: dateFilter,
-        to_date: dateFilter,
+        employee_id: filterEmployeeId,
+        from_date: fromDate,
+        to_date: toDate,
         page: 1,
         page_size: clampHrmPageSize(100),
       });
-      const rows = response.data ?? [];
+      let rows = response.data ?? [];
+      const total = response.total ?? rows.length;
+      if (total > rows.length) {
+        const totalPages = Math.min(Math.ceil(total / 100), 50);
+        const remainingPages = Array.from({ length: totalPages - 1 }, (_, i) => i + 2);
+        const additionalResponses = await Promise.all(
+          remainingPages.map((page) =>
+            listAttendanceRecords({
+              company_id: currentCompanyId,
+              employee_id: filterEmployeeId,
+              from_date: fromDate,
+              to_date: toDate,
+              page,
+              page_size: clampHrmPageSize(100),
+            })
+          )
+        );
+        additionalResponses.forEach((res) => {
+          if (res.data) rows = rows.concat(res.data);
+        });
+      }
+
       const needsEmployeeLookup = rows.some((row) => !row.employee_name?.trim());
       let employeeLookup: Map<string, Partial<AttendanceRecord>> | undefined;
       if (needsEmployeeLookup) {
@@ -329,7 +357,7 @@ export function useAttendanceRecords(dateFilter?: string) {
       console.error('Error fetching attendance records:', error);
       toast({ title: t('messages.error'), description: toErrorMessage(error, h('fetchError')), variant: 'destructive' });
     } finally { setIsLoading(false); }
-  }, [currentCompanyId, dateFilter, toast, t]);
+  }, [currentCompanyId, fromDate, toDate, filterEmployeeId, toast, t]);
 
   const fetchTodayRecord = useCallback(async (employeeId: string) => {
     if (!currentCompanyId) return null;

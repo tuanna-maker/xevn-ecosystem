@@ -60,6 +60,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { ViMoneyInput } from '@/components/ui/ViMoneyInput';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { useJobTitles } from '@/hooks/useJobTitles';
+import { useGrades } from '@/hooks/useGrades';
+import { usePaySteps } from '@/hooks/usePaySteps';
 import {
   Select,
   SelectContent,
@@ -509,6 +513,60 @@ export function EmployeeFormDialog({
   });
 
   const watchedDepartment = form.watch('department');
+  const watchedPosition = form.watch('position');
+
+  const [currentStepCode, setCurrentStepCode] = useState<string>('');
+  const { data: dbJobTitles = [] } = useJobTitles({ enabled: open });
+  const { grades: dbGrades = [] } = useGrades();
+  const { steps: dbPaySteps = [] } = usePaySteps();
+
+  const derivedGradeCode = useMemo(() => {
+    if (!watchedPosition) return null;
+    const normPos = watchedPosition.trim().toLowerCase();
+
+    // 1. Check dbJobTitles API records
+    const hitFromDb = dbJobTitles.find(
+      (jt) =>
+        jt.code?.toLowerCase() === normPos ||
+        jt.id?.toLowerCase() === normPos ||
+        jt.title_name?.toLowerCase() === normPos,
+    );
+    if (hitFromDb?.grade_code) {
+      return hitFromDb.grade_code;
+    }
+
+    // 2. Check Settings Catalogs Overview items
+    const jobTitleCatalog = findCatalog(catalogs, ['job_titles', 'positions', 'employee_positions']);
+    const hitFromCatalog = jobTitleCatalog?.effectiveItems?.find(
+      (item) =>
+        item.code?.toLowerCase() === normPos ||
+        item.label?.toLowerCase() === normPos,
+    );
+    if (hitFromCatalog?.unit) {
+      return hitFromCatalog.unit;
+    }
+
+    // 3. Smart fallback: Grade Name match if setting unit is not populated yet
+    const posLabel = hitFromCatalog?.label || hitFromDb?.title_name || watchedPosition;
+    const normLabel = posLabel.trim().toLowerCase();
+    const matchedGradeByName = dbGrades.find(
+      (g) =>
+        g.grade_name?.toLowerCase() === normLabel ||
+        g.code?.toLowerCase() === normLabel ||
+        (normLabel.includes('nhân viên') && (g.code === 'E1' || g.grade_name?.includes('Chuyên viên'))) ||
+        (normLabel.includes('trưởng phòng') && (g.code === 'M1' || g.grade_name?.includes('Trưởng phòng'))),
+    );
+    if (matchedGradeByName) {
+      return matchedGradeByName.code;
+    }
+
+    return null;
+  }, [dbJobTitles, catalogs, dbGrades, watchedPosition]);
+
+  const matchedGrade = useMemo(
+    () => dbGrades.find((g) => g.code === derivedGradeCode),
+    [dbGrades, derivedGradeCode],
+  );
 
   const { data: effectivePositionsRes } = useQuery({
     queryKey: ['effective-pay-positions', currentCompanyId, watchedDepartment],
@@ -528,6 +586,7 @@ export function EmployeeFormDialog({
         department: employee.department,
         custom_fields: employee.custom_fields,
       });
+      setCurrentStepCode(employee.custom_fields?.current_step_code || '');
       form.reset({
         employee_code: employee.employee_code,
         full_name: employee.full_name,
@@ -589,6 +648,7 @@ export function EmployeeFormDialog({
       });
       setAvatarUrl(null);
       setDynamicFieldValues({});
+      setCurrentStepCode('');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- open/id only; cấm deps `form` / object employee (input 1 ký tự)
   }, [open, employee?.id, companies?.[0]?.id]);
@@ -802,16 +862,36 @@ export function EmployeeFormDialog({
   );
 
   const positionOptions = useMemo(() => {
+    const jobTitleCatalog = (catalogs ?? []).find((c) =>
+      ['job_titles', 'positions', 'employee_positions'].includes(c.catalogKey),
+    );
+    const items = jobTitleCatalog?.effectiveItems ?? [];
+    if (items.length > 0) {
+      return items.map((item) => {
+        const gradeText = item.unit ? ` (Ngạch: ${item.unit})` : '';
+        return {
+          value: item.code,
+          label: `${item.label}${gradeText}`,
+          code: item.code,
+          gradeCode: item.unit,
+        };
+      });
+    }
+
     const effective = effectivePositionsRes?.data ?? [];
     if (effective.length > 0) {
-      return effective.map((p) => ({
-        value: p.code,
-        label: p.label,
-        code: p.code,
-      }));
+      return effective.map((p) => {
+        const gradeText = p.grade_code ? ` (Ngạch: ${p.grade_code})` : '';
+        return {
+          value: p.code,
+          label: `${p.label}${gradeText}`,
+          code: p.code,
+          gradeCode: p.grade_code,
+        };
+      });
     }
     return catalogPositionOptions;
-  }, [effectivePositionsRes, catalogPositionOptions]);
+  }, [catalogs, effectivePositionsRes, catalogPositionOptions]);
 
   const positionCatalogBound = positionOptions.length > 0;
 
@@ -862,6 +942,12 @@ export function EmployeeFormDialog({
         ([, value]) => value != null && String(value).trim().length > 0,
       ),
     );
+    if (derivedGradeCode) {
+      customFields.grade_code = derivedGradeCode;
+    }
+    if (currentStepCode) {
+      customFields.current_step_code = currentStepCode;
+    }
     const success = await onSubmit({
       employee_code: values.employee_code,
       full_name: values.full_name,
@@ -1077,13 +1163,13 @@ export function EmployeeFormDialog({
                     name="position"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{basicLabel('position', t('employees.position'))}</FormLabel>
+                        <FormLabel>{basicLabel('position', 'Chức danh công việc')}</FormLabel>
                         <FormControl>
                           <CatalogSearchPicker
                             options={positionOptions}
                             value={field.value}
                             onValueChange={field.onChange}
-                            placeholder={t('employeeForm.positionPlaceholder')}
+                            placeholder="Chọn chức danh công việc..."
                             loading={catalogsLoading}
                             errorText={
                               catalogsError ? t('settings.catalogs.loadError') : undefined
@@ -1111,6 +1197,39 @@ export function EmployeeFormDialog({
                           />
                         </FormControl>
                         <FormMessage />
+
+                        {watchedPosition && (
+                          <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2.5 mt-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-semibold text-slate-700">Ngạch lương (Áp dụng theo Chức danh):</span>
+                              {matchedGrade ? (
+                                <Badge className="bg-emerald-100 text-emerald-800 border-emerald-300 text-xs font-medium">
+                                  {matchedGrade.grade_name} ({matchedGrade.code})
+                                </Badge>
+                              ) : (
+                                <span className="text-xs text-amber-600 font-medium italic">
+                                  {derivedGradeCode ? `Ngạch: ${derivedGradeCode}` : 'Chưa gán Ngạch cho Chức danh'}
+                                </span>
+                              )}
+                            </div>
+
+                            <div>
+                              <label className="text-xs font-medium text-slate-600 block mb-1">Bậc lương hiện hưởng *</label>
+                              <Select value={currentStepCode} onValueChange={setCurrentStepCode}>
+                                <SelectTrigger className="bg-white h-8 text-xs">
+                                  <SelectValue placeholder="-- Chọn Bậc lương --" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {dbPaySteps.map((step) => (
+                                    <SelectItem key={step.id || step.code} value={step.code} className="text-xs">
+                                      {step.name} ({step.code}) {step.amount ? `— ${new Intl.NumberFormat('vi-VN').format(step.amount)} ₫` : ''}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        )}
                       </FormItem>
                     )}
                   />

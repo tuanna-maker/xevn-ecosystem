@@ -445,17 +445,29 @@ export const usePayrollBatches = (options?: { periodMonth?: number; periodYear?:
       rows.map(async (row) => {
         const periodInputValues =
           row.employee_id != null ? (periodInputsByEmployee.get(row.employee_id) ?? {}) : {};
-        let payslipLineValues: Record<string, number> = {};
-        let hasPayslipLines = false;
-        try {
-          const linesResponse = await listPayrollPayslipLines(row.id, {
-            company_id: currentCompanyId,
-          });
-          const lines = linesResponse.data ?? [];
-          hasPayslipLines = lines.length > 0;
-          payslipLineValues = mapPayslipLinesToComponentValues(lines);
-        } catch {
-          payslipLineValues = {};
+        const rawLines = Array.isArray((row as any).lines)
+          ? (row as any).lines
+          : Array.isArray((row as any).components)
+            ? (row as any).components
+            : [];
+        let hasPayslipLines = (row as any).has_payslip_lines ?? rawLines.length > 0;
+        let payslipLineValues: Record<string, number> =
+          (row as any).component_values ?? (row as any).componentValues ?? {};
+
+        if (!hasPayslipLines && rawLines.length > 0) {
+          hasPayslipLines = true;
+          payslipLineValues = mapPayslipLinesToComponentValues(rawLines);
+        } else if (!hasPayslipLines && !Object.keys(payslipLineValues).length) {
+          try {
+            const linesResponse = await listPayrollPayslipLines(row.id, {
+              company_id: currentCompanyId,
+            });
+            const lines = linesResponse.data ?? [];
+            hasPayslipLines = lines.length > 0;
+            payslipLineValues = mapPayslipLinesToComponentValues(lines);
+          } catch {
+            payslipLineValues = {};
+          }
         }
         let componentValues = mergePayrollComponentValues(payslipLineValues, periodInputValues);
         let componentPreviewSources: Partial<Record<string, ComponentPreviewSource>> | undefined;

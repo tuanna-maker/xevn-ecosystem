@@ -187,7 +187,7 @@ export class AttendanceService {
   ): number {
     const parsed = Number(value ?? fallback);
     if (!Number.isFinite(parsed) || parsed < 1) return fallback;
-    return Math.min(100, Math.trunc(parsed));
+    return Math.min(50000, Math.trunc(parsed));
   }
 
   private assertCheckInOutOrder(

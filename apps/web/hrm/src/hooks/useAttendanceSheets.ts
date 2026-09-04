@@ -28,9 +28,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { toErrorMessage } from '@/lib/apiError';
 import {
+  closeAttendanceSheetApi,
   createAttendanceSheet,
   deleteAttendanceSheet,
   listAttendanceSheets,
+  reopenAttendanceSheetApi,
+  submitAttendanceSheetApi,
   updateAttendanceSheet,
 } from '@/integrations/hrmApi';
 
@@ -120,22 +123,47 @@ export function useAttendanceSheets(opts?: { enabled?: boolean }) {
     }
   }, [currentCompanyId, invalidateSheets, toast, t]);
 
-  const updateSheet = useCallback(async (id: string, updates: Partial<AttendanceSheetInput>): Promise<boolean> => {
-    if (!currentCompanyId) return false;
-    try {
-      await updateAttendanceSheet(id, currentCompanyId, updates);
-      toast({ title: t('messages.success'), description: t('hk.attendanceSheet.updateSuccess') });
-      await invalidateSheets();
-      return true;
-    } catch (error: unknown) {
-      toast({
-        title: t('messages.error'),
-        description: toErrorMessage(error, t('hk.attendanceSheet.updateError')),
-        variant: 'destructive',
-      });
-      return false;
-    }
-  }, [currentCompanyId, invalidateSheets, toast, t]);
+  const updateSheet = useCallback(
+    async (
+      id: string,
+      updates: Partial<AttendanceSheetInput> & { status?: string },
+    ): Promise<boolean> => {
+      if (!currentCompanyId) return false;
+      try {
+        if (updates.status === 'closed') {
+          try {
+            await closeAttendanceSheetApi(id, currentCompanyId);
+          } catch {
+            await updateAttendanceSheet(id, currentCompanyId, updates);
+          }
+        } else if (updates.status === 'draft') {
+          try {
+            await reopenAttendanceSheetApi(id, currentCompanyId, {
+              reason: 'Mở lại từ giao diện',
+            });
+          } catch {
+            await updateAttendanceSheet(id, currentCompanyId, updates);
+          }
+        } else {
+          await updateAttendanceSheet(id, currentCompanyId, updates);
+        }
+        toast({
+          title: t('messages.success'),
+          description: t('hk.attendanceSheet.updateSuccess'),
+        });
+        await invalidateSheets();
+        return true;
+      } catch (error: unknown) {
+        toast({
+          title: t('messages.error'),
+          description: toErrorMessage(error, t('hk.attendanceSheet.updateError')),
+          variant: 'destructive',
+        });
+        return false;
+      }
+    },
+    [currentCompanyId, invalidateSheets, toast, t],
+  );
 
   const deleteSheet = useCallback(async (id: string): Promise<boolean> => {
     if (!currentCompanyId) return false;

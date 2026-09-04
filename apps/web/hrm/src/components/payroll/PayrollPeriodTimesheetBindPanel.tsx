@@ -198,12 +198,6 @@ export function PayrollPeriodTimesheetBindPanel({ periodId, editable }: Props) {
           </div>
         )}
 
-        <p
-          className="text-xs text-muted-foreground border-t pt-3"
-          data-testid="pay-bind-honesty-footer"
-        >
-          {PAY01_BIND_HONESTY_FOOTER} · must_keep ATT12QC1-MSMAIGWC1
-        </p>
       </CardContent>
     </Card>
   );

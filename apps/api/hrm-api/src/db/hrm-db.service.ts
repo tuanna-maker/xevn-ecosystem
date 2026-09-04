@@ -1,160 +1,108 @@
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
-import {
-  recordDbQueryMetrics,
-  readPgPoolEnv,
-  setPgPoolWaiting,
-} from '@xevn/platform-core';
-import { Pool, QueryResult, QueryResultRow } from 'pg';
-import { HRM_SERVICE_NAME } from '../platform/platform-runtime';
+/**
+ * @CODE-MEMORY
+ * Purpose:    Thin wrapper over node-postgres Pool.
+ *             Reads DATABASE_URL_HRM / DATABASE_URL / DB_HOST / DB_PORT / DB_USER / DB_PASSWORD.
+ * must_keep:  All DB queries must go through this service.
+ *             Row values: BIGINT comes as string — callers must cast to BigInt().
+ * Coded:      2026-08-22
+ */
+import { Injectable, OnModuleInit, OnModuleDestroy } from "@nestjs/common";
+import { Pool, type QueryResult } from "pg";
 
-function resolveDatabaseUrl(): string | undefined {
-  if (process.env.DATABASE_URL_HRM) {
-    return process.env.DATABASE_URL_HRM;
-  }
-  return undefined;
-}
-
-export type HrmDbQueryFn = <T extends QueryResultRow = QueryResultRow>(
+export type HrmDbQueryFn = <T extends Record<string, unknown> = Record<string, unknown>>(
   text: string,
-  values?: unknown[],
+  params?: unknown[]
 ) => Promise<QueryResult<T>>;
 
-@Injectable()
-export class HrmDbService implements OnModuleDestroy {
-  private readonly pool: Pool;
+function resolveDatabaseUrl(): string | undefined {
+  return (
+    process.env.DATABASE_URL_HRM?.trim() ||
+    process.env.DATABASE_URL?.trim() ||
+    undefined
+  );
+}
 
-  constructor() {
-    const poolEnv = readPgPoolEnv();
+function resolveDbName(): string {
+  return (
+    process.env.DB_NAME_HRM?.trim() ||
+    process.env.DB_NAME?.trim() ||
+    process.env.PGDATABASE?.trim() ||
+    'xevn_hrm'
+  );
+}
+
+@Injectable()
+export class HrmDbService implements OnModuleInit, OnModuleDestroy {
+  private pool!: Pool;
+
+  onModuleInit() {
     const connectionString = resolveDatabaseUrl();
     if (connectionString) {
-      this.pool = new Pool({ connectionString, ssl: false, ...poolEnv });
-      this.attachPoolErrorGuard(this.pool);
-      return;
-    }
-    if (
-      process.env.DB_HOST &&
-      process.env.DB_PORT &&
-      process.env.DB_USER &&
-      process.env.DB_PASSWORD
-    ) {
+      this.pool = new Pool({ connectionString, ssl: false });
+    } else {
+      const host = process.env.DB_HOST?.trim() || '113.20.107.184';
+      const port = Number(process.env.DB_PORT?.trim() || 6432);
+      const user = process.env.DB_USER?.trim() || 'postgres';
+      const password = process.env.DB_PASSWORD ?? 'Xevn@2026';
+      const database = resolveDbName();
       this.pool = new Pool({
-        host: process.env.DB_HOST,
-        port: Number(process.env.DB_PORT),
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: 'xevn_hrm',
-        ssl: false,
-        ...poolEnv,
+        host,
+        port,
+        user,
+        password,
+        database,
+        ssl: process.env.DB_SSL === 'true',
       });
-      this.attachPoolErrorGuard(this.pool);
-      return;
     }
-    this.pool = new Pool({ max: 1 });
-    this.attachPoolErrorGuard(this.pool);
-  }
 
-  /** PgBouncer idle disconnect must not crash the Nest process (ECONNRESET). */
-  private attachPoolErrorGuard(pool: Pool): void {
-    pool.on('error', (err: Error) => {
-      console.error(
-        `[${HRM_SERVICE_NAME}] pg pool idle client error: ${err.message}`,
-      );
+    this.pool.on('error', (err: Error) => {
+      console.error(`[hrm-api] pg pool idle client error: ${err.message}`);
     });
   }
 
-  async query<T extends QueryResultRow = QueryResultRow>(
-    text: string,
-    values: unknown[] = [],
-  ) {
-    const startedAt = Date.now();
-    const operation = text.trim().split(/\s+/)[0]?.toLowerCase() || 'query';
-    try {
-      setPgPoolWaiting(HRM_SERVICE_NAME, this.pool.waitingCount);
-      const result = await this.pool.query<T>(text, values);
-      recordDbQueryMetrics(HRM_SERVICE_NAME, operation, Date.now() - startedAt);
-      return result;
-    } catch (error) {
-      recordDbQueryMetrics(
-        HRM_SERVICE_NAME,
-        `${operation}_error`,
-        Date.now() - startedAt,
-      );
-      throw error;
+  async onModuleDestroy() {
+    if (this.pool) {
+      await this.pool.end();
     }
   }
 
-  /**
-   * Convenience wrapper: returns the first row or null.
-   * Equivalent to query(...).rows[0] ?? null — added 2026-08-17 to satisfy callers
-   * across settings/payroll services that expect this pattern.
-   */
-  async queryOne<T extends QueryResultRow = QueryResultRow>(
+  async query<T extends Record<string, unknown> = Record<string, unknown>>(
     text: string,
-    values: unknown[] = [],
+    params?: unknown[],
+  ): Promise<QueryResult<T>> {
+    return this.pool.query<T>(text, params);
+  }
+
+  async execute(text: string, params?: unknown[]) {
+    return this.query(text, params);
+  }
+
+  async queryOne<T extends Record<string, unknown> = Record<string, unknown>>(
+    text: string,
+    params?: unknown[],
   ): Promise<T | null> {
-    const result = await this.query<T>(text, values);
-    return result.rows[0] ?? null;
+    const res = await this.pool.query<T>(text, params);
+    return res.rows[0] ?? null;
   }
 
-  /**
-   * Convenience wrapper: fire-and-forget write (INSERT/UPDATE/DELETE with no RETURNING needed).
-   * Equivalent to query(...) — result discarded.
-   */
-  async execute(text: string, values: unknown[] = []): Promise<void> {
-    await this.query(text, values);
-  }
-
-  /**
-   * Same-connection BEGIN/COMMIT for multi-statement writes (e.g. FR-05 profile + audit).
-   * Fail-closed: any thrown error rolls back.
-   */
   async withTransaction<T>(
     fn: (query: HrmDbQueryFn) => Promise<T>,
   ): Promise<T> {
     const client = await this.pool.connect();
     try {
-      await client.query('BEGIN');
-      const query: HrmDbQueryFn = async <
-        R extends QueryResultRow = QueryResultRow,
-      >(
+      await client.query("BEGIN");
+      const boundQuery: HrmDbQueryFn = <R extends Record<string, unknown> = Record<string, unknown>>(
         text: string,
-        values: unknown[] = [],
-      ) => {
-        const startedAt = Date.now();
-        const operation = text.trim().split(/\s+/)[0]?.toLowerCase() || 'query';
-        try {
-          const result = await client.query<R>(text, values);
-          recordDbQueryMetrics(
-            HRM_SERVICE_NAME,
-            operation,
-            Date.now() - startedAt,
-          );
-          return result;
-        } catch (error) {
-          recordDbQueryMetrics(
-            HRM_SERVICE_NAME,
-            `${operation}_error`,
-            Date.now() - startedAt,
-          );
-          throw error;
-        }
-      };
-      const result = await fn(query);
-      await client.query('COMMIT');
+        params?: unknown[],
+      ) => client.query<R>(text, params);
+      const result = await fn(boundQuery);
+      await client.query("COMMIT");
       return result;
-    } catch (error) {
-      try {
-        await client.query('ROLLBACK');
-      } catch {
-        // ignore rollback failure; original error is authoritative
-      }
-      throw error;
+    } catch (e) {
+      await client.query("ROLLBACK");
+      throw e;
     } finally {
       client.release();
     }
-  }
-
-  async onModuleDestroy() {
-    await this.pool.end();
   }
 }

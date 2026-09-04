@@ -98,7 +98,7 @@ export class ContractTemplatesService {
   /** List overrides for a template, excluding soft-deleted rows. */
   async listClauses(templateCode: string, tenantId: string) {
     assertBoundCode(templateCode);
-    const result = await this.db.query<ClauseOverrideRow>(
+    const result = await this.db.query<any>(
       `SELECT ${SELECT_COLS}
        FROM template_clause_override
        WHERE tenant_id = $1
@@ -114,7 +114,7 @@ export class ContractTemplatesService {
   async getClause(templateCode: string, clauseId: string, tenantId: string) {
     assertBoundCode(templateCode);
     assertClauseIdFormat(clauseId);
-    const row = await this.db.queryOne<ClauseOverrideRow>(
+    const row = await this.db.queryOne<any>(
       `SELECT ${SELECT_COLS}
        FROM template_clause_override
        WHERE tenant_id = $1
@@ -154,7 +154,7 @@ export class ContractTemplatesService {
       dto.override_text !== undefined ? dto.override_text : null;
     const updatedBy = dto.updated_by ?? null;
 
-    const row = await this.db.queryOne<ClauseOverrideRow>(
+    const row = await this.db.queryOne<any>(
       `INSERT INTO template_clause_override
          (id, tenant_id, template_code, clause_id, override_text, source, updated_by, updated_at, created_at)
        VALUES ($1, $2, $3, $4, $5, $6, $7, now(), now())
@@ -191,7 +191,7 @@ export class ContractTemplatesService {
     assertBoundCode(templateCode);
     assertClauseIdFormat(clauseId);
 
-    const row = await this.db.queryOne<ClauseOverrideRow>(
+    const row = await this.db.queryOne<any>(
       `UPDATE template_clause_override
        SET deleted_at = now()
        WHERE tenant_id = $1

@@ -47,10 +47,7 @@ export function isPayTimesheetClosedForBind(status: PayTimesheetSheetStatus | nu
 /** Actionable VI for bind/process 412 family — AC-PAY-01-BIND-DRAFT-412 · AC-PAY-01-PROCESS-412 */
 export function resolvePayAtt412UserMessage(code: string | undefined, fallback?: string): string {
   if (code === 'HRM-PAY-ATT-412') {
-    return (
-      fallback?.trim() ||
-      'Bảng chấm công chưa chốt hoặc không khớp kỳ lương. Chốt bảng công (ATT-11) rồi gắn lại — không lấy giờ từ đơn phép/OT.'
-    );
+    return 'Bảng chấm công chưa chốt hoặc không khớp kỳ lương. Vui lòng sang phân hệ Chấm công chốt bảng công (ATT-11) rồi thử lại.';
   }
   if (code === 'HRM-PAY-INP-409-DUP') {
     return 'Kỳ lương đã gắn bảng công này. F5 để xem liên kết hiện có.';

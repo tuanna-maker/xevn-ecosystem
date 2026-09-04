@@ -14,13 +14,13 @@
 
 /** Create / composer / DnD — fixed shell, scroll inner body */
 export const HRM_DIALOG_FULL_VIEWPORT_CONTENT_CLASS =
-  'w-[min(90vw,96rem)] max-w-[min(90vw,96rem)] max-h-[90vh] h-[min(90vh,calc(100vh-2rem))] overflow-hidden flex flex-col gap-4 p-6 xevn-safe-inline text-base';
+  'w-[min(96vw,110rem)] max-w-[min(96vw,110rem)] max-h-[95vh] h-[min(95vh,calc(100vh-1rem))] overflow-hidden flex flex-col gap-3 p-4 xevn-safe-inline text-base';
 
 export const HRM_DIALOG_FULL_VIEWPORT_BODY_CLASS = 'min-h-0 flex-1 overflow-y-auto pr-1 -mr-1';
 
 /** Read-only / lighter mutate — scroll on content shell */
 export const HRM_DIALOG_FULL_VIEWPORT_SCROLL_CLASS =
-  'w-[min(90vw,96rem)] max-w-[min(90vw,96rem)] max-h-[min(90vh,calc(100vh-2rem))] overflow-y-auto flex flex-col gap-4 p-6 xevn-safe-inline text-base';
+  'w-[min(96vw,110rem)] max-w-[min(96vw,110rem)] max-h-[min(95vh,calc(100vh-1rem))] overflow-y-auto flex flex-col gap-3 p-4 xevn-safe-inline text-base';
 
 /** Compact catalog form — parent portal, ~56rem cap (no DnD) */
 export const HRM_DIALOG_PARENT_COMPACT_CLASS =

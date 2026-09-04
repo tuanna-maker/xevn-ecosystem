@@ -1,0 +1,559 @@
+## 1. TỔNG QUAN TÀI LIỆU SRS
+
+### 1.1. Mục tiêu và phạm vi
+
+Tài liệu Đặc tả Yêu cầu Phần mềm (SRS) này định nghĩa chi tiết từng use case của hệ sinh thái XeVN Ecosystem OS, phục vụ trực tiếp cho quá trình thiết kế kỹ thuật và kiểm thử. Mỗi use case được mô tả với đầy đủ: metadata, điều kiện tiên quyết, luồng chính, luồng ngoại lệ, quy tắc nghiệp vụ, mã lỗi và tiêu chí chấp nhận.
+
+### 1.2. Tài liệu nguồn
+
+| Tài liệu | Mã | Phiên bản |
+|---|---|---|
+| Business Requirements Document | UNICOM/BRD-XEVN-OS-001 | 1.0 |
+| Technical Spec Mobile | docs/hrm/TECHSPEC_MOBILE.md | 1.0 |
+| HRM Mobile Backlog | docs/hrm/MOBILE_BACKLOG.md | 1.0 |
+| BRD Tổng hợp hệ sinh thái | docs/ecosystem/BRD_TONG_HOP_HE_SINH_THAI_XEVN.md | 1.0 |
+
+---
+
+## 2. MODULE XBOS — TENANT MANAGEMENT
+
+### UC-B01: Tạo Tenant mới
+
+**Metadata:**
+
+| Thuộc tính | Giá trị |
+|---|---|
+| **ID** | UC-B01 |
+| **Module** | XBOS / Tenant Management |
+| **Actor chính** | Super Admin |
+| **Độ ưu tiên** | P0 — Critical |
+| **Giai đoạn** | Phase 1 |
+
+**Điều kiện tiên quyết:**
+- Super Admin đã xác thực (JWT hợp lệ, role = `SUPER_ADMIN`)
+- Thông tin pháp nhân đã được XeVN Group phê duyệt nội bộ
+
+**Dữ liệu đầu vào và quy tắc validation:**
+
+| Trường | Loại | Bắt buộc | Quy tắc |
+|---|---|---|---|
+| `name` | String | ✅ | 3–200 ký tự, không null |
+| `slug` | String | ✅ | `[a-z0-9-]`, 3–50 ký tự, unique toàn hệ thống |
+| `industry` | Enum | ✅ | Một trong: `TRANSPORT`, `TOURISM`, `SERVICE`, `OTHER` |
+| `adminEmail` | Email | ✅ | Format email hợp lệ, domain trong whitelist XeVN |
+| `adminFullName` | String | ✅ | 2–100 ký tự |
+| `timezone` | String | ❌ | Mặc định `Asia/Ho_Chi_Minh` |
+| `locale` | String | ❌ | Mặc định `vi-VN` |
+
+**Luồng chính (Happy Path):**
+1. SA mở form "Tạo Tenant mới" trong Command Center
+2. SA nhập: Tên công ty, slug, ngành nghề, email Tenant Admin
+3. Hệ thống validate realtime:
+   - Slug check unique khi rời ô nhập
+   - Email check domain whitelist khi rời ô nhập
+4. SA bấm "Tạo Tenant"
+5. Hệ thống tạo tenant record với trạng thái `PROVISIONING`
+6. Hệ thống tạo Membership cho Tenant Admin với role `TENANT_ADMIN`
+7. Hệ thống gửi email kích hoạt đến `adminEmail`
+8. UI hiển thị: "Tenant đã tạo thành công. Email kích hoạt đã gửi đến [email]."
+9. SA được chuyển đến trang quản lý tenant mới
+
+**Luồng ngoại lệ:**
+
+| Tình huống | Điều kiện | Xử lý |
+|---|---|---|
+| Slug đã tồn tại | `slug` trùng với tenant hiện có | Lỗi inline: "Slug này đã được sử dụng. Thử: [gợi ý slug thay thế]" |
+| Email không hợp lệ | Sai format hoặc domain không trong whitelist | Lỗi inline: "Email phải thuộc domain @xe.vn hoặc domain đã đăng ký" |
+| Network lỗi | Timeout khi gọi API | Toast error: "Không thể kết nối. Vui lòng thử lại." |
+| Session hết hạn | JWT expired | Redirect về login, preserve form data |
+
+**Quy tắc nghiệp vụ:**
+
+| BR-ID | Quy tắc | Điều kiện | Hậu quả vi phạm |
+|---|---|---|---|
+| BR-B01-01 | Slug uniqueness | Tất cả trường hợp | Reject ngay khi submit |
+| BR-B01-02 | Email domain whitelist | Tất cả trường hợp | Reject ngay khi submit |
+| BR-B01-03 | Link kích hoạt expiry | 48h sau khi tạo | Link hết hạn, SA cần resend |
+| BR-B01-04 | No hard delete | Sau khi tạo | Chỉ SUSPENDED / ARCHIVED |
+
+**Mã lỗi:**
+
+| Mã | HTTP | Mô tả |
+|---|---|---|
+| `TENANT_SLUG_EXISTS` | 409 | Slug đã tồn tại |
+| `TENANT_EMAIL_INVALID` | 422 | Email không hợp lệ |
+| `TENANT_EMAIL_DOMAIN` | 422 | Domain email không trong whitelist |
+
+**Tiêu chí chấp nhận:**
+- SA tạo tenant thành công → Tenant Admin nhận email → click link → đặt mật khẩu → đăng nhập thành công: **PASS**
+- SA nhập slug đã tồn tại → hệ thống báo lỗi ngay lập tức: **PASS**
+- SA nhập email sai domain → hệ thống báo lỗi ngay lập tức: **PASS**
+
+---
+
+### UC-B02: Phân quyền và Quản lý Role
+
+**Metadata:**
+
+| Thuộc tính | Giá trị |
+|---|---|
+| **ID** | UC-B02 |
+| **Module** | XBOS / RBAC Engine |
+| **Actor chính** | Tenant Admin |
+| **Actor phụ** | Super Admin |
+| **Độ ưu tiên** | P0 — Critical |
+
+**Luồng chính:**
+1. Tenant Admin vào "Quản lý người dùng" → chọn nhân viên
+2. Mở tab "Phân quyền"
+3. Chọn role muốn gán từ danh sách: `HR_MANAGER`, `DEPT_MANAGER`, `EMPLOYEE`, `FINANCE_STAFF`, `RECRUITER`
+4. (Tùy chọn) Giới hạn scope: chọn phòng ban áp dụng nếu role hỗ trợ
+5. Bấm "Lưu phân quyền"
+6. Hệ thống cập nhật Membership record
+7. Token của người dùng được đánh dấu revoke — lần đăng nhập tiếp theo sẽ lấy role mới
+
+**Quy tắc:**
+- Tenant Admin chỉ gán được role trong phạm vi tenant của mình
+- Role `TENANT_ADMIN` chỉ Super Admin mới được gán hoặc thu hồi
+- Gán role đang active cho người khác cần confirm
+- Mỗi thay đổi quyền ghi audit log: `{actor, targetUser, oldRoles, newRoles, timestamp}`
+
+---
+
+### UC-B03: Workflow Engine — Phê duyệt đơn
+
+**Metadata:**
+
+| Thuộc tính | Giá trị |
+|---|---|
+| **ID** | UC-B03 |
+| **Module** | XBOS / Workflow Engine |
+| **Actor chính** | Employee (người nộp), Dept Manager (cấp 1), HR Manager (cấp 2) |
+| **Độ ưu tiên** | P0 — Critical |
+
+**Luồng chính (phê duyệt thành công):**
+1. Employee nộp đơn (nghỉ phép / chi phí / ...)
+2. Hệ thống tạo WorkflowInstance với trạng thái `SUBMITTED`
+3. Hệ thống gửi notification đến Dept Manager (cấp 1)
+4. Dept Manager review và bấm "Duyệt"
+5. WorkflowInstance chuyển sang `L1_APPROVED`
+6. Hệ thống gửi notification đến HR Manager (cấp 2)
+7. HR Manager review và bấm "Duyệt"
+8. WorkflowInstance chuyển sang `L2_APPROVED` (Final)
+9. Hệ thống cập nhật entity liên quan (số ngày phép, trạng thái đơn...)
+10. Employee nhận notification "Đơn của bạn đã được duyệt"
+
+**Luồng ngoại lệ — Từ chối:**
+- Tại bất kỳ bước nào: Approver bấm "Từ chối" + nhập lý do (bắt buộc, min 10 ký tự)
+- WorkflowInstance → `REJECTED`
+- Employee nhận notification kèm lý do từ chối
+- Employee có thể chỉnh sửa và nộp lại (tạo WorkflowInstance mới)
+
+**Luồng ngoại lệ — Quá SLA:**
+- Sau 24h không có action ở cấp 1 → hệ thống gửi reminder email/push cho approver
+- Sau 48h (2×SLA) → hệ thống escalate lên cấp trên của approver
+- Escalation được ghi log và SA có thể xem trong báo cáo
+
+---
+
+## 3. MODULE HRM — HỒ SƠ NHÂN VIÊN
+
+### UC-H01: Tạo hồ sơ nhân viên mới
+
+**Metadata:**
+
+| Thuộc tính | Giá trị |
+|---|---|
+| **ID** | UC-H01 |
+| **Module** | HRM / Employee Management |
+| **Actor chính** | HR Manager |
+| **Độ ưu tiên** | P0 — Critical |
+
+**Dữ liệu đầu vào:**
+
+| Trường | Loại | Bắt buộc | Quy tắc validation |
+|---|---|---|---|
+| `fullName` | String | ✅ | 2–200 ký tự |
+| `nationalId` | String | ✅ | CCCD 12 số hoặc CMND 9 số, unique trong tenant |
+| `dateOfBirth` | Date | ✅ | Tuổi từ 15–70; format `YYYY-MM-DD` |
+| `email` | Email | ✅ | Format hợp lệ, unique trong tenant |
+| `phone` | String | ❌ | 10–11 số, theo chuẩn VN |
+| `departmentId` | UUID | ✅ | Phải tồn tại trong tenant |
+| `positionId` | UUID | ✅ | Phải tồn tại trong catalog tenant |
+| `managerId` | UUID | ✅ | Phải là nhân viên active trong cùng tenant |
+| `contractType` | Enum | ✅ | `FULL_TIME`, `PROBATION`, `CONTRACT`, `INTERN` |
+| `startDate` | Date | ✅ | Không sớm hơn today − 365 ngày |
+| `baseSalary` | Decimal | ✅ | ≥ lương tối thiểu vùng áp dụng |
+| `workplaceId` | UUID | ✅ | Phải tồn tại trong tenant |
+
+**Luồng chính:**
+1. HR vào "Nhân viên" → "Thêm mới"
+2. Nhập tab 1: Thông tin cá nhân (họ tên, CCCD, ngày sinh, giới tính, liên hệ)
+3. Nhập tab 2: Vị trí công việc (phòng ban, chức danh, quản lý, địa điểm)
+4. Nhập tab 3: Hợp đồng (loại HĐ, ngày bắt đầu, lương cơ bản, phụ cấp)
+5. Upload tab 4: Tài liệu (ảnh chân dung, CCCD, bằng cấp, hợp đồng scan)
+6. HR bấm "Lưu hồ sơ"
+7. Hệ thống validate toàn bộ form
+8. Hệ thống tạo Employee record + ContractRecord + Membership account
+9. Hệ thống gửi email mời đến email nhân viên
+10. HR nhận xác nhận: "Hồ sơ nhân viên [Tên] đã tạo thành công. Mã nhân viên: [ID]"
+
+---
+
+### UC-H02: Chấm công — Check-in/Check-out
+
+**Metadata:**
+
+| Thuộc tính | Giá trị |
+|---|---|
+| **ID** | UC-H02 |
+| **Module** | HRM / Attendance |
+| **Actor chính** | Employee (qua Mobile App) |
+| **Độ ưu tiên** | P0 — Critical |
+
+**Sequence diagram đầy đủ:**
+
+```mermaid
+sequenceDiagram
+    participant E as Employee Mobile
+    participant API as HRM API
+    participant GEO as Geofence Service
+    participant DB as Database
+    participant PUSH as Push Service
+
+    E->>API: POST /attendance/check-in {lat, lng, selfieBase64}
+    API->>API: Validate JWT token
+    API->>GEO: Check location {lat, lng, workplaces[]}
+    GEO-->>API: {valid: true, workplace: "VP HCM", distance: 45}
+    API->>DB: INSERT attendance_records
+    DB-->>API: {id, checkedInAt}
+    API->>PUSH: Notify manager of team checkin
+    API-->>E: {success, checkedInAt, workplace, message}
+```
+
+**Quy tắc validation:**
+
+| Quy tắc | Điều kiện | Xử lý |
+|---|---|---|
+| Khoảng cách | distance ≤ 200m (configurable) | Nếu > 200m → từ chối tự động |
+| Thời gian trùng | Đã có record check-in chưa check-out | Cảnh báo, không block |
+| Ngày trùng | Đã check-in hôm nay | Cảnh báo + hỏi xác nhận |
+| GPS accuracy | Độ chính xác ≥ 50m | Nếu kém hơn → cảnh báo cho NV |
+
+---
+
+### UC-H03: Nộp đơn nghỉ phép
+
+**Metadata:**
+
+| Thuộc tính | Giá trị |
+|---|---|
+| **ID** | UC-H03 |
+| **Module** | HRM / Leave Management |
+| **Actor chính** | Employee |
+| **Actor phụ** | Dept Manager, HR Manager |
+| **Độ ưu tiên** | P0 — Critical |
+
+**Dữ liệu đầu vào:**
+
+| Trường | Loại | Bắt buộc | Quy tắc |
+|---|---|---|---|
+| `leaveTypeId` | UUID | ✅ | Phải tồn tại trong catalog tenant |
+| `startDate` | Date | ✅ | Không được trong quá khứ (trừ sick leave) |
+| `endDate` | Date | ✅ | ≥ startDate |
+| `reason` | String | ✅ | 10–500 ký tự |
+| `attachment` | File | ❌ | PDF/JPG ≤ 5MB; bắt buộc nếu sick leave ≥ 3 ngày |
+
+**Luồng chính:**
+1. Employee vào "Nghỉ phép" → "Tạo đơn"
+2. Hệ thống hiển thị số ngày phép còn lại theo từng loại
+3. Employee chọn loại nghỉ, ngày bắt đầu, ngày kết thúc
+4. Hệ thống tính số ngày nghỉ (loại trừ ngày lễ và cuối tuần)
+5. Employee nhập lý do; upload giấy tờ nếu cần
+6. Employee bấm "Nộp đơn"
+7. Hệ thống validate: kiểm tra số ngày còn lại, nộp đủ sớm, giấy tờ nếu cần
+8. Hệ thống tạo LeaveRequest với trạng thái `SUBMITTED`
+9. Hệ thống gửi notification đến Dept Manager
+10. Employee nhận xác nhận: "Đơn nghỉ phép đã gửi thành công"
+
+---
+
+### UC-H04: Tính lương cuối kỳ
+
+**Metadata:**
+
+| Thuộc tính | Giá trị |
+|---|---|
+| **ID** | UC-H04 |
+| **Module** | HRM / Payroll |
+| **Actor chính** | Hệ thống (auto), HR Manager, Finance Staff |
+| **Độ ưu tiên** | P0 — Critical |
+
+**Luồng tự động hàng tháng:**
+1. Ngày 25 hàng tháng: Batch job tự động chạy
+2. Lấy dữ liệu: attendance records + approved leaves + base salary + allowances
+3. Tính lương từng NV theo công thức:
+   - Working days = Ngày công chuẩn − Ngày nghỉ không phép
+   - Gross = BaseSalary × (workingDays / standardDays) + Allowances
+   - Net = Gross − BHXH(8%) − BHYT(1.5%) − BHTN(1%) − PIT
+4. Tạo PayrollRecord với trạng thái `DRAFT`
+5. HR Manager được notify để review
+
+**Mã lỗi:**
+
+| Mã | Điều kiện | Xử lý |
+|---|---|---|
+| `PAYROLL_NO_CONTRACT` | NV không có hợp đồng active | Skip NV đó, ghi warning |
+| `PAYROLL_NO_ATTENDANCE` | NV không có bất kỳ record chấm công nào | Tính lương = 0, ghi warning |
+| `PAYROLL_ALREADY_LOCKED` | Bảng lương đã khóa | Reject thao tác sửa |
+
+---
+
+## 4. MODULE HRM MOBILE
+
+### UC-M01: Đăng nhập đa tenant
+
+**Metadata:**
+
+| Thuộc tính | Giá trị |
+|---|---|
+| **ID** | UC-M01 |
+| **Module** | HRM Mobile / Authentication |
+| **Actor chính** | Employee |
+| **Độ ưu tiên** | P0 — Critical |
+| **Platform** | React Native (iOS 14+, Android 8+) |
+
+**Luồng chính:**
+1. User mở app → màn hình đăng nhập
+2. Nhập email + password
+3. API validate credentials → trả về danh sách memberships
+4. User thấy màn hình "Chọn công ty":
+   - Hiển thị tên công ty + vai trò + avatar
+5. User chọn công ty
+6. API phát access_token + refresh_token cho membership đó
+7. App lưu token vào SecureStorage (Keychain/KeyStore)
+8. App navigate đến màn hình chính
+
+**Biometric Login (sau lần đầu thành công):**
+1. User mở app → hiển thị nút "Đăng nhập bằng Face ID / Vân tay"
+2. Xác thực biometric thành công → app dùng stored refresh_token để lấy access_token mới
+3. Nếu refresh_token hết hạn → yêu cầu đăng nhập lại bằng password
+
+---
+
+### UC-M02: Check-in GPS
+
+**Metadata:**
+
+| Thuộc tính | Giá trị |
+|---|---|
+| **ID** | UC-M02 |
+| **Module** | HRM Mobile / Attendance |
+| **Actor chính** | Employee |
+| **Độ ưu tiên** | P0 — Critical |
+
+**Màn hình Check-in:**
+
+| Element | Mô tả |
+|---|---|
+| Map view | Hiển thị vị trí hiện tại + vòng tròn geofence |
+| Địa điểm | Tên địa điểm làm việc gần nhất trong phạm vi |
+| Khoảng cách | "Bạn cách [VP HCM] 45m" |
+| Nút Check-in | Xanh lá khi trong phạm vi; xám khi ngoài phạm vi |
+| Thời gian | Đồng hồ realtime |
+
+**Xử lý các trường hợp đặc biệt:**
+
+| Tình huống | Màn hình hiển thị | Hành động cho phép |
+|---|---|---|
+| GPS không bắt được | Cảnh báo + icon GPS off | Check-in thủ công (cần manager confirm) |
+| Ngoài tất cả phạm vi | Map với pin vị trí hiện tại | Chọn địa điểm thủ công từ dropdown |
+| Đã check-in hôm nay | Badge "Đã check-in lúc 08:32" | Xem lịch sử, không check-in lại |
+| Thiết bị mock GPS | Phát hiện qua Play Integrity API | Block check-in, ghi cảnh báo bảo mật |
+
+---
+
+### UC-M03: Nghỉ phép Mobile
+
+**Luồng tạo đơn (Employee):**
+1. Tab "Nghỉ phép" → "Tạo đơn nghỉ"
+2. Chọn loại: Phép năm / Nghỉ bệnh / Nghỉ không lương / ...
+3. Chọn ngày (DatePicker với highlight ngày lễ màu đỏ, cuối tuần màu xanh)
+4. Nhập lý do (min 10 ký tự)
+5. Upload giấy tờ (nếu cần) từ camera hoặc file
+6. Xem summary: "Bạn sẽ nghỉ 2 ngày. Phép còn lại sau khi nghỉ: 8 ngày"
+7. Bấm "Gửi đơn" → xác nhận lần cuối
+8. Nhận push notification: "Đơn nghỉ phép đã gửi"
+
+**Luồng duyệt (Manager):**
+1. Push notification: "Đơn nghỉ phép từ Nguyễn Văn A (2 ngày, 25-26/06)"
+2. Mở notification → màn hình chi tiết đơn
+3. Xem: tên NV, loại nghỉ, ngày, lý do, lịch sử nghỉ của NV năm nay
+4. Xem calendar tổ đội: ai đang nghỉ cùng ngày?
+5. Bấm "Duyệt" hoặc "Từ chối" (bắt buộc nhập lý do khi từ chối)
+6. Action được xử lý ngay → NV nhận kết quả push notification trong 30 giây
+
+---
+
+### UC-M04: Xem Phiếu lương Mobile
+
+**Luồng:**
+1. Tab "Lương" → danh sách phiếu theo tháng (6 tháng gần nhất)
+2. Badge "MỚI" trên tháng hiện tại khi vừa phát
+3. Chọn tháng → màn hình phiếu lương chi tiết
+
+**Cấu trúc phiếu lương Mobile:**
+
+| Phần | Nội dung |
+|---|---|
+| Header | Tên NV, Mã NV, Kỳ lương, Trạng thái (Đã thanh toán) |
+| Thu nhập | Lương cơ bản, Phụ cấp xăng xe, Phụ cấp điện thoại, Bonus |
+| Khấu trừ | BHXH (8%), BHYT (1.5%), BHTN (1%), Thuế TNCN |
+| Tổng kết | **Lương thực nhận** (highlight màu xanh, font lớn) |
+| Footer | Nút "Tải PDF", nút "Chia sẻ" |
+
+---
+
+### UC-M05: Push Notifications
+
+**Metadata:**
+
+| Thuộc tính | Giá trị |
+|---|---|
+| **ID** | UC-M05 |
+| **Module** | HRM Mobile / Notifications |
+| **Độ ưu tiên** | P1 — High |
+
+**Loại thông báo và template:**
+
+| Loại | Trigger | Template |
+|---|---|---|
+| Đơn nghỉ phép chờ duyệt | Khi employee nộp đơn | "[Tên NV] xin nghỉ phép [N ngày]. Bấm để xem và duyệt." |
+| Kết quả duyệt đơn | Khi approver duyệt/từ chối | "Đơn nghỉ phép của bạn đã được [duyệt/từ chối]. Lý do: [...]" |
+| Phiếu lương mới | Sau khi bảng lương được phê duyệt | "Phiếu lương tháng [MM/YYYY] đã sẵn sàng. Lương thực nhận: [số tiền]" |
+| Reminder check-in | 8:00 sáng nếu chưa check-in | "Bạn chưa check-in hôm nay. Nhớ chấm công nhé!" |
+| Workflow escalation | Khi approver quá SLA | "Có [N] đơn chờ phê duyệt quá 24h từ bộ phận bạn" |
+
+---
+
+### UC-M06: Offline Mode
+
+**Dữ liệu được cache offline:**
+
+| Dữ liệu | TTL cache | Cập nhật khi |
+|---|---|---|
+| Thông tin cá nhân NV | 24h | Đăng nhập / Force sync |
+| Lịch sử chấm công 30 ngày gần nhất | 24h | Mỗi lần mở app (foreground) |
+| Phiếu lương 3 tháng gần nhất | 7 ngày | Sau mỗi kỳ phát lương |
+| Danh sách đơn nghỉ phép | 1h | Sau mỗi thay đổi trạng thái |
+| Thông tin các địa điểm làm việc | 7 ngày | Khi admin cập nhật |
+
+**Hành vi khi offline:**
+
+| Tính năng | Offline behavior |
+|---|---|
+| Check-in | Không khả dụng (cần GPS + API) |
+| Xem lịch sử chấm công | Khả dụng từ cache |
+| Xem phiếu lương | Khả dụng từ cache |
+| Tạo đơn nghỉ phép | Queue locally → sync khi có mạng |
+| Push notifications | Không nhận được (cần internet) |
+
+---
+
+## 5. MODULE LOGISTICS
+
+### UC-L01: Quản lý phương tiện
+
+**Metadata:**
+
+| Thuộc tính | Giá trị |
+|---|---|
+| **ID** | UC-L01 |
+| **Module** | Logistics / Vehicle Management |
+| **Actor chính** | Fleet Manager |
+| **Độ ưu tiên** | P1 — High |
+
+**Dữ liệu phương tiện:**
+
+| Trường | Loại | Bắt buộc | Quy tắc |
+|---|---|---|---|
+| `licensePlate` | String | ✅ | Format biển số VN, unique trong tenant |
+| `vehicleType` | Enum | ✅ | `BUS`, `MINIBUS`, `CAR`, `MOTORCYCLE` |
+| `capacity` | Integer | ✅ | 1–100 chỗ |
+| `brand` | String | ✅ | VD: Toyota, Mercedes |
+| `model` | String | ✅ | VD: Fortuner, Sprinter |
+| `year` | Integer | ✅ | 1990 đến năm hiện tại |
+| `registrationExpiry` | Date | ✅ | Ngày hết hạn đăng ký |
+| `insuranceExpiry` | Date | ✅ | Ngày hết hạn bảo hiểm |
+| `inspectionExpiry` | Date | ✅ | Ngày hết hạn kiểm định |
+
+**Cảnh báo tự động:**
+- 30 ngày trước khi bất kỳ giấy tờ nào hết hạn: gửi email + push cho Fleet Manager
+- 7 ngày trước: gửi thêm 1 lần nữa với priority cao
+- Xe có giấy tờ hết hạn: không thể assign cho chuyến mới (block)
+
+---
+
+### UC-L03: Lên lịch và quản lý chuyến
+
+**Metadata:**
+
+| Thuộc tính | Giá trị |
+|---|---|
+| **ID** | UC-L03 |
+| **Module** | Logistics / Trip Management |
+| **Actor chính** | Dispatcher |
+| **Actor phụ** | Driver, Fleet Manager |
+| **Độ ưu tiên** | P1 — High |
+
+**Luồng tạo chuyến:**
+1. Dispatcher vào "Tạo chuyến mới"
+2. Nhập thông tin chuyến: điểm đón, điểm đến, ngày giờ khởi hành, số khách
+3. Hệ thống gợi ý xe phù hợp (theo sức chứa ≥ số khách và lịch trống)
+4. Hệ thống gợi ý tài xế phù hợp (không nghỉ phép, không trùng chuyến khác)
+5. Dispatcher chọn xe và tài xế; xác nhận tạo chuyến
+6. Hệ thống tạo Trip record
+7. Tài xế nhận push notification: "Bạn có chuyến mới ngày [ngày giờ]"
+8. Tài xế xác nhận nhận chuyến trên Mobile App
+
+**Trạng thái chuyến:**
+
+| Trạng thái | Ý nghĩa |
+|---|---|
+| `SCHEDULED` | Đã lên lịch, chưa khởi hành |
+| `CONFIRMED` | Tài xế đã xác nhận |
+| `IN_PROGRESS` | Đang thực hiện chuyến |
+| `COMPLETED` | Hoàn thành |
+| `CANCELLED` | Đã hủy |
+
+---
+
+## 6. BẢNG TỔNG HỢP TẤT CẢ USE CASES
+
+| ID | Module | Use Case | Actor | Priority | Status |
+|---|---|---|---|---|---|
+| UC-B01 | XBOS | Tạo Tenant mới | Super Admin | P0 | ✅ Đặc tả đầy đủ |
+| UC-B02 | XBOS | Phân quyền RBAC | Tenant Admin | P0 | ✅ Đặc tả đầy đủ |
+| UC-B03 | XBOS | Workflow Engine | Employee/Manager | P0 | ✅ Đặc tả đầy đủ |
+| UC-B04 | XBOS | Catalog Governance | Super Admin/TA | P1 | 📝 Đặc tả cơ bản |
+| UC-B05 | XBOS | Audit Log | System | P1 | 📝 Đặc tả cơ bản |
+| UC-H01 | HRM | Tạo hồ sơ nhân viên | HR Manager | P0 | ✅ Đặc tả đầy đủ |
+| UC-H02 | HRM | Chấm công GPS | Employee | P0 | ✅ Đặc tả đầy đủ |
+| UC-H03 | HRM | Nghỉ phép | Employee | P0 | ✅ Đặc tả đầy đủ |
+| UC-H04 | HRM | Tính lương | System/HR/Finance | P0 | ✅ Đặc tả đầy đủ |
+| UC-H05 | HRM | Tuyển dụng | Recruiter | P1 | 📝 Đặc tả cơ bản |
+| UC-H06 | HRM | Báo cáo nhân sự | HR Manager | P1 | 📝 Đặc tả cơ bản |
+| UC-M01 | Mobile | Đăng nhập đa tenant | Employee | P0 | ✅ Đặc tả đầy đủ |
+| UC-M02 | Mobile | Check-in GPS | Employee | P0 | ✅ Đặc tả đầy đủ |
+| UC-M03 | Mobile | Nghỉ phép Mobile | Employee/Manager | P0 | ✅ Đặc tả đầy đủ |
+| UC-M04 | Mobile | Phiếu lương Mobile | Employee | P1 | ✅ Đặc tả đầy đủ |
+| UC-M05 | Mobile | Push Notifications | System | P1 | ✅ Đặc tả đầy đủ |
+| UC-M06 | Mobile | Offline Mode | Employee | P1 | ✅ Đặc tả đầy đủ |
+| UC-M07 | Mobile | Biometric Unlock | Employee | P2 | 📝 Đặc tả cơ bản |
+| UC-P01 | Portal | Command Center Dashboard | Super Admin | P1 | 📝 Đặc tả cơ bản |
+| UC-P02 | Portal | Catalog Management | Super Admin/TA | P1 | 📝 Đặc tả cơ bản |
+| UC-P03 | Portal | Tenant Admin Panel | Tenant Admin | P0 | 📝 Đặc tả cơ bản |
+| UC-L01 | Logistics | Quản lý phương tiện | Fleet Manager | P1 | ✅ Đặc tả đầy đủ |
+| UC-L02 | Logistics | Quản lý tài xế | Fleet Manager | P1 | 📝 Đặc tả cơ bản |
+| UC-L03 | Logistics | Lịch trình chuyến | Dispatcher | P1 | ✅ Đặc tả đầy đủ |
+| UC-L04 | Logistics | Tracking trạng thái | Driver | P2 | 📝 Đặc tả cơ bản |

@@ -40,6 +40,11 @@ export class ListEmployeesQueryDto {
 
   @IsOptional()
   @IsString()
+  department?: string;
+
+
+  @IsOptional()
+  @IsString()
   attendance_filter?: string;
 
   @IsOptional()

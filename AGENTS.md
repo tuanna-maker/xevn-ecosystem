@@ -40,7 +40,8 @@ Xem `docs/program/PATH_CANONICAL_LOCK.md`.
 - **U65:** nghiệm thu từ FE, zero-seed  
 - Soft-delete only; multi-tenant scope parity list↔get-by-id  
 - Spec trước code: SRS → TechSpec → DB_DESIGN → API_DESIGN
-- **STRICT SPECIFICATION ALIGNMENT**: Không tự suy diễn Schema & API Contract. Dù sửa FE cũng PHẢI đối chiếu SRS, TechSpec, DB_DESIGN, API_DESIGN trước (Full-Stack verification).
+- **STRICT SPECIFICATION ALIGNMENT**: Không tự suy diễn Schema & API Contract. Dù sửa FE hay BE cũng PHẢI đối chiếu SRS, TechSpec, DB_DESIGN, API_DESIGN trước (Full-Stack verification).
+- **MANDATORY SPEC ALIGNMENT BEFORE CODE**: Trước khi tạo mới, fix bug hay mở rộng tính năng, BẮT BUỘC phải tự động đối chiếu chuỗi spec: SRS -> TechSpec -> API Contract -> UI/UX Spec trong `docs/program/` và `_vibe-team-os/29-UIUX-STANDARDS.md` trước khi sửa bất kỳ dòng code nào.
 
 ## Claude Code
 
@@ -97,3 +98,4 @@ Xem `docs/program/PATH_CANONICAL_LOCK.md`.
    - JS error trong console = FAIL, phai log
 
 > Ly do: Agent cha can biet chinh xac nguyen nhan de fix, khong chi biet "subagent failed".
+- **COMMAND CENTER PORTAL DIALOG RULE**: Mọi Popup Modal trong ứng dụng HRM BẮT BUỘC dùng `@/components/ui/dialog` (`Dialog` + `DialogContent`) để Radix `DialogPortal` mount ra `document.body` toàn màn hình Command Center. CẤM dùng `<div className="fixed inset-0">` tự chế làm popup bị lọt thỏm trong iframe.

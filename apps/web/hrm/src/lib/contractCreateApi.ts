@@ -484,9 +484,15 @@ function mapPackageToSnapshot(pkg: HrmCompensationPackageRecord | null): Contrac
 
   const baseAmount = baseLine?.amount ?? probationLine?.amount ?? null;
 
+  const siLine = pkg.lines.find(
+    (l) => l.allowance_code === 'si_base' || l.component_code === 'si_base',
+  );
+
+  const insuranceAmount = siLine?.amount ?? baseAmount;
+
   const allowances: ContractCreateAllowanceLine[] = pkg.lines
 
-    .filter((l) => l.line_type === 'allowance')
+    .filter((l) => l.line_type === 'allowance' && l.allowance_code !== 'si_base')
 
     .map((l) => ({
 
@@ -504,7 +510,7 @@ function mapPackageToSnapshot(pkg: HrmCompensationPackageRecord | null): Contrac
 
     base_salary_vnd: formatVnd(baseAmount),
 
-    insurance_salary_vnd: formatVnd(baseAmount),
+    insurance_salary_vnd: formatVnd(insuranceAmount),
 
     salary_ratio_percent: null,
 
@@ -1080,23 +1086,41 @@ export type ContractCbBootstrapErrorOutcome = {
 
 export function mapContractCbBootstrapError(err: unknown): ContractCbBootstrapErrorOutcome {
 
-  const code = err instanceof ApiClientError ? err.code : undefined;
+  const code = err instanceof ApiClientError ? err.code : (err as any)?.code;
+
+  const status = err instanceof ApiClientError ? err.status : (err as any)?.status;
+
+
 
   const isOverlap =
 
-    code === 'HRM-COMP-409-OVERLAP' || code === 'HRM-CORE-CB-OVERLAP-409';
+    status === 409 ||
+
+    code === 'HRM-COMP-409-OVERLAP' ||
+
+    code === 'HRM-CORE-CB-OVERLAP-409' ||
+
+    String(code ?? '').includes('OVERLAP') ||
+
+    String(err ?? '').includes('409') ||
+
+    String((err as any)?.message ?? '').includes('chồng');
+
+
 
   if (isOverlap) {
 
     return {
 
-      message: 'Nhân viên đã có gói lương & bảo hiểm — dùng số hiện có (không tạo trùng).',
+      message: 'Nhân viên đã có gói lương & bảo hiểm — sử dụng mức lương hiện có (không tạo trùng).',
 
       treatAsExisting: true,
 
     };
 
   }
+
+
 
   return {
 
@@ -1107,5 +1131,3 @@ export function mapContractCbBootstrapError(err: unknown): ContractCbBootstrapEr
   };
 
 }
-
-

@@ -393,6 +393,17 @@ export class EmployeeCompensationService {
     companyId: string,
     authorization?: string,
   ): Promise<void> {
+    const code = componentCode.trim().toLowerCase();
+    const systemCbCodes = new Set([
+      'base',
+      'si_base',
+      'probation',
+      'base_salary',
+      'luong_co_ban',
+    ]);
+    if (systemCbCodes.has(code)) {
+      return;
+    }
     await assertComponentCodeInEffectiveCatalog({
       query: this.db.query.bind(this.db),
       companyId,
@@ -1294,7 +1305,20 @@ export class EmployeeCompensationService {
       `,
       values,
     );
-    const row = res.rows[0];
+    let row = res.rows[0];
+    if (!row) {
+      const fallbackRes = await this.db.query<CompensationPackageRow>(
+        `
+          SELECT ${PACKAGE_SELECT_COLS}
+          FROM public.employee_compensation_packages p
+          WHERE p.employee_id = $1::uuid
+          ORDER BY p.effective_from DESC, p.version DESC
+          LIMIT 1;
+        `,
+        [query.employee_id],
+      );
+      row = fallbackRes.rows[0];
+    }
     if (!row) return null;
     return { ...this.mapPackage(row), lines: await this.loadLines(row.id) };
   }

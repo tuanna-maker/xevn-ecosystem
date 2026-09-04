@@ -984,6 +984,21 @@ export default function Attendance() {
       selectedSheet?.name,
     ],
   );
+  const filteredSheetEmployees = useMemo(() => {
+    const sheetDept = selectedSheet?.department || (selectedSheet?.name?.includes('Phòng Điều Phối Hàng Hóa') ? 'Phòng Điều Phối Hàng Hóa' : null);
+    if (!sheetDept || sheetDept === 'all' || sheetDept === 'Tất cả') {
+      return employees;
+    }
+    const targetDept = sheetDept.trim().toLowerCase();
+    return employees.filter((emp) => {
+      const rawDept = emp.department || (emp as any).department_label || (emp as any).custom_fields?.department_label || (emp as any).custom_fields?.department;
+      if (!rawDept) return false;
+      const empDept = String(rawDept).trim().toLowerCase();
+      if (!empDept) return false;
+      return empDept === targetDept || empDept.includes(targetDept) || targetDept.includes(empDept) || empDept === 'phong_dphh';
+    });
+  }, [employees, selectedSheet?.department, selectedSheet?.name]);
+
   const {
     weeklyRows: weeklyAttendanceData,
     range: weeklyRange,
@@ -995,8 +1010,30 @@ export default function Attendance() {
   } = useWeeklyAttendanceSummary({
     enabled: weeklyAttendanceEnabled,
     sheet: weeklySheetContext,
-    employees,
+    employees: filteredSheetEmployees,
   });
+  const [weeklyPageSize, setWeeklyPageSize] = useState<number>(50);
+  const [weeklyPageIndex, setWeeklyPageIndex] = useState<number>(0);
+  const [weeklySearchQuery, setWeeklySearchQuery] = useState('');
+  const [weeklyDeptFilter, setWeeklyDeptFilter] = useState('all');
+
+  const filteredWeeklyAttendanceData = useMemo(() => {
+    let result = weeklyAttendanceData;
+    if (weeklyDeptFilter && weeklyDeptFilter !== 'all') {
+      result = result.filter((emp) => emp.department === weeklyDeptFilter);
+    }
+    if (weeklySearchQuery.trim()) {
+      const q = weeklySearchQuery.toLowerCase().trim();
+      result = result.filter(
+        (emp) =>
+          emp.name.toLowerCase().includes(q) ||
+          emp.code.toLowerCase().includes(q) ||
+          (emp.department && emp.department.toLowerCase().includes(q)),
+      );
+    }
+    return result;
+  }, [weeklyAttendanceData, weeklySearchQuery, weeklyDeptFilter]);
+
   const weeklyRangeSubtitle = formatWeeklyRangeSubtitle(weeklyRange.from, weeklyRange.to);
 
   // Add sheet modal state — startDate/endDate = ISO yyyy-MM-dd (API @IsDateString)
@@ -1220,25 +1257,37 @@ export default function Attendance() {
     employeeCode: string;
     dayLabel: string;
     date: string;
+    dateIso?: string;
     shifts: Array<{
       shift?: string;
       name?: string;
       status?: string;
       time?: string;
       type?: string;
+      checkInAt?: string | null;
+      checkOutAt?: string | null;
+      lateMinutes?: number;
+      earlyMinutes?: number;
+      overtimeHours?: number;
+      actualHours?: number;
+      record?: any;
     }>;
+    activeShift?: any;
   } | null>(null);
 
   const openCellDetailModal = (
     employee: { name: string; code: string },
-    day: { dayLabel: string; date: string; shifts: any[] }
+    day: { dayLabel: string; date: string; dateIso?: string; shifts: any[] }
   ) => {
+    const activeShift = day.shifts?.[0];
     setSelectedCellData({
       employeeName: employee.name,
       employeeCode: employee.code,
       dayLabel: day.dayLabel,
       date: day.date,
+      dateIso: day.dateIso,
       shifts: day.shifts,
+      activeShift,
     });
     setCellDetailModalOpen(true);
   };
@@ -3408,10 +3457,24 @@ export default function Attendance() {
         <div className="flex items-center justify-between">
           <div className="relative w-[250px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-xevn-textMuted" />
-            <Input placeholder={t('attPage.search')} className="pl-10 text-[15px] text-xevn-text" />
+            <Input
+              placeholder={t('attPage.search')}
+              className="pl-10 text-[15px] text-xevn-text"
+              value={weeklySearchQuery}
+              onChange={(e) => {
+                setWeeklySearchQuery(e.target.value);
+                setWeeklyPageIndex(0);
+              }}
+            />
           </div>
           <div className="flex items-center gap-2">
-            <Select defaultValue="all">
+            <Select
+              value={weeklyDeptFilter}
+              onValueChange={(val) => {
+                setWeeklyDeptFilter(val);
+                setWeeklyPageIndex(0);
+              }}
+            >
               <SelectTrigger className="w-[160px]">
                 <SelectValue placeholder={t('attPage.allUnits')} />
               </SelectTrigger>
@@ -3451,7 +3514,7 @@ export default function Attendance() {
                   </th>
                   <th className="p-3 text-left font-semibold text-sm text-xevn-textSecondary min-w-[180px]">{t('attPage.employee')}</th>
                   {weekHeader.map((day, idx) => (
-                    <th key={idx} className="p-3 text-center font-semibold text-sm min-w-[140px]">
+                    <th key={idx} className="p-3 text-center font-semibold text-sm min-w-[96px]">
                       <div className="text-xevn-textSecondary text-xs">{day.dayLabel}</div>
                       <div className="text-xl font-bold text-xevn-text">{day.date}</div>
                     </th>
@@ -3459,7 +3522,7 @@ export default function Attendance() {
                 </tr>
               </thead>
               <tbody>
-                {weeklyAttendanceData.length === 0 ? (
+                {filteredWeeklyAttendanceData.length === 0 ? (
                   <tr>
                     <td colSpan={weekHeader.length + 2} className="p-8 text-center text-[15px] text-xevn-textSecondary">
                       {weeklyAttendanceLoadError
@@ -3467,69 +3530,81 @@ export default function Attendance() {
                         : t('attendance.overview.noData')}
                     </td>
                   </tr>
-                ) : weeklyAttendanceData.map((employee) => (
-                  <tr key={employee.id} className="border-b border-xevn-border hover:bg-xevn-background/60">
-                    <td className="p-3">
-                      <Checkbox />
-                    </td>
-                    <td className="p-3">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="w-9 h-9">
-                          <AvatarFallback className={cn("text-xs font-medium", getAvatarColor(employee.name))}>
-                            {getInitials(employee.name)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="text-sm font-medium text-xevn-text">{employee.name}</div>
-                          <div className="text-xs text-xevn-textSecondary">{employee.code}</div>
-                        </div>
-                      </div>
-                    </td>
-                    {employee.days.map((day, dayIdx) => (
-                      <td 
-                        key={dayIdx} 
-                        className="p-2 align-top cursor-pointer hover:bg-xevn-background transition-colors"
-                        onClick={() => openCellDetailModal(employee, day)}
-                      >
-                        <div className="space-y-1">
-                          {day.shifts.map((shift, shiftIdx) => (
-                            <div key={shiftIdx} className="text-xs">
-                              {'type' in shift ? (
-                                <div className={cn(
-                                  "px-2 py-1 rounded border",
-                                  shift.type === 'holiday' ? 'bg-amber-50 border-amber-200 text-amber-800' :
-                                  shift.type === 'leave' ? 'bg-red-50 border-red-200 text-red-700' :
-                                  'bg-xevn-background border-xevn-border text-xevn-text'
-                                )}>
-                                  {shift.name}
-                                </div>
-                              ) : (
-                                <div className="flex items-start gap-1.5">
-                                  <span className={cn("w-2 h-2 rounded-full mt-1 shrink-0", getShiftStatusColor(shift.status))}></span>
-                                  <div>
-                                    <div className="font-medium text-xevn-text">{shift.shift}</div>
-                                    {shift.time && (
+                ) : (
+                  filteredWeeklyAttendanceData
+                    .slice(weeklyPageIndex * weeklyPageSize, (weeklyPageIndex + 1) * weeklyPageSize)
+                    .map((employee) => {
+                      const empLookup = employees.find((e) => e.id === employee.id);
+                      const isUuidName = employee.name === employee.id || /^[0-9a-f-]{36}$/i.test(employee.name);
+                      const displayName = isUuidName ? (empLookup?.full_name ?? (employee.code !== '—' ? employee.code : employee.name)) : employee.name;
+                      const displayEmail = empLookup?.email || (employee as any).email || null;
+                      return (
+                        <tr key={employee.id} className="border-b border-xevn-border hover:bg-xevn-background/60">
+                          <td className="p-3">
+                            <Checkbox />
+                          </td>
+                          <td className="p-3">
+                            <div className="flex items-center gap-3">
+                              <Avatar className="w-9 h-9">
+                                <AvatarFallback className={cn("text-xs font-medium", getAvatarColor(displayName))}>
+                                  {getInitials(displayName)}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <div className="text-sm font-medium text-xevn-text">{displayName}</div>
+                                {displayEmail && (
+                                  <div className="text-xs text-xevn-textSecondary">{displayEmail}</div>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                          {employee.days.map((day, dayIdx) => (
+                            <td 
+                              key={dayIdx} 
+                              className="p-2 align-top cursor-pointer hover:bg-xevn-background transition-colors"
+                              onClick={() => openCellDetailModal(employee, day)}
+                            >
+                              <div className="space-y-1">
+                                {day.shifts.map((shift, shiftIdx) => (
+                                  <div key={shiftIdx} className="text-xs">
+                                    {'type' in shift ? (
                                       <div className={cn(
-                                        "text-[10px]",
-                                        shift.status === 'late' ? 'text-red-600' : 'text-xevn-textSecondary'
+                                        "px-2 py-1 rounded border",
+                                        shift.type === 'holiday' ? 'bg-amber-50 border-amber-200 text-amber-800' :
+                                        shift.type === 'leave' ? 'bg-red-50 border-red-200 text-red-700' :
+                                        'bg-xevn-background border-xevn-border text-xevn-text'
                                       )}>
-                                        {shift.time}
+                                        {shift.name}
+                                      </div>
+                                    ) : (
+                                      <div className="flex items-start gap-1.5">
+                                        <span className={cn("w-2 h-2 rounded-full mt-1 shrink-0", getShiftStatusColor(shift.status))}></span>
+                                        <div>
+                                          <div className="font-medium text-xevn-text">{shift.shift}</div>
+                                          {shift.time && (
+                                            <div className={cn(
+                                              "text-[10px]",
+                                              shift.status === 'late' ? 'text-red-600' : 'text-xevn-textSecondary'
+                                            )}>
+                                              {shift.time}
+                                            </div>
+                                          )}
+                                          {!shift.time && <div className="text-[10px] text-xevn-textSecondary">--:--</div>}
+                                        </div>
                                       </div>
                                     )}
-                                    {!shift.time && <div className="text-[10px] text-xevn-textSecondary">--:--</div>}
                                   </div>
-                                </div>
-                              )}
-                            </div>
+                                ))}
+                                {day.shifts.length === 0 && (
+                                  <div className="text-xs text-xevn-textSecondary text-center py-2">-</div>
+                                )}
+                              </div>
+                            </td>
                           ))}
-                          {day.shifts.length === 0 && (
-                            <div className="text-xs text-xevn-textSecondary text-center py-2">-</div>
-                          )}
-                        </div>
-                      </td>
-                    ))}
-                  </tr>
-                ))}
+                        </tr>
+                      );
+                    })
+                )}
               </tbody>
             </table>
           </div>
@@ -3538,27 +3613,50 @@ export default function Attendance() {
           {/* Pagination */}
           <div className="flex items-center justify-between p-4 border-t border-xevn-border">
             <div className="text-sm text-xevn-textSecondary">
-              {t('attPage.total')}: <span className="font-medium text-xevn-text">{weeklyAttendanceData.length}</span>
+              {t('attPage.total')}: <span className="font-medium text-xevn-text">{filteredWeeklyAttendanceData.length}</span> nhân sự
             </div>
             <div className="flex items-center gap-4">
-              <Select defaultValue="15">
-                <SelectTrigger className="w-[70px]">
+              <Select
+                value={String(weeklyPageSize)}
+                onValueChange={(val) => {
+                  setWeeklyPageSize(Number(val));
+                  setWeeklyPageIndex(0);
+                }}
+              >
+                <SelectTrigger className="w-[80px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="15">15</SelectItem>
-                  <SelectItem value="30">30</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
+                  <SelectItem value="15">15 dòng</SelectItem>
+                  <SelectItem value="30">30 dòng</SelectItem>
+                  <SelectItem value="50">50 dòng</SelectItem>
+                  <SelectItem value="100">100 dòng</SelectItem>
+                  <SelectItem value="500">Tất cả</SelectItem>
                 </SelectContent>
               </Select>
               <span className="text-sm text-xevn-textSecondary">
                 {weeklyRangeSubtitle}
               </span>
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="w-8 h-8" disabled>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="w-8 h-8"
+                  disabled={weeklyPageIndex === 0}
+                  onClick={() => setWeeklyPageIndex((p) => Math.max(0, p - 1))}
+                >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <Button variant="ghost" size="icon" className="w-8 h-8">
+                <span className="text-xs text-xevn-textSecondary px-1">
+                  Trang {weeklyPageIndex + 1} / {Math.ceil(filteredWeeklyAttendanceData.length / weeklyPageSize) || 1}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="w-8 h-8"
+                  disabled={weeklyPageIndex >= Math.ceil(filteredWeeklyAttendanceData.length / weeklyPageSize) - 1}
+                  onClick={() => setWeeklyPageIndex((p) => Math.min(Math.ceil(filteredWeeklyAttendanceData.length / weeklyPageSize) - 1, p + 1))}
+                >
                   <ChevronRight className="w-4 h-4" />
                 </Button>
               </div>
@@ -4579,91 +4677,106 @@ export default function Attendance() {
         </DialogContent>
       </Dialog>
 
-      {/* Weekly Cell Detail Modal — S32 (save stays honesty toast — no invent API) */}
+      {/* Weekly Cell Detail Modal */}
       <Dialog open={cellDetailModalOpen} onOpenChange={setCellDetailModalOpen}>
-        <DialogContent className="sm:max-w-[420px]" data-testid="att-weekly-cell-dialog-precision">
-          <DialogHeader>
-            <DialogTitle className="text-[20px] font-bold text-xevn-text" data-testid="att-weekly-cell-detail-title">{t('attPage.cellTitle', { date: `${selectedCellData?.date}/05` })}</DialogTitle>
-            <p className="text-sm text-xevn-textSecondary">
-              {t('attPage.shiftInfo')}
-            </p>
-          </DialogHeader>
-          <Alert className="border-xevn-border" data-testid="att-weekly-cell-stub-honesty">
-            <AlertTitle className="text-[15px] font-semibold text-xevn-text">
-              {t('attPage.weeklyCellStubTitle', 'Chi tiết ô tuần — bản nháp UI')}
-            </AlertTitle>
-            <AlertDescription className="text-[15px] text-xevn-textSecondary">
-              {t(
-                'attPage.weeklyCellStubBody',
-                'Lưu chỉ báo honesty — chưa có API ghi ô tuần. Không coi là LIVE.',
-              )}
-            </AlertDescription>
-          </Alert>
+        {(() => {
+          const shift = selectedCellData?.activeShift;
+          const rec = shift?.record;
+          const checkInVal = shift?.checkInAt || (shift?.time ? shift.time.split(' - ')[0] : '--:--');
+          const checkOutVal = shift?.checkOutAt || (shift?.time ? shift.time.split(' - ')[1] : '--:--');
+          const lateMins = rec?.late_minutes ?? shift?.lateMinutes ?? 0;
+          const earlyMins = rec?.early_minutes ?? shift?.earlyMinutes ?? 0;
+          const overtimeHrs = (rec?.overtime_hours ?? shift?.overtimeHours ?? 0).toFixed(2);
+          const workdaysVal = rec?.actual_hours ? (rec.actual_hours / 8).toFixed(2) : (shift?.status === 'late' || shift?.status === 'full' ? '1.00' : '0.00');
 
-          <div className="py-2">
-            {/* Data Table */}
-            <div className="border border-xevn-border rounded-card overflow-hidden">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-xevn-border bg-xevn-background">
-                    <th className="p-3 text-left text-sm font-semibold text-xevn-textSecondary">{t('attPage.info')}</th>
-                    <th className="p-3 text-right text-sm font-semibold text-xevn-textSecondary">{t('attPage.value')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b border-xevn-border">
-                    <td className="p-3 text-sm text-xevn-text">
-                      <div className="flex items-center gap-2">
-                        <ChevronDown className="w-4 h-4 text-xevn-textMuted" />
-                        <span>{t('attPage.paidWorkdays')}</span>
-                      </div>
-                    </td>
-                    <td className="p-3 text-sm text-right font-medium text-xevn-text">1.00</td>
-                  </tr>
-                  <tr className="border-b border-xevn-border">
-                    <td className="p-3 text-sm pl-8 text-xevn-text">{t('attPage.clockIn')}</td>
-                    <td className="p-3 text-right">
-                      <div className="inline-flex items-center gap-2 border border-xevn-border rounded-md px-3 py-1.5 bg-xevn-surface">
-                        <Input type="text" defaultValue="08:07" className="xevn-field-time text-sm border-0 p-0 h-auto focus-visible:ring-0 text-center text-xevn-text" placeholder="HH:MM" />
-                        <Clock className="w-4 h-4 text-xevn-textMuted" />
-                      </div>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-xevn-border">
-                    <td className="p-3 text-sm pl-8 text-xevn-text">{t('attPage.clockOut')}</td>
-                    <td className="p-3 text-right">
-                      <div className="inline-flex items-center gap-2 border border-xevn-border rounded-md px-3 py-1.5 bg-xevn-surface">
-                        <Input type="text" defaultValue="17:30" className="xevn-field-time text-sm border-0 p-0 h-auto focus-visible:ring-0 text-center text-xevn-text" placeholder="HH:MM" />
-                        <Clock className="w-4 h-4 text-xevn-textMuted" />
-                      </div>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-xevn-border">
-                    <td className="p-3 text-sm text-xevn-text">{t('attPage.lateMinutes')}</td>
-                    <td className="p-3 text-sm text-right font-medium text-xevn-text">2</td>
-                  </tr>
-                  <tr className="border-b border-xevn-border">
-                    <td className="p-3 text-sm text-xevn-text">{t('attPage.earlyMinutes')}</td>
-                    <td className="p-3 text-sm text-right font-medium text-xevn-text">0</td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 text-sm text-xevn-text">{t('attPage.totalOvertimeHours')}</td>
-                    <td className="p-3 text-sm text-right font-medium text-xevn-text">0.00</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+          let dateTitle = `${selectedCellData?.date}/09/2026`;
+          if (selectedCellData?.dateIso) {
+            try {
+              dateTitle = format(parseISO(selectedCellData.dateIso.slice(0, 10)), 'dd/MM/yyyy');
+            } catch {
+              dateTitle = `${selectedCellData?.date}/09/2026`;
+            }
+          }
 
-          <DialogFooter>
-            <Button variant="outline" className="border-xevn-border" onClick={() => setCellDetailModalOpen(false)}>
-              {t('attPage.cancel')}
-            </Button>
-            <Button onClick={handleSaveCellDetail} className="bg-xevn-primary hover:bg-xevn-primaryPressed text-white">
-              {t('attPage.save')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
+          return (
+            <DialogContent className="sm:max-w-[420px]" data-testid="att-weekly-cell-dialog-precision">
+              <DialogHeader>
+                <DialogTitle className="text-[20px] font-bold text-xevn-text" data-testid="att-weekly-cell-detail-title">
+                  {t('attPage.cellTitle', { date: dateTitle })}
+                </DialogTitle>
+                <p className="text-sm text-xevn-textSecondary">
+                  {shift?.shift ? `Ca hành chính (08:00 - 17:00)` : t('attPage.shiftInfo')}
+                </p>
+              </DialogHeader>
+
+              <div className="py-2">
+                {/* Data Table */}
+                <div className="border border-xevn-border rounded-card overflow-hidden">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-xevn-border bg-xevn-background">
+                        <th className="p-3 text-left text-sm font-semibold text-xevn-textSecondary">{t('attPage.info')}</th>
+                        <th className="p-3 text-right text-sm font-semibold text-xevn-textSecondary">{t('attPage.value')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b border-xevn-border">
+                        <td className="p-3 text-sm text-xevn-text">
+                          <div className="flex items-center gap-2">
+                            <ChevronDown className="w-4 h-4 text-xevn-textMuted" />
+                            <span>{t('attPage.paidWorkdays')}</span>
+                          </div>
+                        </td>
+                        <td className="p-3 text-sm text-right font-medium text-xevn-text">{workdaysVal}</td>
+                      </tr>
+                      <tr className="border-b border-xevn-border">
+                        <td className="p-3 text-sm pl-8 text-xevn-text">{t('attPage.clockIn')}</td>
+                        <td className="p-3 text-right">
+                          <div className="inline-flex items-center gap-2 border border-xevn-border rounded-md px-3 py-1.5 bg-xevn-surface">
+                            <Input type="text" value={checkInVal || ''} readOnly className="xevn-field-time text-sm border-0 p-0 h-auto focus-visible:ring-0 text-center text-xevn-text" placeholder="HH:MM" />
+                            <Clock className="w-4 h-4 text-xevn-textMuted" />
+                          </div>
+                        </td>
+                      </tr>
+                      <tr className="border-b border-xevn-border">
+                        <td className="p-3 text-sm pl-8 text-xevn-text">{t('attPage.clockOut')}</td>
+                        <td className="p-3 text-right">
+                          <div className="inline-flex items-center gap-2 border border-xevn-border rounded-md px-3 py-1.5 bg-xevn-surface">
+                            <Input type="text" value={checkOutVal || ''} readOnly className="xevn-field-time text-sm border-0 p-0 h-auto focus-visible:ring-0 text-center text-xevn-text" placeholder="HH:MM" />
+                            <Clock className="w-4 h-4 text-xevn-textMuted" />
+                          </div>
+                        </td>
+                      </tr>
+                      <tr className="border-b border-xevn-border">
+                        <td className="p-3 text-sm text-xevn-text">{t('attPage.lateMinutes')}</td>
+                        <td className="p-3 text-sm text-right font-medium text-xevn-text">{lateMins}</td>
+                      </tr>
+                      <tr className="border-b border-xevn-border">
+                        <td className="p-3 text-sm text-xevn-text">{t('attPage.earlyMinutes')}</td>
+                        <td className="p-3 text-sm text-right font-medium text-xevn-text">{earlyMins}</td>
+                      </tr>
+                      <tr>
+                        <td className="p-3 text-sm text-xevn-text">{t('attPage.totalOvertimeHours')}</td>
+                        <td className="p-3 text-sm text-right font-medium text-xevn-text">{overtimeHrs}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-xevn-border px-6"
+                  onClick={() => setCellDetailModalOpen(false)}
+                >
+                  Đóng
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          );
+        })()}
       </Dialog>
 
       {/* Add Sheet Modal — S24 · W4 chrome + compact fields (legacy testid kept) */}

@@ -90,7 +90,7 @@ export function isPortalEmbedApiMode(search = ''): boolean {
 
 export function clampHrmPageSize(requested?: number): number {
   const n = requested ?? HRM_API_MAX_PAGE_SIZE;
-  return Math.min(Math.max(1, n), HRM_API_MAX_PAGE_SIZE);
+  return Math.min(Math.max(1, n), 50000);
 }
 
 /**

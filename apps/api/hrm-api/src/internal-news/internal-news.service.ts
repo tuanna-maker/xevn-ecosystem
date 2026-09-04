@@ -160,7 +160,7 @@ export class InternalNewsService {
     const total = parseInt(countRes.rows[0]?.count ?? '0', 10);
 
     values.push(pageSize, offset);
-    const res = await this.db.query<HrmInternalNewsRow>(
+    const res = await this.db.query<any>(
       `SELECT ${ROW_SELECT}
        FROM public.hrm_internal_news
        ${where}
@@ -188,7 +188,7 @@ export class InternalNewsService {
     const status = payload.status ?? 'published';
     const publishedAt = payload.published_at?.toISOString() ?? (status === 'published' ? now : null);
 
-    const res = await this.db.query<HrmInternalNewsRow>(
+    const res = await this.db.query<any>(
       `INSERT INTO public.hrm_internal_news (
         id, company_id, tenant_id,
         title, slug, summary, content,
@@ -242,7 +242,7 @@ export class InternalNewsService {
 
   private async getNewsScoped(id: string, companyId: string, authorization?: string) {
     const scope = resolveHrmListScope(authorization, companyId);
-    const res = await this.db.query<HrmInternalNewsRow>(
+    const res = await this.db.query<any>(
       `SELECT ${ROW_SELECT} FROM public.hrm_internal_news WHERE id = $1::uuid LIMIT 1;`,
       [id],
     );
@@ -319,7 +319,7 @@ export class InternalNewsService {
     }
 
     values.push(id);
-    const res = await this.db.query<HrmInternalNewsRow>(
+    const res = await this.db.query<any>(
       `UPDATE public.hrm_internal_news SET ${fields.join(', ')} WHERE id = $${paramIdx}::uuid RETURNING ${ROW_SELECT};`,
       values,
     );

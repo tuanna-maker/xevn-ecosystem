@@ -132,13 +132,13 @@ export class AttendanceOverviewService {
       { name: string; dept: string; count: number }
     >();
     for (const r of lateEarlyAll) {
-      const existing = lateEarlyMap.get(r.employee_id);
+      const existing = lateEarlyMap.get((r.employee_id as string));
       if (existing) {
         existing.count += 1;
       } else {
-        lateEarlyMap.set(r.employee_id, {
-          name: r.employee_name,
-          dept: r.department || 'Không xác định',
+        lateEarlyMap.set((r.employee_id as string), {
+          name: String(r.employee_name || ""),
+          dept: String(r.department || 'Không xác định'),
           count: 1,
         });
       }

@@ -33,7 +33,8 @@
  * must_keep: payroll_e2e_ready=false · hdsd-pay-sheet-tpl-* · U65
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Plus, Save, Trash2, LayoutTemplate, GripVertical } from 'lucide-react';
+import { Plus, Save, Trash2, LayoutTemplate, GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
+
 import { useAuth } from '@/contexts/AuthContext';
 import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterContext';
 import {
@@ -83,9 +84,12 @@ import {
 } from '@/lib/settingsCatalogPagination';
 import { SettingsCatalogScreenShell } from '@/components/settings/SettingsCatalogScreenShell';
 import { cn } from '@/lib/utils';
-import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
-
+import { Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
+import { sameNodeDragBind } from '@/lib/jdDndSameNodeProps';
 import { HrmDragDropContext } from '@/components/contracts/HrmDragDropContext';
+
+
+
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
 import { SettingsCatalogPagination } from '@/components/settings/SettingsCatalogPagination';
 import { SettingsCatalogRowActions } from '@/components/settings/SettingsCatalogRowActions';
@@ -532,6 +536,29 @@ export function PaySheetTemplateSettingsPanel() {
     });
   };
 
+  const moveLineUp = (index: number) => {
+    if (index <= 0) return;
+    setLineDrafts((prev) => {
+      const items = Array.from(prev);
+      const temp = items[index - 1];
+      items[index - 1] = items[index];
+      items[index] = temp;
+      return items.map((item, idx) => ({ ...item, sortOrder: idx }));
+    });
+  };
+
+  const moveLineDown = (index: number) => {
+    setLineDrafts((prev) => {
+      if (index >= prev.length - 1) return prev;
+      const items = Array.from(prev);
+      const temp = items[index + 1];
+      items[index + 1] = items[index];
+      items[index] = temp;
+      return items.map((item, idx) => ({ ...item, sortOrder: idx }));
+    });
+  };
+
+
   const removeLine = (key: string) => {
     setLineDrafts((prev) => {
       const next = prev.filter((l) => l.key !== key);
@@ -750,9 +777,9 @@ export function PaySheetTemplateSettingsPanel() {
         </div>
 
         {dndReady ? (
-          <DragDropContext onDragEnd={onDragEnd}>
+          <HrmDragDropContext onDragEnd={onDragEnd}>
             <div className="border rounded-md divide-y overflow-x-auto">
-              <div className="grid grid-cols-[100px_minmax(180px,1.2fr)_minmax(140px,1fr)_130px_minmax(180px,1.4fr)_40px] gap-2.5 bg-muted/50 px-3 py-2 text-xs font-medium text-muted-foreground border-b items-center min-w-[800px]">
+              <div className="grid grid-cols-[140px_minmax(180px,1.2fr)_minmax(150px,1fr)_130px_minmax(180px,1.4fr)_40px] gap-2 bg-muted/50 px-3 py-2 text-xs font-medium text-muted-foreground border-b items-center min-w-[820px]">
                 <div>TT</div>
                 <div>Nhãn hiển thị (Thành phần)</div>
                 <div>Mã cột</div>
@@ -765,127 +792,156 @@ export function PaySheetTemplateSettingsPanel() {
                   <div
                     {...provided.droppableProps}
                     ref={provided.innerRef}
-                    className="divide-y min-h-[100px] bg-white min-w-[800px]"
+                    className="divide-y min-h-[100px] bg-white min-w-[820px]"
                   >
                     {lineDrafts.map((line, index) => (
                       <Draggable key={line.key} draggableId={line.key} index={index}>
-                        {(draggableProvided, snapshot) => (
-                          <div
-                            ref={draggableProvided.innerRef}
-                            {...draggableProvided.draggableProps}
-                            style={draggableProvided.draggableProps.style}
-                            data-testid={`pay-sheet-tpl-line-${line.key}`}
-                            className={cn(
-                              "grid grid-cols-[100px_minmax(180px,1.2fr)_minmax(140px,1fr)_130px_minmax(180px,1.4fr)_40px] gap-2.5 px-3 py-2 items-center bg-white border-b transition-colors",
-                              snapshot.isDragging && "shadow-xl bg-accent/60 rounded-md border border-primary/40 z-[9999] opacity-95 scale-[1.01]"
-                            )}
-                          >
-                            <div className="flex items-center gap-1 shrink-0">
-                              <div
-                                {...draggableProvided.dragHandleProps}
-                                className="cursor-grab active:cursor-grabbing p-1.5 hover:bg-muted rounded shrink-0 text-muted-foreground hover:text-foreground touch-none select-none"
-                                title="Kéo thả để di chuyển dòng"
-                              >
-                                <GripVertical className="h-4 w-4" />
-                              </div>
-                              <Input
-                                type="text"
-                                inputMode="numeric"
-                                pattern="[0-9]*"
-                                className="h-9 w-11 text-center shrink-0 text-xs px-1"
-                                value={line.sortOrder}
-                                onChange={(e) =>
-                                  updateLine(line.key, { sortOrder: Number(e.target.value.replace(/\D/g, '')) || 0 })
-                                }
-                                data-testid={`hdsd-pay-sheet-tpl-line-sort-${line.key}`}
-                              />
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7 rounded-full hover:bg-muted shrink-0 text-primary"
-                                onClick={() => addLineAfter(line.key)}
-                                title="Thêm cột phía dưới"
-                              >
-                                <Plus className="h-4 w-4" />
-                              </Button>
-                            </div>
-                            <div className="min-w-0">
-                              <CatalogSearchPicker
-                                options={componentOptions}
-                                value={line.componentId || null}
-                                onValueChange={(v) => {
-                                  const comp = components.find((c) => c.id === v);
-                                  updateLine(line.key, {
-                                    componentId: v,
-                                    displayLabel: comp ? comp.name : '',
-                                  });
-                                }}
-                                placeholder="Chọn nhãn hiển thị"
-                                searchPlaceholder="Tìm thành phần..."
-                                triggerClassName="h-9 w-full"
-                                data-testid={`hdsd-pay-sheet-tpl-line-component-${line.key}`}
-                              />
-                            </div>
-                            <div className="min-w-0">
-                              <Input
-                                className="h-9 bg-muted w-full font-mono text-xs overflow-ellipsis"
-                                value={components.find((c) => c.id === line.componentId)?.code || ''}
-                                readOnly
-                                placeholder="Mã tự động"
-                                data-testid={`hdsd-pay-sheet-tpl-line-code-${line.key}`}
-                              />
-                            </div>
-                            <div className="min-w-0">
-                              <Select
-                                value={line.inputMethod || 'FORMULA'}
-                                onValueChange={(v) =>
-                                  updateLine(line.key, { inputMethod: v })
-                                }
-                              >
-                                <SelectTrigger className="h-9 w-full text-xs">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SettingsDialogSelectContent>
-                                  <SelectItem value="MANUAL">Nhập tay</SelectItem>
-                                  <SelectItem value="FORMULA">Công thức</SelectItem>
-                                  <SelectItem value="SYSTEM">Dữ liệu hệ thống</SelectItem>
-                                </SettingsDialogSelectContent>
-                              </Select>
-                            </div>
-                            <div className="min-w-0">
-                              {line.inputMethod === 'MANUAL' ? (
-                                <span className="text-xs text-muted-foreground px-1 block truncate">Nhập liệu thủ công</span>
-                              ) : line.inputMethod === 'SYSTEM' ? (
-                                <CatalogSearchPicker
-                                  options={systemDataOptions}
-                                  value={line.systemDataMappingId || null}
-                                  onValueChange={(v) =>
-                                    updateLine(line.key, {
-                                      systemDataMappingId: v,
-                                    })
-                                  }
-                                  placeholder="-- Chọn dữ liệu --"
-                                  searchPlaceholder="Tìm dữ liệu hệ thống..."
-                                  triggerClassName="h-9 w-full"
-                                />
-                              ) : (
-                                <span className="text-xs text-muted-foreground px-1 block truncate">Công thức gốc</span>
+                        {(draggableProvided, snapshot) => {
+                          const bind = sameNodeDragBind(draggableProvided);
+                          return (
+                            <div
+                              ref={bind.ref}
+                              {...bind.props}
+                              data-testid={`pay-sheet-tpl-line-${line.key}`}
+                              className={cn(
+                                "grid grid-cols-[140px_minmax(180px,1.2fr)_minmax(150px,1fr)_130px_minmax(180px,1.4fr)_40px] gap-2 px-3 py-2 items-center bg-white border-b transition-colors cursor-grab active:cursor-grabbing hover:bg-slate-50/80 select-none",
+                                snapshot.isDragging && "shadow-2xl bg-sky-50/90 rounded-md border-2 border-primary/60 z-[99999] opacity-95 scale-[1.01]"
                               )}
+                            >
+                              <div className="flex items-center gap-1 shrink-0">
+                                <div
+                                  className="p-1 text-muted-foreground shrink-0"
+                                  title="Kéo thả để di chuyển dòng"
+                                >
+                                  <GripVertical className="h-4 w-4" />
+                                </div>
+                                <div
+                                  className="flex flex-col gap-0.5 shrink-0"
+                                  onPointerDown={(e) => e.stopPropagation()}
+                                  onMouseDown={(e) => e.stopPropagation()}
+                                >
+                                  <button
+                                    type="button"
+                                    onClick={() => moveLineUp(index)}
+                                    disabled={index === 0}
+                                    className="p-0.5 hover:bg-muted rounded disabled:opacity-20 disabled:pointer-events-none text-muted-foreground hover:text-foreground transition-colors"
+                                    title="Di chuyển lên"
+                                  >
+                                    <ChevronUp className="h-3 w-3" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => moveLineDown(index)}
+                                    disabled={index === lineDrafts.length - 1}
+                                    className="p-0.5 hover:bg-muted rounded disabled:opacity-20 disabled:pointer-events-none text-muted-foreground hover:text-foreground transition-colors"
+                                    title="Di chuyển xuống"
+                                  >
+                                    <ChevronDown className="h-3 w-3" />
+                                  </button>
+                                </div>
+                                <Input
+                                  type="text"
+                                  inputMode="numeric"
+                                  pattern="[0-9]*"
+                                  className="h-8 w-10 text-center shrink-0 text-xs px-1"
+                                  value={line.sortOrder}
+                                  onPointerDown={(e) => e.stopPropagation()}
+                                  onMouseDown={(e) => e.stopPropagation()}
+                                  onChange={(e) =>
+                                    updateLine(line.key, { sortOrder: Number(e.target.value.replace(/\D/g, '')) || 0 })
+                                  }
+                                  data-testid={`hdsd-pay-sheet-tpl-line-sort-${line.key}`}
+                                />
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 rounded-full hover:bg-muted shrink-0 text-primary"
+                                  onPointerDown={(e) => e.stopPropagation()}
+                                  onMouseDown={(e) => e.stopPropagation()}
+                                  onClick={() => addLineAfter(line.key)}
+                                  title="Thêm cột phía dưới"
+                                >
+                                  <Plus className="h-4 w-4" />
+                                </Button>
+                              </div>
+                              <div className="min-w-0" onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+                                <CatalogSearchPicker
+                                  options={componentOptions}
+                                  value={line.componentId || null}
+                                  onValueChange={(v) => {
+                                    const comp = components.find((c) => c.id === v);
+                                    updateLine(line.key, {
+                                      componentId: v,
+                                      displayLabel: comp ? comp.name : '',
+                                    });
+                                  }}
+                                  placeholder="Chọn nhãn hiển thị"
+                                  searchPlaceholder="Tìm thành phần..."
+                                  triggerClassName="h-9 w-full"
+                                  data-testid={`hdsd-pay-sheet-tpl-line-component-${line.key}`}
+                                />
+                              </div>
+                              <div className="min-w-0" onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+                                <Input
+                                  className="h-9 bg-muted w-full font-mono text-xs overflow-ellipsis"
+                                  value={components.find((c) => c.id === line.componentId)?.code || ''}
+                                  readOnly
+                                  placeholder="Mã tự động"
+                                  data-testid={`hdsd-pay-sheet-tpl-line-code-${line.key}`}
+                                />
+                              </div>
+                              <div className="min-w-0" onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+                                <Select
+                                  value={line.inputMethod || 'FORMULA'}
+                                  onValueChange={(v) =>
+                                    updateLine(line.key, { inputMethod: v })
+                                  }
+                                >
+                                  <SelectTrigger className="h-9 w-full text-xs">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SettingsDialogSelectContent>
+                                    <SelectItem value="MANUAL">Nhập tay</SelectItem>
+                                    <SelectItem value="FORMULA">Công thức</SelectItem>
+                                    <SelectItem value="SYSTEM">Dữ liệu hệ thống</SelectItem>
+                                  </SettingsDialogSelectContent>
+                                </Select>
+                              </div>
+                              <div className="min-w-0" onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+                                {line.inputMethod === 'MANUAL' ? (
+                                  <span className="text-xs text-muted-foreground px-1 block truncate">Nhập liệu thủ công</span>
+                                ) : line.inputMethod === 'SYSTEM' ? (
+                                  <CatalogSearchPicker
+                                    options={systemDataOptions}
+                                    value={line.systemDataMappingId || null}
+                                    onValueChange={(v) =>
+                                      updateLine(line.key, {
+                                        systemDataMappingId: v,
+                                      })
+                                    }
+                                    placeholder="-- Chọn dữ liệu --"
+                                    searchPlaceholder="Tìm dữ liệu hệ thống..."
+                                    triggerClassName="h-9 w-full"
+                                  />
+                                ) : (
+                                  <span className="text-xs text-muted-foreground px-1 block truncate">Công thức gốc</span>
+                                )}
+                              </div>
+                              <div className="text-center" onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => removeLine(line.key)}
+                                  data-testid={`hdsd-pay-sheet-tpl-line-remove-${line.key}`}
+                                >
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </div>
                             </div>
-                            <div className="text-center">
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => removeLine(line.key)}
-                                data-testid={`hdsd-pay-sheet-tpl-line-remove-${line.key}`}
-                              >
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
-                            </div>
-                          </div>
-                        )}
+                          );
+                        }}
                       </Draggable>
                     ))}
                     {provided.placeholder}
@@ -893,7 +949,7 @@ export function PaySheetTemplateSettingsPanel() {
                 )}
               </Droppable>
             </div>
-          </DragDropContext>
+          </HrmDragDropContext>
         ) : (
           <div className="text-center text-xs text-muted-foreground py-16">
             Đang khởi tạo danh sách kéo thả...

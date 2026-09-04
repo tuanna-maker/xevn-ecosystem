@@ -16,21 +16,74 @@ function getToken(): string {
   return localStorage.getItem("hrm_token") ?? "";
 }
 
-async function apiFetch<T>(path: string, opts: RequestInit = {}): Promise<T> {
-  const tenantId = 
-    (typeof localStorage !== 'undefined' ? localStorage.getItem('hrm_current_tenant_id') : null) ||
-    "xevn";
-  const companyId = 
-    (typeof localStorage !== 'undefined' ? localStorage.getItem('hrm_current_company_id') : null) ||
-    "company_1";
+function parseJwtPayload(token: string | null): any {
+  if (!token) return null;
+  try {
+    const parts = token.split(".");
+    if (parts.length < 2) return null;
+    const base64Url = parts[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+}
 
+function getTenantId(): string {
+  if (typeof window === "undefined") return "";
+  // 1. Extract from JWT access token payload
+  const token = getToken();
+  const payload = parseJwtPayload(token);
+  if (payload?.tenant_id) return payload.tenant_id;
+  if (payload?.tenantId) return payload.tenantId;
+
+  // 2. Extract from URL path segment (e.g. /xe-vietnam/command-center/hrm/payroll)
+  const pathParts = window.location.pathname.split("/").filter(Boolean);
+  if (
+    pathParts.length > 0 &&
+    !["hr", "payroll", "api", "admin", "login", "auth"].includes(pathParts[0])
+  ) {
+    return pathParts[0];
+  }
+
+  // 3. Fallback to localStorage session scope
+  return (
+    localStorage.getItem("hrm_current_tenant_id") ||
+    localStorage.getItem("tenant_id") ||
+    ""
+  );
+}
+
+function getCompanyId(): string {
+  if (typeof window === "undefined") return "";
+  // 1. Extract from JWT access token payload
+  const token = getToken();
+  const payload = parseJwtPayload(token);
+  if (payload?.company_id) return payload.company_id;
+  if (payload?.companyId) return payload.companyId;
+
+  // 2. Fallback to localStorage session scope
+  return (
+    localStorage.getItem("hrm_current_company_id") ||
+    localStorage.getItem("company_id") ||
+    ""
+  );
+}
+
+async function apiFetch<T>(path: string, opts: RequestInit = {}): Promise<T> {
   const res = await fetch(`${HRM_API}${path}`, {
     ...opts,
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${getToken()}`,
-      "x-tenant-id": tenantId,
-      "x-company-id": companyId,
+      "x-tenant-id": getTenantId(),
+      "x-company-id": getCompanyId(),
       ...(opts.headers ?? {}),
     },
   });
@@ -45,10 +98,41 @@ async function apiFetch<T>(path: string, opts: RequestInit = {}): Promise<T> {
 
 export type PolicyStatus = "DRAFT" | "ACTIVE" | "ARCHIVED" | "SUPERSEDED";
 
+export type PolicyGroup = {
+  id: string;
+  code: string;
+  name_vi: string;
+  icon: string | null;
+  color_hex: string | null;
+  sort_order: number;
+  is_platform: boolean;
+  active_policy_count: number;
+};
+
+export type PolicyAssignment = {
+  id: string;
+  policy_id: string;
+  target_type: "job_title" | "department" | "employee" | "contract" | "pay_group" | "all";
+  target_key: string | null;
+  target_id: string | null;
+  priority: number;
+  effective_from: string;
+  effective_to: string | null;
+  created_by: string | null;
+  created_at: string;
+};
+
+export type LookupItem = { key: string; label: string };
+
 export type Policy = {
   id: string;
   name: string;
   pay_group_code: string;
+  group_id: string | null;
+  group_code: string | null;
+  group_name_vi: string | null;
+  group_icon: string | null;
+  group_color_hex: string | null;
   status: PolicyStatus;
   version: number;
   effective_from: string;
@@ -56,6 +140,7 @@ export type Policy = {
   description: string | null;
   created_at: string;
   components?: PolicyComponent[];
+  component_count?: number;
   assignment_count?: number;
 };
 
@@ -137,77 +222,80 @@ export type PayslipComponent = {
   skipped: boolean;
 };
 
-// ─── SETTINGS API ──────────────────────────────────────────────────────────────
-export const SettingsAPI = {
-  getMasterDataFields: () => {
-    // Gọi API Settings/Catalogs để lấy cấu hình động thay vì fix cứng.
-    // Tạm thời endpoint /settings/fields chưa deploy, trả về mock data để tránh lỗi 404 ở console
-    return Promise.resolve([
-        { 
-          value: 'contract_type', label: 'Loại Hợp đồng', type: 'select', 
-          options: [
-            {value: 'Chính thức', label: 'Chính thức'}, 
-            {value: 'Thử việc', label: 'Thử việc'}, 
-            {value: 'Khoán việc', label: 'Khoán việc'}, 
-            {value: 'Xác định thời hạn', label: 'Xác định thời hạn'},
-            {value: 'HĐ Không thời hạn', label: 'HĐ Không thời hạn'},
-            {value: 'HĐ Xác định thời hạn 1-3 năm', label: 'HĐ Xác định thời hạn 1-3 năm'}
-          ] 
-        },
-        { 
-          value: 'resident_status', label: 'Tình trạng cư trú', type: 'select', 
-          options: [
-            {value: 'Cá nhân cư trú', label: 'Cá nhân cư trú'}, 
-            {value: 'Cá nhân không cư trú', label: 'Cá nhân không cư trú'}
-          ] 
-        },
-        { value: 'employee_group', label: 'Nhóm nhân sự', type: 'text' },
-        { value: 'nationality', label: 'Quốc tịch', type: 'text' },
-        { value: 'position', label: 'Vị trí công việc', type: 'text' }
-      ]);
-  }
-};
-
 // ─── POLICY API ──────────────────────────────────────────────────────────────
 
+export const PolicyGroupAPI = {
+  list: () =>
+    apiFetch<{ data: PolicyGroup[] }>("/pay-policy-groups").then((r) => r.data),
+};
+
 export const PolicyAPI = {
-  list: (params?: { status?: string; pay_group_code?: string }) => {
+  list: (params?: { status?: string; pay_group_code?: string; group_id?: string; search?: string }) => {
     const qs = new URLSearchParams();
     if (params?.status) qs.set("status", params.status);
     if (params?.pay_group_code) qs.set("pay_group_code", params.pay_group_code);
-    return apiFetch<{ data: Policy[] }>(`/pay-policies?${qs}`).then((r) => r.data);
+    if (params?.group_id) qs.set("group_id", params.group_id);
+    if (params?.search) qs.set("search", params.search);
+    return apiFetch<{ data: Policy[]; total: number }>(`/pay-policies?${qs}`).then((r) => r);
   },
   get: (id: string) => apiFetch<Policy>(`/pay-policies/${id}`),
-  create: (body: { name: string; pay_group_code: string; effective_from: string; description?: string }) =>
+  create: (body: {
+    name: string;
+    pay_group_code: string;
+    group_id?: string;
+    effective_from: string;
+    effective_to?: string;
+    description?: string;
+  }) =>
     apiFetch<{ policy_id: string; status: string }>("/pay-policies", { method: "POST", body: JSON.stringify(body) }),
-  update: (id: string, body: { name?: string; effective_from?: string; description?: string }) =>
-    apiFetch<{ success: boolean }>(`/pay-policies/${id}`, { method: "PUT", body: JSON.stringify(body) }),
+  update: (id: string, body: { name?: string; effective_from?: string; description?: string; status?: string }) =>
+    apiFetch(`/pay-policies/${id}`, { method: "PUT", body: JSON.stringify(body) }),
+  toggleStatus: (id: string) =>
+    apiFetch(`/pay-policies/${id}/toggle-status`, { method: "POST" }),
   addComponent: (policyId: string, body: Omit<PolicyComponent, "id" | "policy_id">) =>
     apiFetch(`/pay-policies/${policyId}/components`, { method: "POST", body: JSON.stringify(body) }),
-  deleteComponent: (policyId: string, componentId: string) =>
-    apiFetch<{ success: boolean }>(`/pay-policies/${policyId}/components/${componentId}`, { method: "DELETE" }),
+  updateComponent: (policyId: string, compId: string, body: Partial<Pick<PolicyComponent, "name" | "params" | "sort_order" | "is_deduction">>) =>
+    apiFetch(`/pay-policies/${policyId}/components/${compId}`, { method: "PUT", body: JSON.stringify(body) }),
+  deleteComponent: (policyId: string, compId: string) =>
+    apiFetch(`/pay-policies/${policyId}/components/${compId}`, { method: "DELETE" }),
   reorder: (policyId: string, orderedIds: string[]) =>
     apiFetch(`/pay-policies/${policyId}/components/reorder`, { method: "PUT", body: JSON.stringify({ ordered_ids: orderedIds }) }),
-  toggleStatus: (id: string) =>
-    apiFetch<{ policy_id: string; status: string }>(`/pay-policies/${id}/toggle-status`, { method: "POST" }),
+  activate: (id: string) => apiFetch<{ policy_id: string; status: string }>(`/pay-policies/${id}/activate`, { method: "POST" }),
   clone: (id: string, body: { name: string; effective_from: string }) =>
     apiFetch(`/pay-policies/${id}/clone`, { method: "POST", body: JSON.stringify(body) }),
   delete: (id: string) =>
     apiFetch<{ success: boolean }>(`/pay-policies/${id}`, { method: "DELETE" }),
-  assignToTarget: (policyId: string, body: { target_type: 'employee' | 'pay_group' | 'department' | 'position', target_ids: string[], effective_from: string }) =>
-    apiFetch(`/pay-policies/${policyId}/assign`, { method: "POST", body: JSON.stringify(body) }),
 };
 
-export const PolicyGroupAPI = {
-  list: () => apiFetch<{ data: any[] }>("/pay-policy-groups").then((r) => r.data),
+export const PolicyAssignmentAPI = {
+  list: (policyId: string) =>
+    apiFetch<{ data: PolicyAssignment[] }>(`/pay-policies/${policyId}/assignments`).then((r) => r.data),
+  create: (policyId: string, body: {
+    target_type: string;
+    target_key?: string;
+    target_id?: string;
+    priority?: number;
+    effective_from: string;
+    effective_to?: string;
+  }) =>
+    apiFetch<PolicyAssignment>(`/pay-policies/${policyId}/assignments`, { method: "POST", body: JSON.stringify(body) }),
+  delete: (policyId: string, assignmentId: string) =>
+    apiFetch<{ deleted: boolean }>(`/pay-policies/${policyId}/assignments/${assignmentId}`, { method: "DELETE" }),
+};
+
+export const LookupAPI = {
+  positions: (search?: string) =>
+    apiFetch<{ data: LookupItem[] }>(`/lookup/positions${search ? `?search=${encodeURIComponent(search)}` : ""}`).then((r) => r.data),
+  departments: (search?: string) =>
+    apiFetch<{ data: LookupItem[] }>(`/lookup/departments${search ? `?search=${encodeURIComponent(search)}` : ""}`).then((r) => r.data),
+  payGroups: () =>
+    apiFetch<{ data: LookupItem[] }>("/lookup/pay-groups").then((r) => r.data),
 };
 
 // ─── GRADE API ───────────────────────────────────────────────────────────────
 
 export const GradeAPI = {
-  list: () => apiFetch<Grade[]>("/payroll/pay-grades").then((r) => (Array.isArray(r) ? r : (r as any).data || []) as Grade[]),
-  upsert: (body: Omit<Grade, 'id'> & { id?: string }) => 
-    apiFetch("/grades", { method: "POST", body: JSON.stringify(body) }),
+  list: () => apiFetch<{ data: Grade[] }>("/grades").then((r) => r.data),
   listAssignments: (employeeId: string) => apiFetch<{ data: unknown[] }>(`/employees/${employeeId}/grade-history`).then((r) => r.data),
   assign: (employeeId: string, body: { grade_code: string; step_number: number; effective_from: string }) =>
     apiFetch(`/employees/${employeeId}/grade-assignment`, { method: "POST", body: JSON.stringify(body) }),
@@ -239,11 +327,24 @@ export const InputAPI = {
 
 export const BatchAPI = {
   run: (period: string) =>
-    apiFetch<any>("/payroll/batch", {
+    apiFetch<{ batch_id: string; employee_count: number; warnings: string[] }>("/payroll-batch/run", {
       method: "POST", body: JSON.stringify({ period_month: period }),
-    }).then((r: any) => (r.data || r) as { batch_id: string; employee_count: number; warnings: string[] }),
-  approve: (batchId: string) =>
-    apiFetch<any>(`/payroll/batch/${batchId}/approve`, { method: "POST" }).then((r: any) => r.data || r),
+    }),
+  approve: (batchId: string) => apiFetch(`/payroll-batch/${batchId}/approve`, { method: "POST" }),
   getPayslip: (employeeId: string, period: string) =>
-    apiFetch<any>(`/payroll/batch/payslip/${employeeId}?period_month=${period}`).then((r: any) => (r.data || r) as Payslip),
+    apiFetch<Payslip>(`/payroll-batch/payslip/${employeeId}?period_month=${period}`),
+};
+
+
+export const SettingsAPI = {
+  getMasterDataFields: () =>
+    apiFetch<LookupItem[]>("/settings/master-data-fields").catch(() => [
+      { key: "contract_type", label: "Loại hợp đồng" },
+      { key: "department", label: "Phòng ban" },
+      { key: "position", label: "Chức danh" },
+      { key: "province", label: "Tỉnh định biên" },
+      { key: "work_location", label: "Địa điểm làm việc" },
+      { key: "seniority_months", label: "Thâm niên (tháng)" },
+      { key: "performance_kpi", label: "Điểm KPI (%)" },
+    ]),
 };

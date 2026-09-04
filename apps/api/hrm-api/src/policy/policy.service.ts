@@ -24,13 +24,26 @@ export class PolicyService {
                WHERE c.policy_id = p.id AND c.deleted_at IS NULL
              ) as components
       FROM payroll_policies p
-      WHERE p.company_id = $1 AND p.deleted_at IS NULL
+      WHERE p.deleted_at IS NULL
     `;
-    const params: any[] = [companyId];
+    const params: any[] = [];
     
     if (payGroupCode) {
-      params.push(payGroupCode);
-      sql += ` AND pay_group_code = $${params.length}`;
+      const codeUpper = payGroupCode.toUpperCase();
+      if (codeUpper === 'LUONG' || codeUpper === 'GRADE') {
+        sql += ` AND p.pay_group_code IN ('LUONG', 'GRADE')`;
+      } else if (codeUpper === 'GIA' || codeUpper === 'ALLOWANCE') {
+        sql += ` AND p.pay_group_code IN ('GIA', 'ALLOWANCE')`;
+      } else if (codeUpper === 'THUONG' || codeUpper === 'BONUS') {
+        sql += ` AND p.pay_group_code IN ('THUONG', 'BONUS')`;
+      } else if (codeUpper === 'THUE' || codeUpper === 'TAX') {
+        sql += ` AND p.pay_group_code IN ('THUE', 'TAX')`;
+      } else if (codeUpper === 'BHXH' || codeUpper === 'INSURANCE') {
+        sql += ` AND p.pay_group_code IN ('BHXH', 'INSURANCE')`;
+      } else {
+        params.push(payGroupCode);
+        sql += ` AND p.pay_group_code = $${params.length}`;
+      }
     }
     
     if (status) {
@@ -50,8 +63,8 @@ export class PolicyService {
               TO_CHAR(effective_from, 'YYYY-MM-DD') as effective_from, 
               TO_CHAR(effective_to, 'YYYY-MM-DD') as effective_to 
        FROM payroll_policies 
-       WHERE company_id = $1 AND id = $2 AND deleted_at IS NULL`,
-      [companyId, policyId]
+       WHERE id = $1 AND deleted_at IS NULL`,
+      [policyId]
     );
     
     if (policyRes.rows.length === 0) {
@@ -80,7 +93,7 @@ export class PolicyService {
         `INSERT INTO payroll_policies (company_id, pay_group_code, name, status, version, effective_from)
          VALUES ($1, $2, $3, $4, 1, $5)
          RETURNING id, version`,
-        [companyId, dto.pay_group_code, dto.name, dto.status || 'ACTIVE', dto.effective_from]
+        [companyId, dto.pay_group_code, dto.name, dto.status || 'DRAFT', dto.effective_from]
       );
       return res.rows[0];
     });
@@ -152,7 +165,7 @@ export class PolicyService {
       `SELECT status FROM payroll_policies WHERE id = $1 AND company_id = $2 AND deleted_at IS NULL`,
       [policyId, companyId]
     );
-    if (!policy) throw new NotFoundException('Policy not found');
+    if (!policy) throw new NotFoundException('Không tìm thấy chính sách tương ứng hoặc chính sách đã bị xóa.');
     
     const newStatus = policy.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
 
@@ -161,8 +174,8 @@ export class PolicyService {
         `SELECT COUNT(*) as count FROM public.payroll_payslips WHERE formula_definition_id = $1::uuid`,
         [policyId]
       );
-      if (hasPayslips && parseInt(hasPayslips.count, 10) > 0) {
-        throw new ConflictException('Cannot deactivate policy because it has already been applied to payroll runs.');
+      if (hasPayslips && parseInt(String(hasPayslips.count), 10) > 0) {
+        throw new ConflictException('Không thể hủy kích hoạt chính sách do đã có bảng lương chốt tính theo chính sách này.');
       }
     }
 
@@ -179,14 +192,14 @@ export class PolicyService {
       `SELECT status FROM payroll_policies WHERE id = $1 AND company_id = $2 AND deleted_at IS NULL`,
       [policyId, companyId]
     );
-    if (!policy) throw new NotFoundException('Policy not found');
+    if (!policy) throw new NotFoundException('Không tìm thấy chính sách tương ứng hoặc chính sách đã bị xóa.');
 
     const hasPayslips = await this.db.queryOne(
       `SELECT COUNT(*) as count FROM public.payroll_payslips WHERE formula_definition_id = $1::uuid`,
       [policyId]
     );
-    if (hasPayslips && parseInt(hasPayslips.count, 10) > 0) {
-      throw new ConflictException('Cannot delete policy because it has already been applied to payroll runs.');
+    if (hasPayslips && parseInt(String(hasPayslips.count), 10) > 0) {
+      throw new ConflictException('Không thể xóa chính sách do đã có bảng lương chốt tính theo chính sách này.');
     }
 
     await this.db.query(
@@ -213,7 +226,7 @@ export class PolicyService {
         `INSERT INTO payroll_policies (company_id, pay_group_code, name, status, version, effective_from)
          VALUES ($1, $2, $3, 'DRAFT', $4, $5)
          RETURNING id, version`,
-        [companyId, src.pay_group_code, dto.name, src.version + 1, dto.effective_from]
+        [companyId, src.pay_group_code, dto.name, (src as any).version + 1, dto.effective_from]
       );
       
       const newPolicyId = insertPolicyRes.rows[0].id;
@@ -287,4 +300,96 @@ export class PolicyService {
       return res.rows[0];
     }
   }
+  async getActivePolicyForGroup(tenantId: string, payGroupCode: string, periodMonth?: string) {
+    const policies = await this.listPolicies(tenantId, 'main', payGroupCode, 'ACTIVE');
+    if (policies.length === 0) return null;
+    return this.getPolicyWithComponents(tenantId, 'main', (policies[0] as any).id);
+  }
+
+  async evaluateEligibility(tenantId: string, companyId: string, employeeContext: any) {
+    const policies = await this.listPolicies(tenantId, companyId, undefined, 'ACTIVE');
+
+    const evaluated = policies.map((policy) => {
+      let priorityLevel = 5;
+      let isMatched = true;
+      let matchedScope = 'global';
+
+      const components = Array.isArray(policy.components) ? policy.components : [];
+      for (const comp of components) {
+        const params = typeof comp.params === 'string' ? JSON.parse(comp.params || '{}') : (comp.params || {});
+        const scope = params.scope || 'global';
+        const conditions: any[] = params.conditions || [];
+
+        if (scope === 'individual') priorityLevel = Math.min(priorityLevel, 1);
+        else if (scope === 'branch') priorityLevel = Math.min(priorityLevel, 2);
+        else if (scope === 'location') priorityLevel = Math.min(priorityLevel, 3);
+        else if (scope === 'department' || scope === 'position') priorityLevel = Math.min(priorityLevel, 4);
+
+        if (conditions.length > 0) {
+          let prevResult = true;
+          for (let i = 0; i < conditions.length; i++) {
+            const cond = conditions[i];
+            const vals = (cond.value || '').split(',').map((v: string) => v.trim()).filter(Boolean);
+            let currentMatch = true;
+
+            if (cond.field === 'location' && employeeContext.location_code) {
+              if (cond.operator === 'eq' || cond.operator === 'in') {
+                currentMatch = vals.includes(employeeContext.location_code);
+              }
+            } else if (cond.field === 'branch' && employeeContext.branch_code) {
+              if (cond.operator === 'eq' || cond.operator === 'in') {
+                currentMatch = vals.includes(employeeContext.branch_code);
+              }
+            } else if (cond.field === 'department' && employeeContext.department_id) {
+              if (cond.operator === 'eq' || cond.operator === 'in') {
+                currentMatch = vals.includes(employeeContext.department_id);
+              }
+            } else if (cond.field === 'title' && employeeContext.job_title_code) {
+              if (cond.operator === 'eq' || cond.operator === 'in') {
+                currentMatch = vals.includes(employeeContext.job_title_code);
+              }
+            } else if (cond.field === 'grade' && employeeContext.grade_code) {
+              if (cond.operator === 'eq' || cond.operator === 'in') {
+                currentMatch = vals.includes(employeeContext.grade_code);
+              }
+            } else if (cond.field === 'step' && employeeContext.current_step_code) {
+              if (cond.operator === 'eq' || cond.operator === 'in') {
+                currentMatch = vals.includes(employeeContext.current_step_code);
+              }
+            }
+
+            if (i === 0) {
+              prevResult = currentMatch;
+            } else {
+              if (cond.logic === 'OR') {
+                prevResult = prevResult || currentMatch;
+              } else {
+                prevResult = prevResult && currentMatch;
+              }
+            }
+          }
+          isMatched = prevResult;
+        }
+
+        if (isMatched) {
+          matchedScope = scope;
+        }
+      }
+
+      return {
+        policy_id: policy.id,
+        policy_name: policy.name,
+        pay_group_code: policy.pay_group_code,
+        is_matched: isMatched,
+        priority_level: priorityLevel,
+        matched_scope: matchedScope,
+        trace_log: isMatched 
+          ? `Ap dung theo scope [${matchedScope}] (Level ${priorityLevel})` 
+          : 'Khong thoa man dieu kien ap dung'
+      };
+    });
+
+    return evaluated.filter(e => e.is_matched).sort((a, b) => a.priority_level - b.priority_level);
+  }
+
 }

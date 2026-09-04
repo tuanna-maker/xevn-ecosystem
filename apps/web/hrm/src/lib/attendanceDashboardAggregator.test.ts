@@ -195,15 +195,15 @@ describe('weekly attendance invalid dates (D-HRM-ATT-INVALID-DATE-01)', () => {
     expect(formatWeeklyRangeSubtitle('not-a-date', 'x')).toBe('(— - —)');
   });
 
-  it('resolveWeeklyDateRange prefers current week clipped to month sheet', () => {
+  it('resolveWeeklyDateRange returns full date range for month sheet', () => {
     const anchor = new Date(2026, 6, 21); // Tue 2026-07-21
     const range = resolveWeeklyDateRange(
       { start_date: '2026-07-01', end_date: '2026-07-31' },
       anchor,
     );
-    expect(range.from).toBe('2026-07-20');
-    expect(range.to).toBe('2026-07-26');
-    expect(range.days).toHaveLength(7);
+    expect(range.from).toBe('2026-07-01');
+    expect(range.to).toBe('2026-07-31');
+    expect(range.days).toHaveLength(31);
   });
 
   it('resolveWeeklyDateRange falls back when sheet dates are invalid', () => {

@@ -26,6 +26,7 @@ export type ContractClauseListTableProps = {
   onActivate: (id: string) => void;
   onRetire: (id: string) => void;
   emptyMessage?: string;
+  customGroupLabels?: Record<string, string>;
 };
 
 export function ContractClauseListTable({
@@ -34,6 +35,7 @@ export function ContractClauseListTable({
   onActivate,
   onRetire,
   emptyMessage = 'Không có điều khoản phù hợp bộ lọc.',
+  customGroupLabels,
 }: ContractClauseListTableProps) {
   return (
     <Table>
@@ -59,7 +61,7 @@ export function ContractClauseListTable({
             <TableRow key={c.id} data-testid={`ctr-clause-row-${c.code}`}>
               <TableCell className="font-mono text-xs">{c.code}</TableCell>
               <TableCell className="max-w-[240px] truncate font-medium">{c.title_vi}</TableCell>
-              <TableCell className="text-xs">{clauseGroupLabelVi(c.clause_group)}</TableCell>
+              <TableCell className="text-xs">{clauseGroupLabelVi(c.clause_group, customGroupLabels)}</TableCell>
               <TableCell className="text-xs" data-testid={`ctr-clause-status-label-${c.code}`}>
                 {clauseStatusLabelVi(c.status)}
               </TableCell>

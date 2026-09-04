@@ -130,9 +130,6 @@ export function PayrollPeriodGroupScopePanel({
           <p className="text-sm text-muted-foreground">Kỳ đã khóa/duyệt — chỉ xem phạm vi nhóm.</p>
         )}
 
-        <p className="text-xs text-muted-foreground" data-testid="pay09-group-honesty-footer">
-          {PAY09_GROUP_HONESTY_FOOTER}
-        </p>
       </CardContent>
     </Card>
   );

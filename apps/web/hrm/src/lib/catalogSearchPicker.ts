@@ -155,7 +155,17 @@ export function resolveCatalogPickerSelection(
 ): CatalogPickerOption | null {
   const trimmed = value?.trim() ?? '';
   if (!trimmed) return null;
-  return options.find((o) => o.value === trimmed) ?? null;
+  const exact = options.find((o) => o.value === trimmed);
+  if (exact) return exact;
+  const lower = trimmed.toLowerCase();
+  return (
+    options.find(
+      (o) =>
+        o.value.toLowerCase() === lower ||
+        (o.code && o.code.toLowerCase() === lower) ||
+        (o.label && o.label.toLowerCase() === lower),
+    ) ?? null
+  );
 }
 
 /** True when value is either empty or belongs to catalog (BR-HRM-MD-01). */

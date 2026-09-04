@@ -13,10 +13,28 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 
-const OPERATOR_OPTIONS = [
+const NUMERIC_OPERATORS = [
+  { value: 'gte', label: 'Lớn hơn hoặc bằng (>=)' },
+  { value: 'gt', label: 'Lớn hơn (>)' },
+  { value: 'lte', label: 'Nhỏ hơn hoặc bằng (<=)' },
+  { value: 'lt', label: 'Nhỏ hơn (<)' },
+  { value: 'eq', label: 'Bằng (=)' },
+  { value: 'neq', label: 'Khác (!=)' },
+  { value: 'between', label: 'Trong khoảng (Between)' },
   { value: 'in', label: 'Bao gồm (In)' },
-  { value: 'eq', label: 'Bằng (Equals)' },
   { value: 'not_in', label: 'Không bao gồm' }
+];
+
+const ALL_OPERATORS = [
+  { value: 'gte', label: 'Lớn hơn hoặc bằng (>=)' },
+  { value: 'gt', label: 'Lớn hơn (>)' },
+  { value: 'lte', label: 'Nhỏ hơn hoặc bằng (<=)' },
+  { value: 'lt', label: 'Nhỏ hơn (<)' },
+  { value: 'eq', label: 'Bằng (Equals)' },
+  { value: 'neq', label: 'Khác (!=)' },
+  { value: 'in', label: 'Bao gồm (In)' },
+  { value: 'not_in', label: 'Không bao gồm' },
+  { value: 'between', label: 'Trong khoảng (Between)' }
 ];
 
 export type Condition = {
@@ -24,12 +42,13 @@ export type Condition = {
   field: string;
   operator: string;
   value: string;
+  logic?: 'AND' | 'OR';
 };
 
 export type FieldOption = { 
   value: string; 
   label: string; 
-  type?: 'select' | 'text' | string;
+  type?: 'select' | 'text' | 'number' | string;
   options?: { value: string; label: string }[];
 };
 
@@ -43,12 +62,33 @@ export type RuleConditionBuilderProps = {
 export function RuleConditionBuilder({ conditions, onChange, fieldOptions, disabled }: RuleConditionBuilderProps) {
   
   const handleAddCondition = () => {
-    const newCond: Condition = { id: `c_${Date.now()}`, field: fieldOptions[0]?.value || '', operator: 'eq', value: '' };
+    const firstField = fieldOptions[0];
+    const isNum = firstField?.type === 'number' || firstField?.value === 'seniority' || firstField?.value === 'kpi_score';
+    const newCond: Condition = { 
+      id: `c_${Date.now()}`, 
+      field: firstField?.value || '', 
+      operator: isNum ? 'gte' : 'eq', 
+      value: '',
+      logic: 'AND'
+    };
     onChange([...conditions, newCond]);
   };
 
   const handleUpdateCondition = (condId: string, field: string, value: string) => {
-    onChange(conditions.map(c => c.id === condId ? { ...c, [field]: value } : c));
+    onChange(conditions.map(c => {
+      if (c.id !== condId) return c;
+      if (field === 'field') {
+        const fieldDef = fieldOptions.find(f => f.value === value);
+        const isNum = fieldDef?.type === 'number' || value === 'seniority' || value === 'kpi_score';
+        return {
+          ...c,
+          field: value,
+          operator: isNum ? 'gte' : 'eq',
+          value: ''
+        };
+      }
+      return { ...c, [field]: value };
+    }));
   };
 
   const handleRemoveCondition = (condId: string) => {
@@ -73,23 +113,50 @@ export function RuleConditionBuilder({ conditions, onChange, fieldOptions, disab
             Chưa có điều kiện nào. Chính sách này sẽ không áp dụng cho ai hoặc áp dụng cho toàn công ty tuỳ cấu hình lõi.
           </p>
         ) : (
-          conditions.map((cond, idx) => (
-            <div key={cond.id} className="flex items-center gap-2 bg-white p-2 border rounded-md shadow-sm">
-              <span className="text-xs font-semibold text-slate-400 w-8 shrink-0 text-center">{idx === 0 ? 'IF' : 'AND'}</span>
-              
-              <Select value={cond.field} disabled={disabled} onValueChange={(val) => handleUpdateCondition(cond.id, 'field', val)}>
-                <SelectTrigger className="flex-[4] h-9 min-w-0"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {fieldOptions.map((opt) => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
-                </SelectContent>
-              </Select>
-              
-              <Select value={cond.operator} disabled={disabled} onValueChange={(val) => handleUpdateCondition(cond.id, 'operator', val)}>
-                <SelectTrigger className="flex-[3] h-9 min-w-0"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {OPERATOR_OPTIONS.map((opt) => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
-                </SelectContent>
-              </Select>
+          conditions.map((cond, idx) => {
+            const selectedFieldDef = fieldOptions.find(f => f.value === cond.field);
+            const isNumericField = selectedFieldDef?.type === 'number' || cond.field === 'seniority' || cond.field === 'kpi_score';
+            const currentOperators = isNumericField ? NUMERIC_OPERATORS : ALL_OPERATORS;
+
+            return (
+              <div key={cond.id} className="flex items-center gap-2 bg-white p-2 border rounded-md shadow-sm">
+                {idx === 0 ? (
+                  <div className="w-16 shrink-0 flex justify-center">
+                    <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded border border-slate-200 uppercase tracking-wider">
+                      IF
+                    </span>
+                  </div>
+                ) : (
+                  <div className="w-16 shrink-0 flex justify-center">
+                    <Select
+                      value={cond.logic || 'AND'}
+                      disabled={disabled}
+                      onValueChange={(val) => handleUpdateCondition(cond.id, 'logic', val)}
+                    >
+                      <SelectTrigger className="h-8 w-16 font-bold text-xs text-indigo-700 bg-indigo-50/90 border-indigo-200 px-1.5 justify-center shadow-2xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="AND" className="font-bold text-xs text-indigo-700">AND</SelectItem>
+                        <SelectItem value="OR" className="font-bold text-xs text-amber-700">OR</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+                
+                <Select value={cond.field} disabled={disabled} onValueChange={(val) => handleUpdateCondition(cond.id, 'field', val)}>
+                  <SelectTrigger className="flex-[4] h-9 min-w-0"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {fieldOptions.map((opt) => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                
+                <Select value={cond.operator} disabled={disabled} onValueChange={(val) => handleUpdateCondition(cond.id, 'operator', val)}>
+                  <SelectTrigger className="flex-[3] h-9 min-w-0"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {currentOperators.map((opt) => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
 
               {(() => {
                 const selectedFieldDef = fieldOptions.find(f => f.value === cond.field);
@@ -146,7 +213,11 @@ export function RuleConditionBuilder({ conditions, onChange, fieldOptions, disab
                   <Input 
                     value={cond.value} 
                     onChange={(e) => handleUpdateCondition(cond.id, 'value', e.target.value)}
-                    placeholder="Nhập giá trị (cách nhau dấu phẩy)"
+                    placeholder={
+                      cond.field === 'seniority' ? 'Nhập số tháng (VD: 12)' :
+                      cond.field === 'kpi_score' ? 'Nhập điểm % (VD: 80)' :
+                      'Nhập giá trị (cách nhau dấu phẩy)'
+                    }
                     disabled={disabled} className="flex-[4] h-9 bg-white min-w-0"
                   />
                 );
@@ -162,8 +233,9 @@ export function RuleConditionBuilder({ conditions, onChange, fieldOptions, disab
                 <Trash2 className="w-4 h-4" />
               </Button>
             </div>
-          ))
-        )}
+          );
+        })
+      )}
       </div>
     </div>
   );

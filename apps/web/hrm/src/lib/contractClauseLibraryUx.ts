@@ -51,9 +51,13 @@ export function clauseStatusLabelVi(status: string | null | undefined): string {
   );
 }
 
-export function clauseGroupLabelVi(group: string | null | undefined): string {
+export function clauseGroupLabelVi(
+  group: string | null | undefined,
+  customMap?: Record<string, string>,
+): string {
   const key = normalizeClauseGroupKey(group);
   if (!key) return '—';
+  if (customMap && customMap[key]) return customMap[key];
   return CONTRACT_CLAUSE_GROUP_LABELS[key] ?? ((group ?? '').trim() || key);
 }
 

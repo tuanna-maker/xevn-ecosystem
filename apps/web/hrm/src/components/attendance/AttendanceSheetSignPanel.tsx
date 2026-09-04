@@ -69,6 +69,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { useEmployees } from '@/hooks/useEmployees';
 import { toErrorMessage } from '@/lib/apiError';
 import { formatAttSheetAggToast } from '@/lib/attSheetAggUi';
 import {
@@ -143,11 +144,20 @@ type BusyRole = AttendanceSheetPersonaRole | 'close' | 'submit' | 'aggregate' | 
 export function AttendanceSheetSignPanel({
   sheetId,
   companyId,
-  sheetStatus,
+  sheetStatus = 'draft',
   onSheetMutated,
 }: AttendanceSheetSignPanelProps) {
   const { t } = useTranslation();
   const { toast } = useToast();
+  const { employees } = useEmployees(false, companyId);
+
+  const empMap = useMemo(() => {
+    const map = new Map<string, { code: string; name: string }>();
+    for (const emp of employees) {
+      map.set(emp.id, { code: emp.employee_code, name: emp.full_name });
+    }
+    return map;
+  }, [employees]);
   const [payload, setPayload] = useState<HrmAttendanceSheetSignaturesPayload | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -499,8 +509,13 @@ export function AttendanceSheetSignPanel({
                     data-testid={`att-10-line-${line.employeeId}`}
                     data-payable-gold={line.payableGoldOk ? 'ok' : 'fail'}
                   >
-                    <td className="py-1.5 pr-2 text-xevn-text">
-                      {line.employeeName ?? line.employeeId}
+                    <td className="py-1.5 pr-2 text-xevn-text font-medium">
+                      {(() => {
+                        const found = empMap.get(line.employeeId);
+                        if (found) return `${found.code} - ${found.name}`;
+                        if (line.employeeName && line.employeeName !== line.employeeId) return line.employeeName;
+                        return line.employeeId;
+                      })()}
                     </td>
                     <td className="py-1.5 pr-2 tabular-nums">{line.standardHours}</td>
                     <td className="py-1.5 pr-2 tabular-nums">{line.paidLeaveHours}</td>
@@ -531,22 +546,10 @@ export function AttendanceSheetSignPanel({
             {dispResidual}
           </p>
         ) : null}
-        <p className="text-xs text-xevn-textMuted" data-testid="att-10-hol-meal-footer">
-          {att10HolMealFooterText()}
-        </p>
       </div>
     ) : null;
 
-  const honestyBanner = (
-    <Alert
-      className="border-xevn-border bg-slate-50"
-      data-testid="att-10-honesty"
-    >
-      <AlertDescription className="text-xs text-xevn-textSecondary leading-relaxed">
-        {att10HonestyBannerText()}
-      </AlertDescription>
-    </Alert>
-  );
+  const honestyBanner = null;
 
   const effectiveSignDisplay = useMemo(() => {
     if (!signDisplay) return null;
@@ -563,41 +566,11 @@ export function AttendanceSheetSignPanel({
         <div className="flex flex-wrap items-center gap-2">
           <Badge
             variant="outline"
-            className="border-xevn-border text-xevn-text font-semibold"
-            data-testid="att-11-header-id"
-          >
-            header: {effectiveSignDisplay.headerId ?? sheetId}
-          </Badge>
-          <Badge
-            variant="outline"
             className="border-xevn-border text-xevn-textSecondary font-semibold"
             data-testid="att-11-status-label"
           >
             {effectiveSignDisplay.statusLabelVi}
-            <span className="ml-1 text-xevn-textMuted">({effectiveSignDisplay.status})</span>
           </Badge>
-          <Badge
-            variant="outline"
-            className={
-              effectiveSignDisplay.canClose
-                ? 'border-green-600 text-green-800 font-semibold'
-                : 'border-xevn-border text-xevn-textMuted font-semibold'
-            }
-            data-testid="att-11-can-close"
-            data-can-close={effectiveSignDisplay.canClose ? 'true' : 'false'}
-          >
-            can_close: {effectiveSignDisplay.canClose ? 'true' : 'false'}
-          </Badge>
-          {effectiveSignDisplay.policyReady != null ? (
-            <Badge
-              variant="outline"
-              className="border-xevn-border text-xevn-text font-semibold"
-              data-testid="att-11-policy-ready"
-              data-policy-ready={effectiveSignDisplay.policyReady ? 'true' : 'false'}
-            >
-              policy_ready: {effectiveSignDisplay.policyReady ? 'true' : 'false'}
-            </Badge>
-          ) : null}
         </div>
         {effectiveSignDisplay.missingMandatoryRoles.length > 0 ? (
           <p className="text-sm text-amber-800" data-testid="att-11-missing-roles">
@@ -608,7 +581,7 @@ export function AttendanceSheetSignPanel({
           </p>
         ) : (
           <p className="text-sm text-green-800" data-testid="att-11-missing-roles-empty">
-            {t('attSign.noMissingRoles', 'Đủ ba bước FIXED_GĐ1 (NV · QL · HCNS).')}
+            {t('attSign.noMissingRoles', 'Đủ 3 bước xác nhận (Nhân viên · Quản lý · HR).')}
           </p>
         )}
         {effectiveSignDisplay.hasRejected ? (
@@ -620,36 +593,15 @@ export function AttendanceSheetSignPanel({
             <AlertDescription className="text-sm">
               {t(
                 'attSign.rejectBlocksClose',
-                'Có bước Từ chối — can_close=false · Chốt → 409 HRM-ATT-SIGN-INCOMPLETE · PAY blocked.',
+                'Có bước từ chối — cần xử lý lại trước khi ký chốt.',
               )}
             </AlertDescription>
           </Alert>
         ) : null}
-        {lastCloseEvent ? (
-          <p className="text-sm text-xevn-textSecondary" data-testid="att-11-close-event">
-            event: {lastCloseEvent} (response-only · ≠ invent PAY DONE)
-          </p>
-        ) : null}
-        <p className="text-xs text-xevn-textMuted" data-testid="att-11-fixed-gd1-footer">
-          {att11FixedGd1FooterText()} · personas:{' '}
-          {ATT_11_FIXED_GD1_PERSONAS.map((p) => att11PersonaLabelVi(p)).join(' · ')}
-        </p>
-        <p className="text-xs text-xevn-textMuted" data-testid="att-11-csum-inbox-footer">
-          {att11CsumInboxFooterText()}
-        </p>
       </div>
     ) : null;
 
-  const att11HonestyBanner = (
-    <Alert
-      className="border-xevn-border bg-slate-50"
-      data-testid="att-11-honesty"
-    >
-      <AlertDescription className="text-xs text-xevn-textSecondary leading-relaxed">
-        {att11HonestyBannerText()}
-      </AlertDescription>
-    </Alert>
-  );
+  const att11HonestyBanner = null;
 
   if (!panelVisible) {
     if (resolvedSheetStatus === 'draft' || resolvedSheetStatus === 'open') {
@@ -667,7 +619,7 @@ export function AttendanceSheetSignPanel({
                 <AlertDescription className="text-[15px] text-xevn-textSecondary">
                   {t(
                     'attSign.draftAggHint',
-                    'Chọn kỳ → Tổng hợp kỳ (POST aggregate) materialize dòng giờ công tính lương; rồi Gửi chờ ký (submit MUST gọi AGG). Không seed.',
+                    'Tổng hợp dữ liệu giờ công tính lương theo kỳ và chuyển hồ sơ sang bước chờ xác nhận/ký chốt.',
                   )}
                 </AlertDescription>
               </div>
@@ -705,7 +657,6 @@ export function AttendanceSheetSignPanel({
             {emptyAggHint}
           </Alert>
           {aggDisplayPanel}
-          {honestyBanner}
         </div>
       );
     }

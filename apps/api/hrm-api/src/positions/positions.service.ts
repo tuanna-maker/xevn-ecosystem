@@ -963,6 +963,24 @@ export class PositionsService implements OnModuleInit {
       query.company_id,
       scopeContext,
     );
+
+    if (res.rows.length === 0) {
+      const merged = await this.buildMergedMasterCatalog(
+        authorization,
+        query.company_id,
+        scopeContext,
+        scope,
+      );
+      return {
+        data: merged.map((row) => ({
+          code: row.code,
+          label: row.name,
+          grade_code: row.grade_code,
+          position_scope: row.position_scope,
+        })),
+      };
+    }
+
     return {
       data: res.rows.map((row) => ({
         code: row.position_code,

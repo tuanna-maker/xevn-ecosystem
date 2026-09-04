@@ -244,7 +244,16 @@ export function ContractCreateWizardDialog({
     setContextLoading(true);
     loadContractCreateContext(companyId, form.employee_id, companyIdsForScope)
       .then((snap) => {
-        if (!cancelled) setContextSnapshot(snap);
+        if (!cancelled) {
+          setContextSnapshot(snap);
+          const cs = snap?.compensation_snapshot;
+          if (cs?.base_salary_vnd != null || cs?.insurance_salary_vnd != null) {
+            setCbBootstrap({
+              base_salary_vnd: cs.base_salary_vnd ?? 0,
+              insurance_salary_vnd: cs.insurance_salary_vnd ?? cs.base_salary_vnd ?? 0,
+            });
+          }
+        }
       })
       .catch(() => {
         if (!cancelled) setContextSnapshot(null);
@@ -458,43 +467,12 @@ export function ContractCreateWizardDialog({
   };
 
   return (
-  <div
-    className="flex min-h-0 flex-1 flex-col"
-    data-testid="ctr-create-wizard-root"
-    data-company-id={companyId}
-    data-list-company-id={listCompanyId}
-  >
-      <div
-        className="flex items-center h-10 gap-4 border-b pb-2 mb-4 shrink-0"
-        data-testid="ctr-create-wizard-stepper"
-        role="tablist"
-        aria-label="Các bước tạo hợp đồng"
-      >
-        <StepChip
-          active={step === 1}
-          label="1. Thông tin & mẫu"
-          tabId="ctr-create-step-tab-1"
-          onActivate={() => {
-            if (step === 2) setStep(1);
-          }}
-        />
-        <StepChip
-          active={step === 2}
-          label="2. Điều khoản & xem trước"
-          tabId="ctr-create-step-tab-2"
-          disabled={step === 1 && (isSubmitting || !templateCode.trim())}
-          title={
-            step === 1 && !templateCode.trim()
-              ? 'Chọn mẫu in ở bước 1 — hệ thống lưu nháp rồi mở điều khoản (cùng nút Tiếp).'
-              : undefined
-          }
-          onActivate={() => {
-            if (step === 2) return;
-            void goStep2();
-          }}
-        />
-      </div>
-
+    <div
+      className="flex min-h-0 flex-1 flex-col"
+      data-testid="ctr-create-wizard-root"
+      data-company-id={companyId}
+      data-list-company-id={listCompanyId}
+    >
       {isCreateFormReady && !templatesLoading ? (
         <span
           data-testid={HDSD_MUTATE_TEST_IDS.contractsFormReady}
@@ -505,7 +483,7 @@ export function ContractCreateWizardDialog({
         </span>
       ) : null}
 
-      {step === 1 ? (
+      <div className="min-h-0 flex-1 overflow-y-auto">
         <ContractCreateStep1GeneralGrid
           isEdit={Boolean(editingContract)}
           form={form}
@@ -540,76 +518,27 @@ export function ContractCreateWizardDialog({
           onCbBootstrapChange={(patch) => setCbBootstrap((prev) => ({ ...prev, ...patch }))}
           hideCandidateSubject={Boolean(prefill?.lock_subject_employee)}
         />
-      ) : sessionContractId ? (
-        <div className="min-h-0 flex-1 overflow-y-auto">
-        <ContractCreateStep2ClausePreview
-          companyId={companyId}
-          contractId={sessionContractId}
-          employeeId={form.employee_id}
-          packCode={packCode}
-          templateId={templateId}
-          templateCode={templateCode}
-          workLocation={form.work_location}
-          driverOverrides={driverOverrides}
-          onCanvasChange={() => setClauseOrderDirty(true)}
-        />
-        </div>
-      ) : null}
+      </div>
 
       <DialogFooter className="gap-2 sm:gap-0 shrink-0 border-t pt-3 mt-2">
         <Button type="button" variant="outline" onClick={onClose} data-testid="ctr-create-cancel-btn">
           Hủy
         </Button>
-        {step === 2 ? (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setStep(1)}
-            data-testid="ctr-create-back-btn"
-          >
-            Quay lại
-          </Button>
-        ) : null}
-        {step === 1 ? (
-          <>
-            <Button
-              type="button"
-              variant="secondary"
-              disabled={isSubmitting}
-              onClick={async () => {
-                const bootstrapped = await maybeBootstrapCb();
-                if (!bootstrapped) return;
-                const id = await persistRegistry(false);
-                if (id) onSaved();
-              }}
-              data-testid={HDSD_MUTATE_TEST_IDS.contractsFormSubmit}
-            >
-              Lưu
-            </Button>
-            <Button
-              type="button"
-              disabled={isSubmitting || !templateCode.trim()}
-              onClick={() => void goStep2()}
-              data-testid="ctr-create-next-btn"
-            >
-              Tiếp
-            </Button>
-          </>
-        ) : (
-          <Button
-            type="button"
-            disabled={isSubmitting}
-            onClick={async () => {
-              const id = await persistRegistry(false);
-              if (id) onSaved();
-            }}
-            data-testid={HDSD_MUTATE_TEST_IDS.contractsFormSubmit}
-          >
-            Lưu
-          </Button>
-        )}
+        <Button
+          type="button"
+          disabled={isSubmitting}
+          onClick={async () => {
+            const bootstrapped = await maybeBootstrapCb();
+            if (!bootstrapped) return;
+            const id = await persistRegistry(false);
+            if (id) onSaved();
+          }}
+          data-testid={HDSD_MUTATE_TEST_IDS.contractsFormSubmit}
+        >
+          Lưu
+        </Button>
       </DialogFooter>
-  </div>
+    </div>
   );
 }
 

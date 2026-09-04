@@ -129,7 +129,7 @@ export function useWeeklyAttendanceSummary(opts: {
         from_date: range.from,
         to_date: range.to,
         page: 1,
-        page_size: clampHrmPageSize(500),
+        page_size: 50000,
       });
       return response.data ?? [];
     },

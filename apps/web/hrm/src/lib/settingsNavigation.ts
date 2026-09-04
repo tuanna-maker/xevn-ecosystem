@@ -216,6 +216,7 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
     groupId: 'hr-catalog',
     title: 'Danh mục Nhân sự',
     items: [
+      { id: 'catalogs', label: 'Danh mục Cài đặt (Khu vực / Bưu cục)', icon: Globe, testId: 'settings-tab-catalogs' },
       { id: 'master-data', label: 'Đơn vị & Phòng ban', icon: Layers, testId: 'settings-tab-master-data' },
       { id: 'catalog-job-titles', label: 'Chức danh công việc', icon: Briefcase, testId: 'settings-tab-catalog-job-titles' },
       { id: 'emp-document-types', label: 'Loại giấy tờ', icon: IdCard, testId: 'settings-tab-emp-document-types' },

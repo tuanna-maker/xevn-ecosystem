@@ -344,104 +344,54 @@ export function buildRegistrySubmitPayload(input: {
 
 
   if (!input.registryOnly) {
-
-    if (!input.extra.work_arrangement.trim()) {
-
-      return { ok: false as const, message: 'Chọn hình thức làm việc.' };
-
-    }
-
     const ratio = parseSalaryRatioPercent(input.extra.salary_ratio_percent);
-
-    if (ratio === null) {
-
+    if (ratio === null && input.extra.salary_ratio_percent.trim()) {
       return { ok: false as const, message: 'Nhập tỉ lệ hưởng lương % (0–100).' };
-
     }
-
   }
-
-
 
   if (input.subject.subject_type === 'candidate') {
-
     if (!input.registryOnly && !input.subject.candidate_id.trim()) {
-
       return { ok: false as const, message: 'Chọn ứng viên trong phạm vi công ty.' };
-
     }
-
   } else if (!input.form.employee_id?.trim()) {
-
     return { ok: false as const, message: 'Chọn nhân viên trong phạm vi công ty.' };
-
   }
 
-
-
   const posResolved =
-
     input.subject.subject_type === 'employee'
-
       ? resolveContractCreatePositionKey({
-
           employeeJobTitleKey: input.employeeJobTitleKey,
-
           positionOptions: input.positionOptions,
-
           departmentSnapshot: input.form.department,
-
           employeeCodeSnapshot: input.employeeCode,
-
         })
-
       : resolveContractCreatePositionKey({
-
           employeeJobTitleKey: input.candidatePositionKey,
-
           positionOptions: input.positionOptions,
-
           departmentSnapshot: input.form.department,
-
           employeeCodeSnapshot: input.candidatePositionName,
-
         });
 
   if (!posResolved) {
-
     return { ok: false as const, message: 'Chọn vị trí từ danh mục chức danh (Cài đặt → Danh mục nghiệp vụ).' };
-
   }
 
-
-
   const tplFields = input.registryOnly
-
     ? omitBlankContractTemplateFields({ template_id: '', template_code: '', pack_code: '' })
-
     : omitBlankContractTemplateFields({
-
         template_id: input.templateId,
-
         template_code: input.templateCode,
-
         pack_code: input.packCode,
-
       });
 
-
-
   const derivedName = deriveContractDisplayName(
-
     input.form.contract_code,
-
     contractTypeCode || input.form.contract_type,
-
     input.contractTypeOptions,
-
   );
 
-  const contractName = derivedName || input.extra.contract_name.trim();
+  const contractName = input.extra.contract_name.trim() || input.form.contract_name?.trim() || derivedName || '';
 
   const abstractText = input.extra.abstract_text.trim();
 

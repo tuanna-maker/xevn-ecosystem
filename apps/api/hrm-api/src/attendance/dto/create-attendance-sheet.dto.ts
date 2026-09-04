@@ -22,17 +22,21 @@
 import { IsDateString, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class CreateAttendanceSheetDto {
+  @IsOptional()
   @IsString()
   @MaxLength(64)
   company_id!: string;
 
+  @IsOptional()
   @IsString()
   @MaxLength(200)
   name!: string;
 
+  @IsOptional()
   @IsDateString()
   start_date!: string;
 
+  @IsOptional()
   @IsDateString()
   end_date!: string;
 
@@ -55,6 +59,11 @@ export class CreateAttendanceSheetDto {
   @IsString()
   @MaxLength(500)
   positions?: string | null;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(40)
+  status?: string;
 
   @IsOptional()
   @IsString()

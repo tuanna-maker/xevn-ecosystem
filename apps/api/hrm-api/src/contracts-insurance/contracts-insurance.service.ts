@@ -2452,6 +2452,13 @@ export class ContractsInsuranceService {
           authorization,
           scopeContext,
         );
+        if (!activePkg && emp.company_id && emp.company_id !== query.company_id) {
+          activePkg = await this.employeeCompensation.getActivePackage(
+            { company_id: emp.company_id, employee_id: employeeId },
+            authorization,
+            scopeContext,
+          );
+        }
       } catch (err: unknown) {
         const e = err as ApiException & { code?: string };
         if (

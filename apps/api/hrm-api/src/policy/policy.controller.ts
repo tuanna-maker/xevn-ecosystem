@@ -24,12 +24,27 @@ export class PolicyController {
     @Headers('x-company-id') headerCompanyId: string | undefined,
     @Query('company_id') queryCompanyId?: string,
     @Query('pay_group_code') payGroupCode?: string,
+    @Query('group_id') groupId?: string,
     @Query('status') status?: string,
   ) {
     const { tenantId, companyId } = resolveScopeContext(auth, { tenantId: reqTenantId, companyId: queryCompanyId ?? headerCompanyId });
-    const data = await this.policyService.listPolicies(tenantId, companyId, payGroupCode, status);
+    const targetGroup = payGroupCode || groupId;
+    const data = await this.policyService.listPolicies(tenantId, companyId, targetGroup, status);
     return { data };
   }
+
+  @Post('evaluate-eligibility')
+  async evaluateEligibility(
+    @Body() employeeContext: any,
+    @Headers('authorization') auth: string | undefined,
+    @Headers('x-tenant-id') reqTenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query('company_id') queryCompanyId?: string,
+  ) {
+    const { tenantId, companyId } = resolveScopeContext(auth, { tenantId: reqTenantId, companyId: queryCompanyId ?? headerCompanyId });
+    return this.policyService.evaluateEligibility(tenantId, companyId, employeeContext);
+  }
+
 
   @Get(':id')
   async getPolicy(
@@ -156,6 +171,19 @@ export class GradesController {
     return { data };
   }
 
+  @Post('evaluate-eligibility')
+  async evaluateEligibility(
+    @Body() employeeContext: any,
+    @Headers('authorization') auth: string | undefined,
+    @Headers('x-tenant-id') reqTenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query('company_id') queryCompanyId?: string,
+  ) {
+    const { tenantId, companyId } = resolveScopeContext(auth, { tenantId: reqTenantId, companyId: queryCompanyId ?? headerCompanyId });
+    return this.policyService.evaluateEligibility(tenantId, companyId, employeeContext);
+  }
+
+
   @Post()
   async saveGrade(
     @Body() dto: any,
@@ -168,4 +196,5 @@ export class GradesController {
     const id = await this.policyService.saveGrade(companyId, dto);
     return { success: true, id };
   }
+
 }

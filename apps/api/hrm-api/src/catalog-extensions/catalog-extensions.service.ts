@@ -1153,7 +1153,7 @@ export class CatalogExtensionsService {
     }
     const row = res.rows[0];
     const trialEnd = row.trial_end_date
-      ? new Date(row.trial_end_date)
+      ? new Date(row.trial_end_date as any)
       : new Date();
     const days = Math.max(
       0,

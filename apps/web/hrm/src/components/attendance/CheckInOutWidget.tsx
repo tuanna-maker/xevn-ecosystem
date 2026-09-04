@@ -23,12 +23,17 @@
  * must_keep: checkIn/checkOut wire; legacy testids; Face HOLD; U65 no seed
  * LastVerified: docs/qa/evidence/po-hrm-ui-brand-w4-att-dialog-ext.md
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
@@ -36,6 +41,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
 import {
   Dialog,
   DialogContent,
@@ -56,8 +69,16 @@ import {
   Timer,
   User,
   Building2,
+  Check,
+  ChevronsUpDown,
 } from 'lucide-react';
-import { useEmployees } from '@/hooks/useEmployees';
+import { useAuth } from '@/contexts/AuthContext';
+import { useEmployees, type Employee } from '@/hooks/useEmployees';
+import { mapHrmEmployeeRecord } from '@/hooks/useEmployee';
+import {
+  useDebouncedPickerKeyword,
+  useEmployeePickerSearch,
+} from '@/hooks/useEmployeePicker';
 import { useAttendanceRecords, type AttendanceRecord } from '@/hooks/useAttendanceRecords';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -68,6 +89,7 @@ interface CheckInOutWidgetProps {
 
 export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
   const { t } = useTranslation();
+  const { currentCompanyId } = useAuth();
   const { employees, isLoading: isLoadingEmployees } = useEmployees();
   const { checkIn, checkOut, fetchTodayRecord, todayRecord } = useAttendanceRecords();
 
@@ -80,6 +102,43 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
   const [location, setLocation] = useState('');
   const [notes, setNotes] = useState('');
   const [attendanceType, setAttendanceType] = useState('normal');
+
+  const [openPicker, setOpenPicker] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedKeyword = useDebouncedPickerKeyword(searchQuery, 300);
+
+  const {
+    employees: searchRawEmployees,
+    isLoading: isSearching,
+  } = useEmployeePickerSearch({
+    companyId: currentCompanyId,
+    keyword: debouncedKeyword,
+    enabled: Boolean(currentCompanyId) && (openPicker || Boolean(searchQuery)),
+    pageSize: 50,
+  });
+
+  const searchEmployees = useMemo(
+    () => searchRawEmployees.map(mapHrmEmployeeRecord),
+    [searchRawEmployees],
+  );
+
+  const allKnownEmployees = useMemo(() => {
+    const map = new Map<string, Employee>();
+    for (const emp of employees) {
+      map.set(emp.id, emp);
+    }
+    for (const emp of searchEmployees) {
+      map.set(emp.id, emp);
+    }
+    return Array.from(map.values());
+  }, [employees, searchEmployees]);
+
+  const displayEmployees = useMemo(() => {
+    if (debouncedKeyword.trim()) {
+      return searchEmployees;
+    }
+    return employees;
+  }, [debouncedKeyword, searchEmployees, employees]);
 
   // Update current time every second
   useEffect(() => {
@@ -105,7 +164,7 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
     }
   }, [todayRecord, selectedEmployeeId]);
 
-  const selectedEmployee = employees.find(e => e.id === selectedEmployeeId);
+  const selectedEmployee = allKnownEmployees.find(e => e.id === selectedEmployeeId);
 
   const handleOpenDialog = (type: 'checkin' | 'checkout') => {
     setDialogType(type);
@@ -154,20 +213,28 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
   const canCheckOut = selectedEmployee && currentRecord?.check_in_time && !currentRecord?.check_out_time;
 
   const getStatusBadge = () => {
-    if (!currentRecord) return null;
-
-    const statusMap: Record<string, { labelKey: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-      present: { labelKey: 'status.present', variant: 'default' },
-      late: { labelKey: 'checkinout.lateMinutes', variant: 'destructive' },
-      early_leave: { labelKey: 'status.earlyLeave', variant: 'secondary' },
-      absent: { labelKey: 'status.absent', variant: 'destructive' },
-    };
-
-    const status = statusMap[currentRecord.status] || { labelKey: currentRecord.status, variant: 'outline' as const };
-    const label = currentRecord.status === 'late' 
-      ? t('checkinout.lateMinutes', { minutes: currentRecord.late_minutes })
-      : t(status.labelKey);
-    return <Badge variant={status.variant}>{label}</Badge>;
+    if (!currentRecord) {
+      return <Badge variant="outline">{t('checkinout.statusNotCheckedIn', 'Chưa check-in')}</Badge>;
+    }
+    const st = currentRecord.status;
+    if (st === 'normal' || st === 'present') {
+      return <Badge variant="default">{t('checkinout.statusNormal', 'Bình thường')}</Badge>;
+    }
+    if (st === 'late') {
+      return (
+        <Badge variant="destructive">
+          {t('checkinout.statusLate', 'Đến muộn')}
+          {currentRecord.late_minutes ? ` (${currentRecord.late_minutes}m)` : ''}
+        </Badge>
+      );
+    }
+    if (st === 'early_leave') {
+      return <Badge variant="destructive">{t('checkinout.statusEarlyLeave', 'Về sớm')}</Badge>;
+    }
+    if (st === 'overtime') {
+      return <Badge variant="secondary">{t('checkinout.statusOvertime', 'Làm thêm giờ')}</Badge>;
+    }
+    return <Badge variant="outline">{st || 'Bình thường'}</Badge>;
   };
 
   void isLoadingEmployees;
@@ -192,28 +259,79 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Employee Selection */}
+          {/* Employee Selection Searchable Picker */}
           <div className="space-y-2">
             <Label className="text-[15px] font-medium text-xevn-text">{t('checkinout.selectEmployee')}</Label>
-            <Select value={selectedEmployeeId} onValueChange={setSelectedEmployeeId}>
-              <SelectTrigger>
-                <SelectValue placeholder={t('checkinout.selectEmployeePlaceholder')} />
-              </SelectTrigger>
-              <SelectContent portalScope="iframe">
-                {employees.map((emp) => (
-                  <SelectItem key={emp.id} value={emp.id}>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-xevn-text">{emp.employee_code}</span>
-                      <span className="text-xevn-textSecondary">-</span>
-                      <span className="text-xevn-text">{emp.full_name}</span>
-                      {emp.department && (
-                        <span className="text-xevn-textSecondary">({emp.department})</span>
+            <Popover open={openPicker} onOpenChange={setOpenPicker}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={openPicker}
+                  className="w-full justify-between font-normal text-left h-10 px-3 bg-white border-xevn-border hover:bg-slate-50"
+                >
+                  {selectedEmployee ? (
+                    <span className="truncate">
+                      <span className="font-medium text-xevn-text">{selectedEmployee.employee_code}</span>
+                      <span className="text-xevn-textSecondary"> - </span>
+                      <span className="text-xevn-text">{selectedEmployee.full_name}</span>
+                      {selectedEmployee.department && (
+                        <span className="text-xevn-textSecondary"> ({selectedEmployee.department})</span>
                       )}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                    </span>
+                  ) : (
+                    <span className="text-xevn-textSecondary">
+                      {t('checkinout.selectEmployeePlaceholder') || '-- Chọn nhân viên để chấm công --'}
+                    </span>
+                  )}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                <Command shouldFilter={false}>
+                  <CommandInput
+                    placeholder="Tìm mã hoặc tên nhân viên (vd: XE01702, Nguyễn Mạnh Tuấn)..."
+                    value={searchQuery}
+                    onValueChange={setSearchQuery}
+                  />
+                  <CommandList>
+                    {isSearching ? (
+                      <div className="py-6 text-center text-sm text-xevn-textSecondary">
+                        Đang tìm kiếm nhân viên...
+                      </div>
+                    ) : displayEmployees.length === 0 ? (
+                      <CommandEmpty>Không tìm thấy nhân viên phù hợp.</CommandEmpty>
+                    ) : (
+                      <CommandGroup>
+                        {displayEmployees.map((emp) => (
+                          <CommandItem
+                            key={emp.id}
+                            value={emp.id}
+                            onSelect={() => {
+                              setSelectedEmployeeId(emp.id);
+                              setOpenPicker(false);
+                            }}
+                            className="flex items-center justify-between cursor-pointer py-2 px-3"
+                          >
+                            <div className="flex items-center gap-2 truncate">
+                              <span className="font-medium text-xevn-text">{emp.employee_code}</span>
+                              <span className="text-xevn-textSecondary">-</span>
+                              <span className="text-xevn-text">{emp.full_name}</span>
+                              {emp.department && (
+                                <span className="text-xs text-xevn-textSecondary">({emp.department})</span>
+                              )}
+                            </div>
+                            {selectedEmployeeId === emp.id && (
+                              <Check className="h-4 w-4 text-xevn-primary shrink-0" />
+                            )}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    )}
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* Selected Employee Info */}

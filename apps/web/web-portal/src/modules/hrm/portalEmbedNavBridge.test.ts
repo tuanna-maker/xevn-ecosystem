@@ -25,7 +25,7 @@ describe('portalEmbedNavBridge (web-portal)', () => {
     expect(postPortalEmbedNavigate(target, '/contracts')).toBe(true);
     expect(postMessage).toHaveBeenCalledWith(
       { type: PORTAL_EMBED_NAVIGATE, v: 1, path: '/contracts' },
-      window.location.origin,
+      '*',
     );
   });
 

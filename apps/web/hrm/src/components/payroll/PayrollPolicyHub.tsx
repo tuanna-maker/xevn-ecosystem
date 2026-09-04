@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @CODE-MEMORY
  * Screen:     HRM · Lương · Hub chính sách
  * Route:      /hr/payroll/policy-engine
@@ -12,11 +12,13 @@ import { useState } from "react";
 import { BatchRunnerScreen } from "./batch/BatchRunnerScreen";
 import { InputHubScreen } from "./input/InputHubScreen";
 import { PolicyListScreen } from "./policy/PolicyListScreen";
+import { StepProgressionBatchTab } from "./StepProgressionBatchTab";
 
-type Tab = "policy" | "grade" | "input" | "batch";
+type Tab = "policy" | "progression" | "grade" | "input" | "batch";
 
 const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: "policy", label: "Chính sách", icon: "⚙️" },
+  { id: "progression", label: "Đợt Xét Nâng Bậc", icon: "📈" },
   { id: "grade", label: "Ngạch-Bậc", icon: "🏛️" },
   { id: "input", label: "Nhập liệu", icon: "📥" },
   { id: "batch", label: "Chạy lương", icon: "🚀" },
@@ -61,6 +63,7 @@ export function PayrollPolicyHub() {
       </div>
       <div style={S.content}>
         {activeTab === "policy" && <PolicyListScreen />}
+        {activeTab === "progression" && <StepProgressionBatchTab />}
         {activeTab === "grade" && <PolicyListScreen defaultGroupCode="CHUNG" />}
         {activeTab === "input" && <InputHubScreen />}
         {activeTab === "batch" && <BatchRunnerScreen />}

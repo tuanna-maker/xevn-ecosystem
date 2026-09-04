@@ -188,7 +188,7 @@ import { HRM_PAY_FORMULA_412 } from './pay-formula.constants';
 import { PayFormulaService } from './pay-formula.service';
 import { PayPeriodInputPackService } from './pay-period-input-pack.service';
 import { hasActiveTimesheetBindForPeriod } from './pay-period-bind-resolver';
-import { resolvePayslipLineSourceTier } from './pay-src-resolver';
+import { resolvePayslipLineSourceTier, type PaySrcResolvedLine } from './pay-src-resolver';
 import { HRM_PAY_SPLIT_409 } from './pay-payslip-split.constants';
 import {
   ensurePayPayslipSplitSegmentsSchema,
@@ -247,7 +247,13 @@ import type { PatchPayslipPaymentStatusDto } from './dto/patch-payslip-payment-s
 import type { PublishPayslipDto } from './dto/publish-payslip.dto';
 import type { VoidPayslipDto } from './dto/void-payslip.dto';
 import type { TerminationSettleDto } from './dto/termination-settle.dto';
-import type { PaySrcResolvedLine } from './pay-src-resolver';
+function cleanUuidNull(val: unknown): string | null {
+  if (!val) return null;
+  const s = String(val).trim();
+  if (!s || s === 'undefined' || s === 'null') return null;
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+  return isUuid ? s : null;
+}
 
 type PayrollPayslipRow = {
   id: string;
@@ -279,6 +285,7 @@ type PayrollPayslipRow = {
   payroll_group_id?: string | null;
   payroll_group_code?: string | null;
   payroll_group_name_vi?: string | null;
+  department?: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -453,7 +460,7 @@ export class PayrollService {
           reasons.push('HIRE_MID_MONTH');
         }
         return {
-          employee_id: row.id,
+          employee_id: row.id as string,
           employee_code: row.employee_code,
           employee_name: row.full_name,
           hire_date: row.hired_at,
@@ -640,7 +647,7 @@ export class PayrollService {
     const totalDeduction = Number(row.total_deduction ?? 0);
     const totalNet = Number(row.total_net ?? 0);
     return {
-      id: row.id,
+      id: row.id as string,
       company_id: row.company_id,
       period_label: row.period_label,
       start_date: row.start_date,
@@ -855,11 +862,46 @@ export class PayrollService {
       );
       boundTimesheetHeaderIds.push(mapped.timesheetHeaderId);
     }
-    const mapped = this.mapPeriod(fullPeriod ?? created);
-    if (boundTimesheetHeaderIds.length > 0) {
-      return { ...mapped, boundTimesheetHeaderIds };
+
+    // Auto-enroll eligible employees (with closed attendance sheet) when period is created
+    let enrolledCount = 0;
+    try {
+      const scopeCompanyId = normalizePayrollListCompanyId(
+        authorization,
+        payload.company_id,
+      );
+      const scope = resolveHrmListScope(authorization, scopeCompanyId);
+      const periodRow = fullPeriod ?? created;
+      const eligibility = await this.loadPayrollEligibility(
+        periodRow,
+        scope,
+        authorization,
+      );
+      const autoEligible = eligibility.items.filter((item) => item.eligible);
+      for (const item of autoEligible) {
+        await this.upsertPayslip({
+          company_id: periodRow.company_id,
+          period_id: periodRow.id,
+          employee_id: item.employee_id,
+          employee_code: item.employee_code,
+          employee_name: item.employee_name,
+          gross_amount: 0,
+          deduction_amount: 0,
+          net_amount: 0,
+          status: 'draft',
+        });
+      }
+      enrolledCount = autoEligible.length;
+    } catch {
+      // Fallback gracefully if auto-enrollment criteria not met at creation
     }
-    return mapped;
+
+    const mapped = this.mapPeriod(fullPeriod ?? created);
+    return {
+      ...mapped,
+      enrolled_count: enrolledCount,
+      ...(boundTimesheetHeaderIds.length > 0 ? { boundTimesheetHeaderIds } : {}),
+    };
   }
 
   async updatePayrollPeriod(
@@ -1653,7 +1695,7 @@ export class PayrollService {
       mismatchCode: 'HRM-PAY-409',
     });
     return {
-      id: row.id,
+      id: row.id as string,
       company_id: row.company_id,
       employee_id: row.employee_id,
       payroll_period_id: row.payroll_period_id,
@@ -1972,7 +2014,7 @@ export class PayrollService {
         ? Number(row.tax_amount)
         : null;
     return {
-      id: row.id,
+      id: row.id as string,
       company_id: row.company_id,
       period_id: row.period_id,
       employee_id: row.employee_id,
@@ -2006,6 +2048,7 @@ export class PayrollService {
       payroll_group_id: row.payroll_group_id ?? null,
       payroll_group_code: row.payroll_group_code ?? null,
       payroll_group_name_vi: row.payroll_group_name_vi ?? null,
+      department: row.department ?? row.payroll_group_name_vi ?? null,
       created_at: row.created_at,
       updated_at: row.updated_at,
     };
@@ -2221,6 +2264,11 @@ export class PayrollService {
   private payslipSelectColumns(): string {
     return `
       p.id, p.company_id, p.period_id, p.employee_id, p.employee_code, p.employee_name,
+      COALESCE(
+        e.custom_fields->>'department_name',
+        e.custom_fields->>'department',
+        pg.name_vi
+      ) AS department,
       p.gross_amount::text, p.deduction_amount::text, p.net_amount::text,
       p.currency, p.status, p.formula_definition_id::text AS formula_definition_id,
       p.employee_confirmed_at::text AS employee_confirmed_at,
@@ -2771,7 +2819,7 @@ export class PayrollService {
       row.source_ref,
     );
     return {
-      id: row.id,
+      id: row.id as string,
       payslip_id: row.payslip_id,
       company_id: row.company_id,
       component_code: row.component_code,
@@ -2820,20 +2868,24 @@ export class PayrollService {
       values.push(scope.companyIds);
       filters.push(`p.company_id = ANY($${values.length}::text[])`);
     }
-    if (extra?.payslipId) {
-      values.push(extra.payslipId);
+    const payslipId = cleanUuidNull(extra?.payslipId);
+    if (payslipId) {
+      values.push(payslipId);
       filters.push(`p.id = $${values.length}::uuid`);
     }
-    if (extra?.periodId) {
-      values.push(extra.periodId);
+    const periodId = cleanUuidNull(extra?.periodId);
+    if (periodId) {
+      values.push(periodId);
       filters.push(`p.period_id = $${values.length}::uuid`);
     }
-    if (extra?.employeeId) {
-      values.push(extra.employeeId);
+    const employeeId = cleanUuidNull(extra?.employeeId);
+    if (employeeId) {
+      values.push(employeeId);
       filters.push(`p.employee_id = $${values.length}::uuid`);
     }
-    if (extra?.payrollGroupId) {
-      values.push(extra.payrollGroupId);
+    const payrollGroupId = cleanUuidNull(extra?.payrollGroupId);
+    if (payrollGroupId) {
+      values.push(payrollGroupId);
       filters.push(`p.payroll_group_id = $${values.length}::uuid`);
     }
     if (extra?.essPublishedOnly) {
@@ -2870,6 +2922,45 @@ export class PayrollService {
       [payslipId],
     );
     return res.rows.map((row) => this.mapPayslipLine(row));
+  }
+
+  private async batchLoadPayslipLinesForPayslips(
+    payslipIds: string[],
+  ): Promise<Map<string, ReturnType<typeof this.mapPayslipLine>[]>> {
+    if (payslipIds.length === 0) return new Map();
+    const res = await this.db.query<{
+      id: string;
+      payslip_id: string;
+      company_id: string;
+      component_code: string;
+      amount: string;
+      sign: string;
+      source_ref: string | null;
+      formula_definition_id: string | null;
+      sort_order: number;
+      created_at: string;
+      source_tier: string | null;
+    }>(
+      `
+        SELECT
+          id, payslip_id, company_id, component_code, amount::text AS amount,
+          sign, source_ref, formula_definition_id::text AS formula_definition_id,
+          sort_order, created_at,
+          source_tier
+        FROM public.payroll_payslip_lines
+        WHERE payslip_id = ANY($1::uuid[])
+        ORDER BY sort_order ASC, component_code ASC;
+      `,
+      [payslipIds],
+    );
+    const map = new Map<string, ReturnType<typeof this.mapPayslipLine>[]>();
+    for (const row of res.rows) {
+      const mapped = this.mapPayslipLine(row);
+      const bucket = map.get(row.payslip_id) ?? [];
+      bucket.push(mapped);
+      map.set(row.payslip_id, bucket);
+    }
+    return map;
   }
 
   /**
@@ -2919,6 +3010,7 @@ export class PayrollService {
           pp.end_date::text AS period_end_date
         FROM public.payroll_payslips p
         JOIN public.payroll_periods pp ON pp.id = p.period_id
+        LEFT JOIN public.employees e ON e.id = p.employee_id AND e.archived_at IS NULL
         LEFT JOIN public.pay_payroll_group pg ON pg.id = p.payroll_group_id
         LEFT JOIN public.pay_termination_settlement pts ON pts.id = p.termination_settlement_id
         WHERE ${filters.join(' AND ')}
@@ -2927,8 +3019,18 @@ export class PayrollService {
       values,
     );
     // Thành công: Diễn biến #4/#5 — total=0 = empty trung thực.
+    const payslipIds = res.rows.map((r) => r.id);
+    const linesMap = await this.batchLoadPayslipLinesForPayslips(payslipIds);
+
     const data = await Promise.all(
       res.rows.map(async (row) => {
+        const lines = linesMap.get(row.id) ?? [];
+        const componentValues: Record<string, number> = {};
+        for (const line of lines) {
+          if (line.component_code) {
+            componentValues[line.component_code] = Number(line.amount ?? 0);
+          }
+        }
         const gtgcDisplay = await this.enrichPayslipGtgcDisplay(
           row,
           row.period_end_date,
@@ -2952,6 +3054,11 @@ export class PayrollService {
           ...siDisplay,
           ...taxDisplay,
           period_label: row.period_label,
+          lines,
+          components: lines,
+          component_values: componentValues,
+          componentValues,
+          has_payslip_lines: lines.length > 0,
         };
       }),
     );
@@ -3303,7 +3410,7 @@ export class PayrollService {
     return {
       total: res.rows.length,
       data: res.rows.map((row) => ({
-        id: row.id,
+        id: row.id as string,
         template_id: row.template_id,
         component_id: row.component_id,
         default_value: Number(row.default_value ?? 0),
@@ -3459,7 +3566,7 @@ export class PayrollService {
         company_id: companyId,
         code: `${row.code}-copy`,
         name: `${row.name} (copy)`,
-        description: row.description,
+        description: row.description as string,
         is_default: false,
       },
       authorization,
@@ -3471,10 +3578,10 @@ export class PayrollService {
     );
     for (const comp of components.data) {
       await this.addSalaryTemplateComponent(
-        copy.id,
+        copy.id as string,
         {
           company_id: companyId,
-          component_id: comp.component_id,
+          component_id: comp.component_id as string,
           default_value: comp.default_value,
           is_required: comp.is_required,
           sort_order: comp.sort_order,

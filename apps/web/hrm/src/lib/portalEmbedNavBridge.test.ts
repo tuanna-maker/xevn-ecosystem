@@ -1,7 +1,14 @@
 import { describe, expect, it, vi } from 'vitest';
-import { PORTAL_EMBED_NAVIGATE, initPortalEmbedNavBridge } from './portalEmbedNavBridge';
+import { PORTAL_EMBED_NAVIGATE, initPortalEmbedNavBridge, isAllowedEmbedOrigin } from './portalEmbedNavBridge';
 
 describe('portalEmbedNavBridge (hrm)', () => {
+  it('validates allowed origins for local dev and same origin', () => {
+    expect(isAllowedEmbedOrigin(window.location.origin)).toBe(true);
+    expect(isAllowedEmbedOrigin('http://localhost:5173')).toBe(true);
+    expect(isAllowedEmbedOrigin('http://127.0.0.1:5173')).toBe(true);
+    expect(isAllowedEmbedOrigin('https://evil.example')).toBe(false);
+  });
+
   it('invokes onNavigate for valid parent message', () => {
     const onNavigate = vi.fn();
     const cleanup = initPortalEmbedNavBridge(onNavigate);

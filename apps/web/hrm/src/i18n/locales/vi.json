@@ -1,4 +1,13 @@
 {
+  "common": {
+    "addNew": "Thêm mới",
+    "search": "Tìm kiếm...",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "delete": "Xóa",
+    "edit": "Sửa",
+    "update": "Cập nhật"
+  },
   "landing": {
     "nav": {
       "features": "Tính năng",
@@ -710,7 +719,7 @@
       "contactPerson": "Người liên hệ",
       "contactPhone": "Số điện thoại",
       "department": "Phòng ban",
-      "position": "Chức vụ",
+      "position": "Chức danh công việc",
       "workLocation": "Địa điểm làm việc",
       "startDate": "Ngày vào làm",
       "endDate": "Ngày kết thúc",

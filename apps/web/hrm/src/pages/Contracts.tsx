@@ -156,7 +156,7 @@
  * Why: DEF-CTR-G4-EDIT-DEEPLINK-P1 — CC URL ?workspace=edit not on iframe src; Step1 not mounted
  * must_keep: G3 workspace shell · view/create deep-links unchanged
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
@@ -497,6 +497,23 @@ export default function Contracts() {
     if (fromCatalog !== '—') return fromCatalog;
     return resolveContractTypeDisplayLabel(code);
   };
+
+  const resolveDepartmentDisplayLabel = useCallback(
+    (deptVal: string | null | undefined) => {
+      if (!deptVal) return '-';
+      const trimmed = deptVal.trim();
+      if (!trimmed) return '-';
+      const hit = departmentPickerOptions.find(
+        (opt) =>
+          opt.value === trimmed ||
+          opt.code === trimmed ||
+          opt.value.toLowerCase() === trimmed.toLowerCase() ||
+          (opt.code ?? '').toLowerCase() === trimmed.toLowerCase(),
+      );
+      return hit ? hit.label : trimmed;
+    },
+    [departmentPickerOptions],
+  );
   const statusOptions = useMemo(() => {
     const fromCatalog = (contractStatusesCatalog?.effectiveItems ?? [])
       .filter((item) => item.status === 'active')
@@ -508,15 +525,20 @@ export default function Contracts() {
   const handleEmployeeSelect = (employeeId: string) => {
     const emp = employeesList.find((e) => e.id === employeeId);
     if (emp) {
+      const deptVal =
+        (emp as any).department_id ||
+        (emp as any).department_key ||
+        (emp as any).department_name ||
+        (emp as any).department ||
+        (emp.custom_fields as { department?: string } | undefined)?.department ||
+        emp.job_title_key ||
+        '';
       setFormData((prev) => ({
         ...prev,
         employee_id: employeeId,
         employee_name: emp.full_name,
         employee_avatar: (emp as { avatar_url?: string }).avatar_url || '',
-        department:
-          (emp.custom_fields as { department?: string } | undefined)?.department ||
-          emp.job_title_key ||
-          '',
+        department: String(deptVal),
       }));
     }
   };
@@ -1537,7 +1559,7 @@ export default function Contracts() {
                     </div>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {contract.department || '-'}
+                    {resolveDepartmentDisplayLabel(contract.department)}
                   </TableCell>
                   <TableCell>{displayContractType(contract.contract_type)}</TableCell>
                   <TableCell>

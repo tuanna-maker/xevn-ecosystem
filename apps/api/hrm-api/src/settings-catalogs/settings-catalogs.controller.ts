@@ -91,7 +91,7 @@ export class SettingsCatalogsController {
     authorization: string | undefined,
     tenantId: string | undefined,
     companyIdHeader: string | undefined,
-    bodyCompanyId: string,
+    bodyCompanyId?: string,
   ): { tenantId: string; catalogCompanyId: string } {
     const scope = resolveScopeContext(authorization, {
       tenantId,
@@ -151,7 +151,7 @@ export class SettingsCatalogsController {
         authorization,
         tenantId,
         companyId,
-        body.company_id,
+        body.company_id || body.companyId,
       );
     return this.settingsCatalogs
       .upsertCatalogItem(resolvedTenantId, {
@@ -175,7 +175,7 @@ export class SettingsCatalogsController {
         authorization,
         tenantId,
         companyId,
-        body.company_id,
+        body.company_id || body.companyId,
       );
     return this.settingsCatalogs
       .upsertCatalogItem(resolvedTenantId, {
@@ -188,10 +188,7 @@ export class SettingsCatalogsController {
   @Delete('items')
   deleteCatalogItem(
     @Body()
-    body: Pick<
-      SettingsCatalogItemMutationDto,
-      'company_id' | 'category_key' | 'item_key'
-    >,
+    body: SettingsCatalogItemMutationDto,
     @Headers('authorization') authorization?: string,
     @Headers('x-internal-api-key') internalApiKey?: string,
     @Headers('x-tenant-id') tenantId?: string,
@@ -203,7 +200,7 @@ export class SettingsCatalogsController {
         authorization,
         tenantId,
         companyId,
-        body.company_id,
+        body.company_id || body.companyId,
       );
     return this.settingsCatalogs
       .deleteCatalogItem(resolvedTenantId, {

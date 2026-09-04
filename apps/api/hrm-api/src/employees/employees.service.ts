@@ -898,10 +898,18 @@ export class EmployeesService implements OnModuleInit {
       idx += 1;
     }
 
+    if (query.department && query.department !== 'all') {
+      filters.push(
+        `(LOWER(TRIM(custom_fields->>'department')) = LOWER(TRIM($${idx})) OR custom_fields->>'department' ILIKE $${idx})`,
+      );
+      values.push(query.department.trim());
+      idx += 1;
+    }
+
     const searchTerm = resolveDirectorySearchTerm(query.keyword, query.q);
     if (searchTerm) {
       filters.push(
-        `(full_name ILIKE $${idx} OR email ILIKE $${idx} OR employee_code ILIKE $${idx})`,
+        `(full_name ILIKE $${idx} OR email ILIKE $${idx} OR employee_code ILIKE $${idx} OR custom_fields->>'department' ILIKE $${idx})`,
       );
       values.push(`%${searchTerm}%`);
       idx += 1;
@@ -1656,6 +1664,7 @@ export class EmployeesService implements OnModuleInit {
     let activatedAtDisplay: string | null = null;
     let activatedEvent: Record<string, unknown> | null = null;
     let activationGate: EmpActivationGateResult | null = null;
+    let nextCustomFields: Record<string, string> | undefined;
     if (payload.email !== undefined) {
       updates.push(`email = $${updates.length + 1}`);
       values.push(payload.email.toLowerCase().trim());
@@ -1667,14 +1676,19 @@ export class EmployeesService implements OnModuleInit {
     if (payload.job_title_key !== undefined) {
       updates.push(`job_title_key = $${updates.length + 1}`);
       values.push(payload.job_title_key.trim());
+      if (payload.custom_fields?.job_title_label === undefined) {
+        nextCustomFields = {
+          ...(nextCustomFields ?? existing.custom_fields ?? {}),
+        };
+        delete nextCustomFields.job_title_label;
+      }
     }
     if (payload.hired_at !== undefined) {
       updates.push(`hired_at = $${updates.length + 1}::date`);
       values.push(payload.hired_at);
     }
 
-    let nextCustomFields: Record<string, string> | undefined;
-    if (payload.custom_fields !== undefined) {
+    if (payload.custom_fields !== undefined && nextCustomFields === undefined) {
       // Option A: self always merges phone keys only (even manager|hr_manager JWT).
       nextCustomFields = isSelfEmployeeTarget(employeeId, authorization)
         ? mergeSelfEssCustomFields(

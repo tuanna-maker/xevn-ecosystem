@@ -310,6 +310,54 @@ export function ContractLegalPrintSettingsPanel({
 
   const isHoldingPartition = isContractLibraryHoldingPartition(companyId);
 
+  const CUSTOM_GROUPS_STORAGE_KEY = 'xevn_contract_clause_custom_groups';
+
+  const [customGroupMap, setCustomGroupMap] = useState<Record<string, string>>(() => {
+    try {
+      const saved = localStorage.getItem(CUSTOM_GROUPS_STORAGE_KEY);
+      return saved ? (JSON.parse(saved) as Record<string, string>) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  const saveCustomGroupMap = useCallback(
+    (newMap: Record<string, string>) => {
+      setCustomGroupMap(newMap);
+      try {
+        localStorage.setItem(CUSTOM_GROUPS_STORAGE_KEY, JSON.stringify(newMap));
+      } catch {
+        /* ignore storage error */
+      }
+      if (companyId) {
+        void putContractCompanySetting({
+          company_id: companyId,
+          setting_key: 'contract_clause_custom_groups',
+          value: newMap,
+        }).catch(() => {});
+      }
+    },
+    [companyId],
+  );
+
+  const customGroupKeys = useMemo(() => Object.keys(customGroupMap), [customGroupMap]);
+
+  const allClauseGroupKeys = useMemo(() => {
+    const set = new Set<string>([...CONTRACT_CLAUSE_GROUPS, ...customGroupKeys]);
+    return Array.from(set);
+  }, [customGroupKeys]);
+
+  const getClauseGroupLabel = useCallback(
+    (key: string) => {
+      return (
+        customGroupMap[key] ??
+        CONTRACT_CLAUSE_GROUP_LABELS[key] ??
+        clauseGroupLabelVi(key, customGroupMap)
+      );
+    },
+    [customGroupMap],
+  );
+
   const [clauseSearch, setClauseSearch] = useState('');
   const [clauseGroupFilter, setClauseGroupFilter] = useState<string>('__all__');
   const [clauseDialogOpen, setClauseDialogOpen] = useState(false);
@@ -318,6 +366,76 @@ export function ContractLegalPrintSettingsPanel({
   const [tplSearch, setTplSearch] = useState('');
   const [tplPage, setTplPage] = useState(1);
   const [tplDialogOpen, setTplDialogOpen] = useState(false);
+
+  const [addGroupDialogOpen, setAddGroupDialogOpen] = useState(false);
+  const [editGroupDialogOpen, setEditGroupDialogOpen] = useState(false);
+  const [groupForm, setGroupForm] = useState<{ oldKey?: string; key: string; label: string }>({
+    key: '',
+    label: '',
+  });
+
+  const handleOpenAddGroup = useCallback(() => {
+    setGroupForm({ key: '', label: '' });
+    setAddGroupDialogOpen(true);
+  }, []);
+
+  const handleOpenEditGroup = useCallback((group: { key: string; label: string }) => {
+    setGroupForm({ oldKey: group.key, key: group.key, label: group.label });
+    setEditGroupDialogOpen(true);
+  }, []);
+
+  const handleSaveAddGroup = useCallback(() => {
+    const rawKey = groupForm.key.trim().toUpperCase().replace(/\s+/g, '_');
+    const rawLabel = groupForm.label.trim();
+    if (!rawKey || !rawLabel) {
+      toast({
+        title: 'Thiếu thông tin nhóm',
+        description: 'Vui lòng nhập đầy đủ Mã nhóm và Tên nhóm.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    const nextMap = { ...customGroupMap, [rawKey]: rawLabel };
+    saveCustomGroupMap(nextMap);
+    setAddGroupDialogOpen(false);
+    setClauseGroupFilter(rawKey);
+    toast({
+      title: 'Đã thêm nhóm điều khoản',
+      description: `Nhóm «${rawLabel}» (${rawKey}) đã được tạo.`,
+    });
+  }, [groupForm, customGroupMap, saveCustomGroupMap]);
+
+  const handleSaveEditGroup = useCallback(() => {
+    const oldKey = groupForm.oldKey;
+    const newKey = groupForm.key.trim().toUpperCase().replace(/\s+/g, '_');
+    const newLabel = groupForm.label.trim();
+    if (!newKey || !newLabel) {
+      toast({
+        title: 'Thiếu thông tin nhóm',
+        description: 'Vui lòng nhập đầy đủ Mã nhóm và Tên nhóm.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const nextMap = { ...customGroupMap };
+    if (oldKey && oldKey !== newKey) {
+      delete nextMap[oldKey];
+    }
+    nextMap[newKey] = newLabel;
+
+    saveCustomGroupMap(nextMap);
+
+    if (oldKey && oldKey !== newKey && clauseGroupFilter === oldKey) {
+      setClauseGroupFilter(newKey);
+    }
+
+    setEditGroupDialogOpen(false);
+    toast({
+      title: 'Đã cập nhật nhóm điều khoản',
+      description: `Đã lưu nhóm «${newLabel}» (${newKey}).`,
+    });
+  }, [groupForm, customGroupMap, saveCustomGroupMap, clauseGroupFilter]);
 
   const filteredClauses = useMemo(
     () => filterClausesByGroupAndSearch(clauses, clauseGroupFilter, clauseSearch),
@@ -379,16 +497,26 @@ export function ContractLegalPrintSettingsPanel({
   const loadCfg = useCallback(async () => {
     if (!companyId) return;
     try {
-      const [suffixRow, patternRow] = await Promise.all([
+      const [suffixRow, patternRow, customGroupsRow] = await Promise.all([
         getContractCompanySetting({ company_id: companyId, key: CONTRACT_SETTING_ORG_SUFFIX }),
         getContractCompanySetting({
           company_id: companyId,
           key: CONTRACT_SETTING_NUMBER_PATTERN,
         }),
+        getContractCompanySetting({
+          company_id: companyId,
+          key: 'contract_clause_custom_groups',
+        }).catch(() => null),
       ]);
       setOrgSuffix(parseOrgSuffixValue(suffixRow?.value));
       const pat = parseNumberPatternValue(patternRow?.value);
       setNumberPattern(pat || CONTRACT_NUMBER_PATTERN_DEFAULT);
+      if (customGroupsRow?.value && typeof customGroupsRow.value === 'object') {
+        setCustomGroupMap((prev) => ({
+          ...prev,
+          ...(customGroupsRow.value as Record<string, string>),
+        }));
+      }
     } catch {
       /* CFG optional until BE — honest empty */
       setOrgSuffix('');
@@ -1549,6 +1677,10 @@ export function ContractLegalPrintSettingsPanel({
                   clauses={clauses}
                   selected={clauseGroupFilter}
                   onSelect={setClauseGroupFilter}
+                  customGroupLabels={customGroupMap}
+                  customGroupKeys={customGroupKeys}
+                  onAddGroup={handleOpenAddGroup}
+                  onEditGroup={handleOpenEditGroup}
                 />
               </div>
               <div className="col-span-12 lg:col-span-9">
@@ -1587,12 +1719,13 @@ export function ContractLegalPrintSettingsPanel({
                 onEdit={onEditClause}
                 onActivate={(id) => void onActivateClause(id)}
                 onRetire={(id) => void onRetireClause(id)}
+                customGroupLabels={customGroupMap}
                 emptyMessage={
                   clauseGroupFilter === '__all__' && !clauseSearch.trim()
                     ? clauses.length === 0
                       ? 'Chưa có điều khoản — bấm «Thêm điều khoản» để tạo từ FE (U65).'
                       : undefined
-                    : `Nhóm «${clauseGroupLabelVi(clauseGroupFilter === '__all__' ? '' : clauseGroupFilter)}» chưa có điều khoản${clauseSearch.trim() ? ' khớp tìm kiếm' : ''} — thêm mới hoặc chọn «Tất cả nhóm».`
+                    : `Nhóm «${getClauseGroupLabel(clauseGroupFilter === '__all__' ? '' : clauseGroupFilter)}» chưa có điều khoản${clauseSearch.trim() ? ' khớp tìm kiếm' : ''} — thêm mới hoặc chọn «Tất cả nhóm».`
                 }
               />
             </SettingsCatalogScreenShell>
@@ -1629,9 +1762,9 @@ export function ContractLegalPrintSettingsPanel({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent portalScope="iframe">
-                    {CONTRACT_CLAUSE_GROUPS.map((g) => (
+                    {allClauseGroupKeys.map((g) => (
                       <SelectItem key={g} value={g}>
-                        {CONTRACT_CLAUSE_GROUP_LABELS[g] ?? g}
+                        {getClauseGroupLabel(g)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -1806,9 +1939,9 @@ export function ContractLegalPrintSettingsPanel({
                         <SelectValue />
                       </SelectTrigger>
                       <SettingsDialogSelectContent>
-                        {CONTRACT_CLAUSE_GROUPS.map((g) => (
+                        {allClauseGroupKeys.map((g) => (
                           <SelectItem key={g} value={g}>
-                            {CONTRACT_CLAUSE_GROUP_LABELS[g] ?? g}
+                            {getClauseGroupLabel(g)}
                           </SelectItem>
                         ))}
                       </SettingsDialogSelectContent>
@@ -2187,6 +2320,106 @@ export function ContractLegalPrintSettingsPanel({
         </TabsContent>
       </Tabs>
       ) : null}
+
+      {/* Dialog: Thêm Nhóm Điều Khoản */}
+      <Dialog open={addGroupDialogOpen} onOpenChange={setAddGroupDialogOpen}>
+        <DialogContent
+          className={HRM_DIALOG_PARENT_COMPACT_CLASS}
+          data-testid="settings-contract-clauses-add-group-dialog"
+          data-hrm-dialog-portal="parent"
+        >
+          <DialogHeader>
+            <DialogTitle>Thêm nhóm điều khoản mới</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div className="space-y-1">
+              <Label>Mã nhóm *</Label>
+              <Input
+                placeholder="VD. DIEU_KHOAN_MOI"
+                value={groupForm.key}
+                onChange={(e) =>
+                  setGroupForm((p) => ({
+                    ...p,
+                    key: e.target.value.toUpperCase().replace(/\s+/g, '_'),
+                  }))
+                }
+                data-testid="settings-contract-clauses-group-code-input"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label>Tên nhóm *</Label>
+              <Input
+                placeholder="VD. Điều khoản bổ sung"
+                value={groupForm.label}
+                onChange={(e) => setGroupForm((p) => ({ ...p, label: e.target.value }))}
+                data-testid="settings-contract-clauses-group-name-input"
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" type="button" onClick={() => setAddGroupDialogOpen(false)}>
+              Hủy
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSaveAddGroup}
+              data-testid="settings-contract-clauses-save-group-btn"
+            >
+              Thêm nhóm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog: Sửa Nhóm Điều Khoản */}
+      <Dialog open={editGroupDialogOpen} onOpenChange={setEditGroupDialogOpen}>
+        <DialogContent
+          className={HRM_DIALOG_PARENT_COMPACT_CLASS}
+          data-testid="settings-contract-clauses-edit-group-dialog"
+          data-hrm-dialog-portal="parent"
+        >
+          <DialogHeader>
+            <DialogTitle>Sửa nhóm điều khoản</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div className="space-y-1">
+              <Label>Mã nhóm *</Label>
+              <Input
+                placeholder="VD. DIEU_KHOAN_MOI"
+                value={groupForm.key}
+                onChange={(e) =>
+                  setGroupForm((p) => ({
+                    ...p,
+                    key: e.target.value.toUpperCase().replace(/\s+/g, '_'),
+                  }))
+                }
+                data-testid="settings-contract-clauses-group-code-edit-input"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label>Tên nhóm *</Label>
+              <Input
+                placeholder="VD. Điều khoản bổ sung"
+                value={groupForm.label}
+                onChange={(e) => setGroupForm((p) => ({ ...p, label: e.target.value }))}
+                data-testid="settings-contract-clauses-group-name-edit-input"
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" type="button" onClick={() => setEditGroupDialogOpen(false)}>
+              Hủy
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSaveEditGroup}
+              data-testid="settings-contract-clauses-update-group-btn"
+            >
+              Lưu thay đổi
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

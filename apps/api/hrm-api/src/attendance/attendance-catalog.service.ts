@@ -563,7 +563,8 @@ export class AttendanceCatalogService {
         name = COALESCE($2, name), start_date = COALESCE($3::date, start_date),
         end_date = COALESCE($4::date, end_date), attendance_type = COALESCE($5, attendance_type),
         standard_type = COALESCE($6, standard_type), department = COALESCE($7, department),
-        positions = COALESCE($8, positions), notes = COALESCE($9, notes), updated_at = NOW()
+        positions = COALESCE($8, positions), notes = COALESCE($9, notes),
+        status = COALESCE($10, status), updated_at = NOW()
        WHERE id = $1::uuid RETURNING *;`,
       [
         id,
@@ -575,6 +576,7 @@ export class AttendanceCatalogService {
         payload.department ?? null,
         payload.positions ?? null,
         payload.notes ?? null,
+        payload.status ?? null,
       ],
     );
     if (!res.rows[0])

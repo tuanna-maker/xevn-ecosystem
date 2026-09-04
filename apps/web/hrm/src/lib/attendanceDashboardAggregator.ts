@@ -48,14 +48,33 @@ function isValidDate(value: Date): boolean {
   return isValid(value) && !Number.isNaN(value.getTime());
 }
 
+export function toLocalDateStr(val?: string | Date | null): string {
+  if (!val) return '';
+  try {
+    const d = typeof val === 'string' ? new Date(val) : val;
+    if (Number.isNaN(d.getTime())) return String(val).slice(0, 10);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  } catch {
+    return String(val).slice(0, 10);
+  }
+}
+
 function parseSheetBoundary(raw: string): Date | null {
   const trimmed = raw.trim();
   if (!trimmed) return null;
-  // Prefer ISO date-only; parseISO('yyyy-MM-dd') is local midnight in date-fns
-  const parsed = /^\d{4}-\d{2}-\d{2}/.test(trimmed)
-    ? parseISO(trimmed.slice(0, 10))
-    : new Date(trimmed);
-  return isValidDate(parsed) ? parsed : null;
+  const dateStr = toLocalDateStr(trimmed);
+  const parts = dateStr.split('-');
+  if (parts.length === 3) {
+    const y = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10) - 1;
+    const d = parseInt(parts[2], 10);
+    const result = new Date(y, m, d);
+    return isValidDate(result) ? result : null;
+  }
+  return null;
 }
 
 export type WeeklyShiftCell = {
@@ -64,6 +83,13 @@ export type WeeklyShiftCell = {
   status?: string;
   time?: string;
   type?: string;
+  checkInAt?: string | null;
+  checkOutAt?: string | null;
+  lateMinutes?: number;
+  earlyMinutes?: number;
+  overtimeHours?: number;
+  actualHours?: number;
+  record?: HrmAttendanceRecord;
 };
 
 export type WeeklyAttendanceDay = {
@@ -105,7 +131,7 @@ export type EmployeeLookup = {
   position?: string | null;
 };
 
-const DAY_LABEL_KEYS = ['sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri'] as const;
+const DAY_LABEL_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
 
 function toTimeLabel(value?: string | null): string {
   if (!value) return '';
@@ -129,8 +155,8 @@ function currentWeekRange(anchor = new Date()): { from: string; to: string; days
   const weekEnd = endOfWeek(anchor, { weekStartsOn: 1 });
   const days = eachDayOfInterval({ start: weekStart, end: weekEnd }).slice(0, 7);
   return {
-    from: format(weekStart, 'yyyy-MM-dd'),
-    to: format(weekEnd, 'yyyy-MM-dd'),
+    from: toLocalDateStr(weekStart),
+    to: toLocalDateStr(weekEnd),
     days,
   };
 }
@@ -140,18 +166,15 @@ function buildRangeFromDays(days: Date[]): { from: string; to: string; days: Dat
   const first = days[0]!;
   const last = days[days.length - 1]!;
   return {
-    from: format(first, 'yyyy-MM-dd'),
-    to: format(last, 'yyyy-MM-dd'),
+    from: toLocalDateStr(first),
+    to: toLocalDateStr(last),
     days,
   };
 }
 
 /**
- * Resolve the ≤7-day window for weekly grid + records GET.
- * Prefer the current calendar week clipped into the sheet period so mid-month
- * sheets are not stuck on the first week (empty grid while API returns later days).
- * When the anchor week is outside the sheet, fall back to the first ≤7 days of the sheet.
- * `from`/`to` always match displayed `days` (API filter aligned with columns).
+ * Resolve the full date range for attendance sheet grid + records GET.
+ * `from`/`to` match displayed `days` across the entire sheet period (e.g. 01/08 - 31/08).
  */
 export function resolveWeeklyDateRange(
   sheet?: { start_date: string; end_date: string } | null,
@@ -162,22 +185,14 @@ export function resolveWeeklyDateRange(
     const end = parseSheetBoundary(sheet.end_date);
     if (start && end && start.getTime() <= end.getTime()) {
       try {
-        const weekStart = startOfWeek(anchor, { weekStartsOn: 1 });
-        const weekEnd = endOfWeek(anchor, { weekStartsOn: 1 });
-        const clippedStart = weekStart < start ? start : weekStart;
-        const clippedEnd = weekEnd > end ? end : weekEnd;
-
-        if (clippedStart.getTime() <= clippedEnd.getTime()) {
-          const clipped = buildRangeFromDays(
-            eachDayOfInterval({ start: clippedStart, end: clippedEnd }).slice(0, 7),
-          );
-          if (clipped) return clipped;
+        const days = eachDayOfInterval({ start, end });
+        if (days.length > 0) {
+          return {
+            from: toLocalDateStr(start),
+            to: toLocalDateStr(end),
+            days,
+          };
         }
-
-        const firstWeek = buildRangeFromDays(
-          eachDayOfInterval({ start, end }).slice(0, 7),
-        );
-        if (firstWeek) return firstWeek;
       } catch {
         // fall through to current week
       }
@@ -246,6 +261,7 @@ function recordToShift(record: HrmAttendanceRecord): WeeklyShiftCell {
       name: resolveAttendanceLeaveDisplayLabel(record),
       type: 'leave',
       status: 'leave',
+      record,
     };
   }
   if (record.status === 'absent' || record.status === 'x') {
@@ -253,18 +269,29 @@ function recordToShift(record: HrmAttendanceRecord): WeeklyShiftCell {
       name: record.status_label?.trim() || 'Vắng mặt',
       type: 'leave',
       status: 'absent',
+      record,
     };
   }
 
   const time = buildTimeRange(record.check_in_at, record.check_out_at);
   const checkInMinutes = record.check_in_at ? toMinutes(record.check_in_at) : null;
-  const status =
-    checkInMinutes != null && checkInMinutes > 8 * 60 + 5 ? 'late' : 'full';
+  const computedLateMinutes =
+    record.late_minutes ??
+    (checkInMinutes != null && checkInMinutes > 8 * 60 ? checkInMinutes - 8 * 60 : 0);
+
+  const status = computedLateMinutes > 5 ? 'late' : 'full';
 
   return {
     shift: 'HC',
     status,
     time,
+    checkInAt: record.check_in_at ? toTimeLabel(record.check_in_at) : null,
+    checkOutAt: record.check_out_at ? toTimeLabel(record.check_out_at) : null,
+    lateMinutes: computedLateMinutes,
+    earlyMinutes: record.early_minutes ?? 0,
+    overtimeHours: record.overtime_hours ?? 0,
+    actualHours: record.actual_hours ?? 8,
+    record,
   };
 }
 
@@ -284,24 +311,56 @@ export function buildWeeklyAttendanceRows(
   operatingUnitLabels?: Map<string, string>,
 ): WeeklyAttendanceRow[] {
   const validDays = range.days.filter(isValidDate);
-  const dayKeys = validDays.map((day) => format(day, 'yyyy-MM-dd'));
+  const dayKeys = validDays.map((day) => toLocalDateStr(day));
   const rowsByEmployee = new Map<string, WeeklyAttendanceRow>();
 
+  // Pre-populate rows for all employees in employeesById map
+  for (const [empId, emp] of employeesById.entries()) {
+    rowsByEmployee.set(empId, {
+      id: empId,
+      name: emp.full_name,
+      code: emp.employee_code,
+      department: resolveAttendanceUnitLabel(emp.department, operatingUnitLabels),
+      days: validDays.map((day) => ({
+        dayLabel: dayLabelFor(day, t),
+        date: format(day, 'dd'),
+        dateIso: toLocalDateStr(day),
+        shifts: [],
+      })),
+    });
+  }
+
   for (const record of records) {
-    const dayIndex = dayKeys.indexOf(record.attendance_date);
+    const dateKey = toLocalDateStr(record.attendance_date);
+    const dayIndex = dayKeys.indexOf(dateKey);
     if (dayIndex < 0) continue;
 
     const employee = employeesById.get(record.employee_id);
+    const rec = record as Record<string, any>;
+    const resolvedName =
+      employee?.full_name ||
+      rec.employee_name ||
+      rec.employee_name_snapshot ||
+      rec.employee_full_name ||
+      rec.full_name ||
+      record.employee_id;
+    const resolvedCode =
+      employee?.employee_code ||
+      rec.employee_code ||
+      rec.employee_code_snapshot ||
+      rec.code ||
+      '—';
+
     if (!rowsByEmployee.has(record.employee_id)) {
       rowsByEmployee.set(record.employee_id, {
         id: record.employee_id,
-        name: employee?.full_name ?? record.employee_id,
-        code: employee?.employee_code ?? '—',
-        department: resolveAttendanceUnitLabel(employee?.department, operatingUnitLabels),
+        name: resolvedName,
+        code: resolvedCode,
+        department: resolveAttendanceUnitLabel(employee?.department ?? rec.department, operatingUnitLabels),
         days: validDays.map((day) => ({
           dayLabel: dayLabelFor(day, t),
           date: format(day, 'dd'),
-          dateIso: format(day, 'yyyy-MM-dd'),
+          dateIso: toLocalDateStr(day),
           shifts: [],
         })),
       });
@@ -323,6 +382,7 @@ export function mapAttendanceRecordsToTableRows(
 ): AttendanceRecordTableRow[] {
   return records.map((record, index) => {
     const employee = employeesById.get(record.employee_id);
+    const rec = record as Record<string, any>;
     const checkIn = toTimeLabel(record.check_in_at);
     const checkOut = toTimeLabel(record.check_out_at);
     const time = checkOut ? `${checkIn || '--:--'} - ${checkOut}` : checkIn || '--:--';
@@ -331,13 +391,27 @@ export function mapAttendanceRecordsToTableRows(
       ? resolveAttendanceLeaveDisplayLabel(record)
       : null;
 
+    const resolvedName =
+      employee?.full_name ||
+      rec.employee_name ||
+      rec.employee_name_snapshot ||
+      rec.employee_full_name ||
+      rec.full_name ||
+      record.employee_id;
+    const resolvedCode =
+      employee?.employee_code ||
+      rec.employee_code ||
+      rec.employee_code_snapshot ||
+      rec.code ||
+      '—';
+
     return {
       id: record.id,
       attendanceCode: String(index + 1),
-      employeeCode: employee?.employee_code ?? '—',
-      name: employee?.full_name ?? record.employee_id,
-      position: employee?.position ?? '—',
-      unit: resolveAttendanceUnitLabel(employee?.department, operatingUnitLabels) ?? '—',
+      employeeCode: resolvedCode,
+      name: resolvedName,
+      position: employee?.position ?? rec.position ?? '—',
+      unit: resolveAttendanceUnitLabel(employee?.department ?? rec.department, operatingUnitLabels) ?? '—',
       date: formatDisplayDate(record.attendance_date),
       time,
       status: record.status,

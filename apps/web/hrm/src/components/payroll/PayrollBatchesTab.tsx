@@ -236,7 +236,7 @@ export function PayrollBatchesTab() {
     isCreating,
   } = usePayrollBatches({ periodMonth, periodYear });
 
-  const { employees } = useEmployees();
+  const { employees } = useEmployees({ enabled: true });
 
   // Dialog states — showAddDialog MUST precede usePaySheetTemplates(enabled) (TDZ)
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -272,9 +272,33 @@ export function PayrollBatchesTab() {
     payroll_group_id: '' as string,
   });
 
+  useEffect(() => {
+    if (!showAddDialog || !paySheetTemplates.length) return;
+    const activeTpl =
+      paySheetTemplates.find((t) => t.id === formData.pay_sheet_template_id) ||
+      paySheetTemplates.find((t) => t.isDefault) ||
+      paySheetTemplates[0];
+
+    if (activeTpl && (formData.pay_sheet_template_id === PAY_SHEET_TPL_PERIOD_NONE_SENTINEL || !formData.department)) {
+      let autoDept = formData.department;
+      if (activeTpl.ouId) {
+        const matchedDept = departments.find(
+          (d) => d.id === activeTpl.ouId || d.code === activeTpl.ouId || d.name === activeTpl.ouId,
+        );
+        autoDept = matchedDept ? matchedDept.name : activeTpl.ouId;
+      }
+      setFormData((prev) => ({
+        ...prev,
+        pay_sheet_template_id: activeTpl.id,
+        department: autoDept || prev.department,
+      }));
+    }
+  }, [showAddDialog, paySheetTemplates, departments]);
+
   // Add employee state
   const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
   const [selectedEmployeesToAdd, setSelectedEmployeesToAdd] = useState<string[]>([]);
+  const [filterByDeptOnly, setFilterByDeptOnly] = useState(true);
 
   const {
     data: eligibilityData,
@@ -357,13 +381,25 @@ export function PayrollBatchesTab() {
   // Load records when viewing batch detail
   useEffect(() => {
     if (!selectedBatch) return;
+    let cancelled = false;
     void fetchBatchRecords(selectedBatch.id, {
       periodMonth: selectedBatch.period_month,
       periodYear: selectedBatch.period_year,
     }).then((records) => {
-      setBatchRecords(enrichPayrollRecordsFromEmployees(records, employees));
+      if (!cancelled) {
+        setBatchRecords(enrichPayrollRecordsFromEmployees(records, employees));
+      }
     });
-  }, [selectedBatch, fetchBatchRecords, employees]);
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedBatch?.id, fetchBatchRecords]);
+
+  // Enrich existing batchRecords when employees list finishes loading in background
+  useEffect(() => {
+    if (!employees || employees.length === 0) return;
+    setBatchRecords((prev) => (prev.length > 0 ? enrichPayrollRecordsFromEmployees(prev, employees) : prev));
+  }, [employees]);
 
   const filteredBatches = batches.filter(batch => {
     const matchesSearch = batch.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -371,11 +407,28 @@ export function PayrollBatchesTab() {
     return matchesSearch && matchesStatus;
   });
 
-  const filteredEmployeesToAdd = employees.filter(emp => {
-    const matchesSearch = emp.full_name.toLowerCase().includes(employeeSearchTerm.toLowerCase()) ||
-      emp.employee_code.toLowerCase().includes(employeeSearchTerm.toLowerCase());
-    const alreadyAdded = batchRecords.some(r => r.employee_id === emp.id);
-    return matchesSearch && !alreadyAdded && emp.status === 'active';
+  const batchDepartmentName = selectedBatch?.department || selectedBatch?.payroll_group_name_vi || '';
+
+  const filteredEmployeesToAdd = employees.filter((emp) => {
+    if (emp.status !== 'active') return false;
+    const alreadyAdded = batchRecords.some((r) => r.employee_id === emp.id);
+    if (alreadyAdded) return false;
+
+    const term = employeeSearchTerm.trim().toLowerCase();
+    if (term) {
+      return (
+        emp.full_name.toLowerCase().includes(term) ||
+        emp.employee_code.toLowerCase().includes(term) ||
+        (emp.email && emp.email.toLowerCase().includes(term)) ||
+        (emp.department && emp.department.toLowerCase().includes(term))
+      );
+    }
+
+    if (!filterByDeptOnly || !batchDepartmentName) return true;
+    return (
+      (emp.department && emp.department.toLowerCase().includes(batchDepartmentName.toLowerCase())) ||
+      (batchDepartmentName.toLowerCase().includes(emp.department?.toLowerCase() || ''))
+    );
   });
 
   const getStatusBadge = (status: string) => {
@@ -439,6 +492,29 @@ export function PayrollBatchesTab() {
         pay_sheet_template_id: paySheetTemplateId,
         payroll_group_id: formData.payroll_group_id?.trim() || null,
       });
+
+      // Automatically enroll active employees into the newly created period
+      const targetDept = formData.department?.trim().toLowerCase();
+      const eligibleEmployees = employees.filter((emp) => {
+        if (emp.status !== 'active') return false;
+        if (!targetDept) return true;
+        return (
+          (emp.department && emp.department.toLowerCase().includes(targetDept)) ||
+          targetDept.includes(emp.department?.toLowerCase() || '')
+        );
+      });
+      const idsToEnroll = (eligibleEmployees.length > 0 ? eligibleEmployees : employees.filter((e) => e.status === 'active')).map((e) => e.id);
+      if (idsToEnroll.length > 0) {
+        try {
+          await addRecord({
+            batchId: createdPeriod.id,
+            employeeIds: idsToEnroll,
+          });
+        } catch (enrollErr) {
+          console.warn('Auto enrollment note:', enrollErr);
+        }
+      }
+
       setShowAddDialog(false);
       setPeriodMonth(parsed.data.period_month);
       setPeriodYear(parsed.data.period_year);
@@ -503,6 +579,40 @@ export function PayrollBatchesTab() {
       }
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const handleAutoEnrollAllDeptEmployees = async () => {
+    if (!selectedBatch) return;
+    const targetDept = (selectedBatch.department || selectedBatch.payroll_group_name_vi || '').trim().toLowerCase();
+    const eligibleEmployees = employees.filter((emp) => {
+      if (emp.status !== 'active') return false;
+      if (!targetDept) return true;
+      return (
+        (emp.department && emp.department.toLowerCase().includes(targetDept)) ||
+        targetDept.includes(emp.department?.toLowerCase() || '')
+      );
+    });
+    const idsToEnroll = (eligibleEmployees.length > 0 ? eligibleEmployees : employees.filter((e) => e.status === 'active')).map((e) => e.id);
+    if (idsToEnroll.length === 0) return;
+
+    try {
+      await addRecord({
+        batchId: selectedBatch.id,
+        employeeIds: idsToEnroll,
+      });
+
+      const updatedRecords = await fetchBatchRecords(selectedBatch.id, {
+        periodMonth: selectedBatch.period_month,
+        periodYear: selectedBatch.period_year,
+      });
+      setBatchRecords(enrichPayrollRecordsFromEmployees(updatedRecords, employees));
+      const refreshed = await refetch();
+      const updated = (refreshed.data ?? []).find((b) => b.id === selectedBatch.id);
+      if (updated) setSelectedBatch(updated);
+      toast.success(`Đã nạp tự động ${idsToEnroll.length} nhân viên vào bảng lương`);
+    } catch (err) {
+      toast.error(toErrorMessage(err, 'Lỗi khi nạp nhân viên'));
     }
   };
 
@@ -708,8 +818,32 @@ export function PayrollBatchesTab() {
                 <TableBody>
                   {batchRecords.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={detailTableColSpan} className="text-center py-8 text-muted-foreground">
-                        Chưa có nhân viên nào trong bảng lương
+                      <TableCell colSpan={detailTableColSpan} className="text-center py-10 text-muted-foreground">
+                        <div className="space-y-3">
+                          <div className="text-base font-medium text-xevn-text">Chưa có nhân viên nào trong bảng lương này</div>
+                          <p className="text-sm text-xevn-textSecondary max-w-md mx-auto">
+                            Bảng lương mới tạo cần chọn danh sách nhân sự thuộc phòng ban áp dụng. Bạn bấm nút dưới đây để chọn nhân viên vào bảng lương.
+                          </p>
+                          {isEditable && (
+                            <div className="flex flex-wrap items-center justify-center gap-3">
+                              <Button
+                                type="button"
+                                onClick={() => void handleAutoEnrollAllDeptEmployees()}
+                                className="bg-xevn-primary hover:bg-xevn-primaryPressed text-white font-medium"
+                              >
+                                <Plus className="w-4 h-4 mr-2" />
+                                Nạp tự động nhân sự phòng ban
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setShowAddEmployeeDialog(true)}
+                              >
+                                Chọn nhân viên từ danh sách
+                              </Button>
+                            </div>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -728,7 +862,7 @@ export function PayrollBatchesTab() {
                             {record.employee_name}
                           </div>
                         </TableCell>
-                        <TableCell>{record.department || '-'}</TableCell>
+                        <TableCell>{record.department || selectedBatch?.department || selectedBatch?.payroll_group_name_vi || '-'}</TableCell>
                         {sheetColumns.map((col) => {
                           const amount = payrollRecordComponentAmount(record, col.componentCode);
                           const previewSource = record.component_preview_sources?.[col.componentCode];
@@ -783,15 +917,31 @@ export function PayrollBatchesTab() {
             <DialogHeader>
               <DialogTitle className="text-[20px] font-bold font-display">Thêm nhân viên vào bảng lương</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Tìm kiếm nhân viên..."
-                  value={employeeSearchTerm}
-                  onChange={(e) => setEmployeeSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="relative flex-1 min-w-[240px]">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Tìm kiếm nhân viên theo tên hoặc mã NV..."
+                    value={employeeSearchTerm}
+                    onChange={(e) => setEmployeeSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                {batchDepartmentName ? (
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const eligibleIds = filteredEmployeesToAdd.map(e => e.id);
+                        setSelectedEmployeesToAdd(prev => Array.from(new Set([...prev, ...eligibleIds])));
+                      }}
+                    >
+                      Chọn tất cả nhân viên phòng ban ({filteredEmployeesToAdd.length})
+                    </Button>
+                  </div>
+                ) : null}
               </div>
 
               <div className="max-h-64 overflow-y-auto border rounded-lg">
@@ -866,7 +1016,6 @@ export function PayrollBatchesTab() {
                   </div>
                 )}
               </div>
-            </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setShowAddEmployeeDialog(false)}>
                 Hủy
@@ -1180,7 +1329,7 @@ export function PayrollBatchesTab() {
                   <SelectTrigger id="pay-batch-create-month" data-testid="pay-batch-create-month-select">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent portalScope="iframe">
+                  <SelectContent>
                     {Array.from({ length: 12 }, (_, i) => (
                       <SelectItem
                         key={i + 1}
@@ -1209,7 +1358,7 @@ export function PayrollBatchesTab() {
                   <SelectTrigger id="pay-batch-create-year" data-testid="pay-batch-create-year-select">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent portalScope="iframe">
+                  <SelectContent>
                     {[currentYear - 1, currentYear, currentYear + 1].map(year => (
                       <SelectItem
                         key={year}
@@ -1234,7 +1383,23 @@ export function PayrollBatchesTab() {
               </p>
               <Select
                 value={paySheetTemplateFormValue(formData.pay_sheet_template_id)}
-                onValueChange={(val) => setFormData((prev) => ({ ...prev, pay_sheet_template_id: val }))}
+                onValueChange={(val) => {
+                  const tpl = paySheetTemplates.find((t) => t.id === val);
+                  let autoDept = formData.department;
+                  if (tpl?.ouId) {
+                    const matchedDept = departments.find(
+                      (d) => d.id === tpl.ouId || d.code === tpl.ouId || d.name === tpl.ouId,
+                    );
+                    autoDept = matchedDept ? matchedDept.name : tpl.ouId;
+                  } else if (tpl?.applicabilityScope === 'ALL_COMPANY') {
+                    autoDept = '';
+                  }
+                  setFormData((prev) => ({
+                    ...prev,
+                    pay_sheet_template_id: val,
+                    department: autoDept,
+                  }));
+                }}
               >
                 <SelectTrigger data-testid="pay-period-pay-sheet-tpl-select">
                   <SelectValue
@@ -1247,7 +1412,7 @@ export function PayrollBatchesTab() {
                     }
                   />
                 </SelectTrigger>
-                <SelectContent portalScope="iframe">
+                <SelectContent>
                   {paySheetTemplates.length === 0 ? (
                     <SelectItem value={PAY_SHEET_TPL_PERIOD_NONE_SENTINEL} disabled>
                       Chưa có mẫu active
@@ -1284,7 +1449,7 @@ export function PayrollBatchesTab() {
                     }
                   />
                 </SelectTrigger>
-                <SelectContent portalScope="iframe">
+                <SelectContent>
                   <SelectItem value="__none__">Không giới hạn nhóm</SelectItem>
                   {activePayrollGroups.map((g) => (
                     <SelectItem key={g.id} value={g.id}>
@@ -1303,7 +1468,7 @@ export function PayrollBatchesTab() {
                 <SelectTrigger>
                   <SelectValue placeholder="Để trống nếu áp dụng tất cả" />
                 </SelectTrigger>
-                <SelectContent portalScope="iframe">
+                <SelectContent>
                   {departments.map((dept) => (
                     <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
                   ))}

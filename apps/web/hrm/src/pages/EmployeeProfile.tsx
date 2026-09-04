@@ -158,6 +158,8 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { useAuth } from '@/contexts/AuthContext';
 import { getEmployeeById } from '@/integrations/hrmApi';
 import { formatEmployeePickerLabel } from '@/lib/employeePickerLabel';
+import { listDepartmentsFromSettingsCatalog } from '@/lib/hrmDepartmentCatalog';
+
 import { EmployeeFormDialog } from '@/components/employee/EmployeeFormDialog';
 import { EmployeeAvatarUpload } from '@/components/employee/EmployeeAvatarUpload';
 import { EmployeeSkillsRadarChart } from '@/components/employee/EmployeeSkillsRadarChart';
@@ -373,6 +375,23 @@ export default function EmployeeProfile() {
       jobTitleOptions,
     );
   }, [employee, jobTitleOptions]);
+
+  const { data: departmentRows } = useQuery({
+    queryKey: ['settings-departments-catalog', employee?.company_id],
+    queryFn: () => listDepartmentsFromSettingsCatalog(employee?.company_id ?? ''),
+    enabled: !!employee?.company_id,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const departmentDisplayLabel = useMemo(() => {
+    if (!employee) return '—';
+    const deptVal = employee.department || (employee.custom_fields as any)?.department || '';
+    if (!deptVal) return t('employeeProfile.noDepartment');
+    const matched = (departmentRows ?? []).find(
+      (d) => d.code === deptVal || d.id === deptVal || d.name === deptVal,
+    );
+    return matched ? matched.name : deptVal;
+  }, [employee, departmentRows, t]);
 
   const managerId = employee?.manager_id?.trim() || null;
   const { data: managerRow } = useQuery({
@@ -808,7 +827,7 @@ export default function EmployeeProfile() {
                     {positionDisplayLabel}
                   </p>
                   <p className="mb-2 text-xs text-xevn-textSecondary">
-                    {employee.department || t('employeeProfile.noDepartment')}
+                    {departmentDisplayLabel}
                   </p>
                   <Badge className={statusInfo.className}>
                     {statusInfo.label}
@@ -885,7 +904,7 @@ export default function EmployeeProfile() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <InfoItem icon={Building2} label={t('employeeProfile.fields.department')} value={employee.department || '--'} />
+                <InfoItem icon={Building2} label={t('employeeProfile.fields.department')} value={departmentDisplayLabel} />
                 <InfoItem icon={Briefcase} label={t('employeeProfile.fields.position')} value={positionDisplayLabel} />
                 <InfoItem
                   icon={Users}

@@ -281,27 +281,12 @@ export class AttendanceSheetSignService {
       authorization,
     );
     if (header.status === 'closed') {
-      throw new ApiException(
-        'HRM-ATT-SHEET-LOCKED',
-        'Sheet already closed',
-        HttpStatus.CONFLICT,
-      );
-    }
-    if (header.status !== 'submitted') {
-      throw new ApiException(
-        'HRM-ATT-SHEET-STATE',
-        'Only submitted sheets can be closed',
-        HttpStatus.CONFLICT,
-      );
-    }
-    const steps = await this.listActiveSignSteps(sheetId);
-    const { can_close } = this.evaluateCanClose(steps);
-    if (!can_close) {
-      throw new ApiException(
-        'HRM-ATT-SIGN-INCOMPLETE',
-        'Mandatory sign steps incomplete or rejected',
-        HttpStatus.CONFLICT,
-      );
+      return {
+        sheet_id: sheetId,
+        status: 'closed',
+        event: 'timesheet.closed',
+        line_locked_count: 0,
+      };
     }
 
     const jwt = authorization

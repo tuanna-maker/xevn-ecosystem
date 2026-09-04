@@ -34,14 +34,21 @@
  * What: leave_types overview — tenantWriter REF-only banner; block extension add/trash; CTA Loại phép ATT
  * Why: HRM-SC-01 dual SoT — tránh 409 HRM-SC-LEAVE-REF-ONLY trên UF-HRM-10
  * must_keep: other catalog mutate paths; U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-09-04 PO-HRM-SETTINGS-CATALOGS-TABBED-UX-01
+ * change_mode: REFACTOR & ENHANCE
+ * What: Redesign SettingsCatalogsTab with Sub-Nav Tabs for catalog families & Dialog Portal modal for +Thêm mới
+ * Why: User UX feedback — long vertical scrolling was tedious; missing direct +Thêm mới button per catalog family.
+ * must_keep: formatDisplayDate(cat.xbosSyncedAt, 'dd/MM/yyyy HH:mm'); isLeaveTypesGroupRefReadOnly; SETTINGS_CATALOGS_QUERY_KEY; useSettingsCatalogsOverview
  */
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { RefreshCw, Plus, Trash2 } from "lucide-react";
+import { RefreshCw, Plus, Trash2, Search, Layers, FolderKanban, CheckCircle2, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { CatalogJobTitlesSettingsPanel } from "@/components/settings/CatalogJobTitlesSettingsPanel";
 import {
   requestSettingsCatalogFieldRemoval,
   syncSettingsCatalogsFromXbos,
@@ -73,6 +80,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { resolveCatalogKeyDisplayLabel } from "@/lib/catalogDisplayLabels";
 import { resolveSettingsCatalogItemStatusDisplay } from "@/lib/labelMaps";
 import { hrmPathWithEmbedSearch } from "@/lib/hrmEmbedNavigation";
@@ -86,12 +101,30 @@ export function SettingsCatalogsTab() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const [catalogKeyInput, setCatalogKeyInput] = useState("");
-  const [newCode, setNewCode] = useState("");
-  const [newLabel, setNewLabel] = useState("");
+
+  // Active Catalog Family Tab & Filter States
+  const [activeCatalogKey, setActiveCatalogKey] = useState<string>("");
+  const [catalogSearch, setCatalogSearch] = useState<string>("");
+  const [tableSearch, setTableSearch] = useState<string>("");
+  const [debouncedTableSearch, setDebouncedTableSearch] = useState<string>("");
+  const [originFilter, setOriginFilter] = useState<"all" | "xbos" | "hrm">("all");
+
+  // Add Item Modal Dialog States
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState<boolean>(false);
+  const [addCode, setAddCode] = useState<string>("");
+  const [addLabel, setAddLabel] = useState<string>("");
+  const [addStatus, setAddStatus] = useState<"active" | "draft">("active");
 
   const overviewQuery = useSettingsCatalogsOverview();
   const scope = overviewQuery.scope;
+
+  // Debounce table search (300ms - Rule U-10)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedTableSearch(tableSearch);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [tableSearch]);
 
   const syncMutation = useMutation({
     mutationFn: () => syncSettingsCatalogsFromXbos(scope!),
@@ -106,24 +139,23 @@ export function SettingsCatalogsTab() {
   });
 
   const appendMutation = useMutation({
-    mutationFn: () =>
+    mutationFn: (payload: { catalogKey: string; code: string; label: string; status: "active" | "draft" }) =>
       upsertSettingsCatalogItem(
         {
           companyId: scope!.companyId,
-          catalogKey: catalogKeyInput.trim(),
-          code: newCode.trim(),
-          label: newLabel.trim(),
+          catalogKey: payload.catalogKey,
+          code: payload.code.trim(),
+          label: payload.label.trim(),
+          status: payload.status,
         },
         scope!,
       ),
-    onSuccess: (data) => {
-      const msg =
-        data?.item_key
-          ? t("settings.catalogs.savedExtensions")
-          : t("settings.catalogs.savedExtensions");
-      toast.success(msg);
-      setNewCode("");
-      setNewLabel("");
+    onSuccess: () => {
+      toast.success(t("settings.catalogs.savedExtensions"));
+      setAddCode("");
+      setAddLabel("");
+      setAddStatus("active");
+      setIsAddDialogOpen(false);
       void queryClient.invalidateQueries({ queryKey: [SETTINGS_CATALOGS_QUERY_KEY] });
     },
     onError: (e: unknown) => {
@@ -160,21 +192,70 @@ export function SettingsCatalogsTab() {
   });
 
   const catalogs = overviewQuery.catalogs;
-
   const attLeaveTypesSettingsHref = hrmPathWithEmbedSearch(SETTINGS_ATT_LEAVE_TYPES_PATH);
 
-  const selectedCatalog = useMemo(
-    () => catalogs.find((c) => c.catalogKey === catalogKeyInput.trim()),
-    [catalogs, catalogKeyInput],
+  // Set default active tab when catalogs load
+  useEffect(() => {
+    if (catalogs.length > 0 && (!activeCatalogKey || !catalogs.some((c) => c.catalogKey === activeCatalogKey))) {
+      setActiveCatalogKey(catalogs[0].catalogKey);
+    }
+  }, [catalogs, activeCatalogKey]);
+
+  // Filter catalog family tabs by user search
+  const filteredCatalogTabs = useMemo(() => {
+    if (!catalogSearch.trim()) return catalogs;
+    const term = catalogSearch.toLowerCase().trim();
+    return catalogs.filter((c) => {
+      const label = resolveCatalogKeyDisplayLabel(c.catalogKey, c.name).toLowerCase();
+      return label.includes(term) || c.catalogKey.toLowerCase().includes(term);
+    });
+  }, [catalogs, catalogSearch]);
+
+  // Current active catalog object
+  const activeCatalog = useMemo(
+    () => catalogs.find((c) => c.catalogKey === activeCatalogKey) ?? catalogs[0],
+    [catalogs, activeCatalogKey],
   );
 
-  const selectedLeaveTypesRefOnly = isLeaveTypesGroupRefReadOnly(selectedCatalog);
+  const activeLeaveTypesRefOnly = isLeaveTypesGroupRefReadOnly(activeCatalog);
 
-  useEffect(() => {
-    if (catalogs.length > 0 && !catalogKeyInput.trim()) {
-      setCatalogKeyInput(catalogs[0].catalogKey);
+  // Filter items in table by code/label & origin
+  const filteredItems = useMemo(() => {
+    if (!activeCatalog) return [];
+    let items = activeCatalog.effectiveItems;
+
+    if (originFilter === "xbos") {
+      items = items.filter((item) => item.origin === "xbos");
+    } else if (originFilter === "hrm") {
+      items = items.filter((item) => item.origin === "hrm");
     }
-  }, [catalogs, catalogKeyInput]);
+
+    if (debouncedTableSearch.trim()) {
+      const q = debouncedTableSearch.toLowerCase().trim();
+      items = items.filter(
+        (item) => item.code.toLowerCase().includes(q) || item.label.toLowerCase().includes(q),
+      );
+    }
+
+    return items;
+  }, [activeCatalog, originFilter, debouncedTableSearch]);
+
+  const handleOpenAddDialog = () => {
+    setAddCode("");
+    setAddLabel("");
+    setAddStatus("active");
+    setIsAddDialogOpen(true);
+  };
+
+  const handleSaveItem = () => {
+    if (!activeCatalogKey || !addCode.trim() || !addLabel.trim()) return;
+    appendMutation.mutate({
+      catalogKey: activeCatalogKey,
+      code: addCode.trim(),
+      label: addLabel.trim(),
+      status: addStatus,
+    });
+  };
 
   if (!scope) {
     return (
@@ -187,99 +268,297 @@ export function SettingsCatalogsTab() {
     );
   }
 
+  const activeCatalogTitle = activeCatalog
+    ? resolveCatalogKeyDisplayLabel(activeCatalog.catalogKey, activeCatalog.name)
+    : "";
+
   return (
     <div className="space-y-4">
-      <Card>
-        <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <CardTitle>{t("settings.catalogs.title")}</CardTitle>
-            <CardDescription>{t("settings.catalogs.subtitle")}</CardDescription>
+      {/* Top Header & Sync Action */}
+      <Card className="border-slate-200 shadow-sm">
+        <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <FolderKanban className="h-5 w-5 text-primary" />
+              <CardTitle className="text-xl font-bold">{t("settings.catalogs.title")}</CardTitle>
+            </div>
+            <CardDescription className="text-sm">
+              {t("settings.catalogs.subtitle")}
+            </CardDescription>
           </div>
           <Button
             type="button"
             variant="outline"
             size="sm"
+            className="h-9 gap-2 shadow-xs border-slate-300 hover:bg-slate-50"
             disabled={syncMutation.isPending}
             onClick={() => syncMutation.mutate()}
           >
-            <RefreshCw className={`mr-2 h-4 w-4 ${syncMutation.isPending ? "animate-spin" : ""}`} />
+            <RefreshCw className={`h-4 w-4 ${syncMutation.isPending ? "animate-spin text-primary" : ""}`} />
             {t("settings.catalogs.syncFromXbos")}
           </Button>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {overviewQuery.isLoading ? (
+      </Card>
+
+      {overviewQuery.isLoading ? (
+        <Card className="p-8 text-center">
+          <div className="flex flex-col items-center justify-center space-y-2">
+            <RefreshCw className="h-6 w-6 animate-spin text-primary" />
             <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
-          ) : overviewQuery.isError ? (
-            <p className="text-sm text-destructive">{t("settings.catalogs.loadError")}</p>
-          ) : catalogs.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{t("settings.catalogs.emptyCatalogs")}</p>
-          ) : (
-            <div className="space-y-6">
-              {catalogs.map((cat) => {
-                const catalogTitle = resolveCatalogKeyDisplayLabel(cat.catalogKey, cat.name);
-                const leaveRefOnly = isLeaveTypesGroupRefReadOnly(cat);
+          </div>
+        </Card>
+      ) : overviewQuery.isError ? (
+        <Card className="p-8 text-center border-red-200 bg-red-50/50">
+          <p className="text-sm font-medium text-destructive">{t("settings.catalogs.loadError")}</p>
+        </Card>
+      ) : catalogs.length === 0 ? (
+        <Card className="p-8 text-center">
+          <p className="text-sm text-muted-foreground">{t("settings.catalogs.emptyCatalogs")}</p>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {/* Sub-Nav Catalog Family Tabs */}
+          <div className="bg-slate-50/80 p-2 rounded-xl border border-slate-200 space-y-2">
+            {/* Filter Search Bar for Tabs (if > 5 catalog families) */}
+            {catalogs.length > 5 && (
+              <div className="px-1 pt-1 pb-2 flex items-center justify-between gap-3">
+                <div className="relative flex-1 max-w-xs">
+                  <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
+                  <Input
+                    type="text"
+                    placeholder="Lọc danh mục (Loại HĐ, Khu vực, Chức danh...)"
+                    value={catalogSearch}
+                    onChange={(e) => setCatalogSearch(e.target.value)}
+                    className="pl-8 h-8 text-xs bg-white border-slate-200"
+                  />
+                </div>
+                <div className="text-xs text-slate-500 font-medium">
+                  {filteredCatalogTabs.length} / {catalogs.length} danh mục
+                </div>
+              </div>
+            )}
+
+            {/* Scrollable Horizontal Pill Tabs */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
+              {filteredCatalogTabs.map((cat) => {
+                const title = resolveCatalogKeyDisplayLabel(cat.catalogKey, cat.name);
+                const isActive = cat.catalogKey === activeCatalogKey;
+                const totalCount = cat.effectiveItems.length;
+
                 return (
-                <div key={cat.catalogKey} className="rounded-lg border p-4 space-y-3">
-                  <div className="flex flex-wrap items-center gap-2 justify-between">
-                    <div>
-                      <h3 className="font-semibold" title={cat.catalogKey}>
-                        {catalogTitle}
+                  <button
+                    key={cat.catalogKey}
+                    type="button"
+                    onClick={() => {
+                      setActiveCatalogKey(cat.catalogKey);
+                      setTableSearch("");
+                    }}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                      isActive
+                        ? "bg-white text-primary shadow-sm border border-slate-200 ring-1 ring-primary/10"
+                        : "text-slate-600 hover:bg-slate-200/60 hover:text-slate-900 border border-transparent"
+                    }`}
+                  >
+                    <span>{title}</span>
+                    <Badge
+                      variant={isActive ? "default" : "secondary"}
+                      className={`text-[10px] px-1.5 py-0 h-4 min-w-4 justify-center ${
+                        isActive ? "bg-primary text-white" : "bg-slate-200 text-slate-700"
+                      }`}
+                    >
+                      {totalCount}
+                    </Badge>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Active Catalog View Card */}
+          {activeCatalog && (
+            activeCatalogKey === 'job_titles' || activeCatalogKey === 'positions' || activeCatalogKey === 'employee_positions' ? (
+              <CatalogJobTitlesSettingsPanel />
+            ) : (
+            <Card className="border-slate-200 shadow-sm">
+              <CardHeader className="border-b border-slate-100 bg-slate-50/40 pb-4">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <div className="space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-lg font-bold text-slate-900" title={activeCatalog.catalogKey}>
+                        {activeCatalogTitle}
                       </h3>
-                      <p className="text-xs text-muted-foreground" data-testid="catalog-sync-stamp">
-                        {cat.domain ? `${cat.domain} · ` : ""}
-                        {cat.xbosSyncedAt
-                          ? t("settings.catalogs.xbosSyncedAt", {
-                              time: formatDisplayDate(cat.xbosSyncedAt, "dd/MM/yyyy HH:mm"),
-                            })
-                          : t("settings.catalogs.notSyncedYet")}
+                      <Badge variant="outline" className="font-mono text-[11px] text-slate-500 bg-white">
+                        {activeCatalog.catalogKey}
+                      </Badge>
+                      <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200">
+                        {t("settings.catalogs.badgeXbos", { n: activeCatalog.xbosItems.length })}
+                      </Badge>
+                      <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                        {t("settings.catalogs.badgeHrm", { n: activeCatalog.hrmExtensionItems.length })}
+                      </Badge>
+                    </div>
+
+                    <p className="text-xs text-slate-500" data-testid="catalog-sync-stamp">
+                      {activeCatalog.domain ? `${activeCatalog.domain} · ` : ""}
+                      {activeCatalog.xbosSyncedAt
+                        ? t("settings.catalogs.xbosSyncedAt", {
+                            time: formatDisplayDate(activeCatalog.xbosSyncedAt, "dd/MM/yyyy HH:mm"),
+                          })
+                        : t("settings.catalogs.notSyncedYet")}
+                    </p>
+
+                    {activeLeaveTypesRefOnly ? (
+                      <p
+                        className="text-xs font-medium text-amber-800 flex items-center gap-1 mt-1"
+                        data-testid={`catalog-leave-types-tenant-writer-${activeCatalog.catalogKey}`}
+                      >
+                        <ShieldAlert className="h-3.5 w-3.5 text-amber-600" />
+                        REF tập đoàn — Quản lý CRUD tenant tại: <Link to={attLeaveTypesSettingsHref} className="underline font-bold">Tab Loại phép ATT</Link>
                       </p>
-                      {leaveRefOnly ? (
-                        <p
-                          className="text-xs text-amber-800 mt-1"
-                          data-testid={`catalog-leave-types-tenant-writer-${cat.catalogKey}`}
-                        >
-                          REF tập đoàn — CRUD tenant: tab Loại phép ATT
-                        </p>
-                      ) : null}
-                    </div>
-                    <div className="flex gap-2">
-                      <Badge variant="secondary">{t("settings.catalogs.badgeXbos", { n: cat.xbosItems.length })}</Badge>
-                      <Badge variant="outline">{t("settings.catalogs.badgeHrm", { n: cat.hrmExtensionItems.length })}</Badge>
-                    </div>
+                    ) : null}
                   </div>
+
+                  {/* Primary Action Button: + Thêm mới [Catalog Name] */}
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="gap-1.5 shadow-xs font-medium bg-primary hover:bg-primary/90 text-white"
+                      disabled={activeLeaveTypesRefOnly}
+                      onClick={handleOpenAddDialog}
+                    >
+                      <Plus className="h-4 w-4" />
+                      Thêm mới {activeCatalogTitle}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Filter Controls Row */}
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-3">
+                  <div className="relative flex-1 max-w-sm">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
+                    <Input
+                      type="text"
+                      placeholder={`Tìm theo mã hoặc nhãn trong ${activeCatalogTitle}...`}
+                      value={tableSearch}
+                      onChange={(e) => setTableSearch(e.target.value)}
+                      className="pl-9 h-9 text-xs bg-white"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Label className="text-xs text-slate-500 font-normal">Nguồn gốc:</Label>
+                    <Select
+                      value={originFilter}
+                      onValueChange={(v: "all" | "xbos" | "hrm") => setOriginFilter(v)}
+                    >
+                      <SelectTrigger className="h-9 text-xs w-[130px] bg-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Tất cả nguồn</SelectItem>
+                        <SelectItem value="xbos">Từ XBOS</SelectItem>
+                        <SelectItem value="hrm">Thêm từ HRM</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </CardHeader>
+
+              <CardContent className="p-0">
+                {filteredItems.length === 0 ? (
+                  <div className="py-12 px-4 text-center space-y-3">
+                    <Layers className="h-10 w-10 text-slate-300 mx-auto" />
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold text-slate-700">Chưa có mục danh mục phù hợp</p>
+                      <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                        {tableSearch.trim()
+                          ? `Không tìm thấy mục nào khớp với từ khóa "${tableSearch}".`
+                          : `Chưa có mục nào trong danh mục ${activeCatalogTitle}.`}
+                      </p>
+                    </div>
+                    {!activeLeaveTypesRefOnly && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="gap-1.5"
+                        onClick={handleOpenAddDialog}
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                        Thêm mới {activeCatalogTitle}
+                      </Button>
+                    )}
+                  </div>
+                ) : (
                   <Table>
-                    <TableHeader>
+                    <TableHeader className="bg-slate-50/60">
                       <TableRow>
-                        <TableHead>{t("settings.catalogs.colCode")}</TableHead>
-                        <TableHead>{t("settings.catalogs.colLabel")}</TableHead>
-                        <TableHead>{t("settings.catalogs.colOrigin")}</TableHead>
-                        <TableHead>{t("settings.catalogs.colStatus")}</TableHead>
+                        <TableHead className="w-[180px] font-semibold text-slate-700">
+                          {t("settings.catalogs.colCode")}
+                        </TableHead>
+                        <TableHead className="font-semibold text-slate-700">
+                          {t("settings.catalogs.colLabel")}
+                        </TableHead>
+                        <TableHead className="w-[140px] font-semibold text-slate-700">
+                          {t("settings.catalogs.colOrigin")}
+                        </TableHead>
+                        <TableHead className="w-[140px] font-semibold text-slate-700">
+                          {t("settings.catalogs.colStatus")}
+                        </TableHead>
+                        <TableHead className="w-[80px] text-right font-semibold text-slate-700">
+                          Thao tác
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {cat.effectiveItems.map((row) => (
-                        <TableRow key={`${cat.catalogKey}-${row.code}`}>
-                          <TableCell className="font-mono text-xs">{row.code}</TableCell>
-                          <TableCell>{row.label}</TableCell>
-                          <TableCell>
-                            {row.origin === "xbos"
-                              ? t("settings.catalogs.originXbos")
-                              : t("settings.catalogs.originHrm")}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <span>{resolveSettingsCatalogItemStatusDisplay(row.status)}</span>
-                              {row.origin === "hrm" && !leaveRefOnly && (
+                      {filteredItems.map((row) => {
+                        const statusDisplay = resolveSettingsCatalogItemStatusDisplay(row.status);
+                        const isActiveStatus = row.status === "active";
+
+                        return (
+                          <TableRow key={`${activeCatalog.catalogKey}-${row.code}`} className="hover:bg-slate-50/80">
+                            <TableCell className="font-mono text-xs font-semibold text-slate-800">
+                              {row.code}
+                            </TableCell>
+                            <TableCell className="text-sm font-medium text-slate-900">
+                              {row.label}
+                            </TableCell>
+                            <TableCell>
+                              {row.origin === "xbos" ? (
+                                <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 text-[11px]">
+                                  {t("settings.catalogs.originXbos")}
+                                </Badge>
+                              ) : (
+                                <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[11px]">
+                                  {t("settings.catalogs.originHrm")}
+                                </Badge>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {isActiveStatus ? (
+                                <Badge variant="default" className="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] gap-1">
+                                  <CheckCircle2 className="h-3 w-3" />
+                                  {statusDisplay}
+                                </Badge>
+                              ) : (
+                                <Badge variant="secondary" className="bg-slate-100 text-slate-600 border-slate-200 text-[11px]">
+                                  {statusDisplay}
+                                </Badge>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {row.origin === "hrm" && !activeLeaveTypesRefOnly && (
                                 <Button
                                   type="button"
                                   size="icon"
                                   variant="ghost"
-                                  className="h-7 w-7 text-destructive"
-                                  title="Gửi yêu cầu xóa trường (cần XBOS + lãnh đạo tập đoàn phê duyệt)"
+                                  className="h-8 w-8 text-slate-400 hover:text-red-600 hover:bg-red-50"
+                                  title="Gửi yêu cầu xóa trường danh mục"
                                   disabled={removeRequestMutation.isPending}
                                   onClick={() =>
                                     removeRequestMutation.mutate({
-                                      catalogKey: cat.catalogKey,
+                                      catalogKey: activeCatalog.catalogKey,
                                       code: row.code,
                                       label: row.label,
                                     })
@@ -288,93 +567,127 @@ export function SettingsCatalogsTab() {
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
                               )}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
-                </div>
-              );
-              })}
+                )}
+              </CardContent>
+            </Card>
+          )
+        )}
+        </div>
+      )}
+
+      {/* Command Center Portal Modal: Add Item Dialog (Rule #14/#15) */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="sm:max-w-[500px] border-slate-200 shadow-xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-lg font-bold text-slate-900">
+              <Plus className="h-5 w-5 text-primary" />
+              Thêm mới mục danh mục — {activeCatalogTitle}
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Khai báo mục danh mục bổ sung (HRM) cho danh mục <span className="font-semibold text-slate-700">{activeCatalogTitle}</span> ({activeCatalogKey})
+            </DialogDescription>
+          </DialogHeader>
+
+          {activeLeaveTypesRefOnly ? (
+            <div
+              className="rounded-md border border-amber-200 bg-amber-50 p-4 space-y-2"
+              data-testid="settings-catalogs-leave-types-ref-readonly"
+            >
+              <p className="text-sm text-amber-900">{LEAVE_TYPES_REF_READONLY_MD_COPY}</p>
+              <Button asChild variant="outline" size="sm" data-testid="settings-catalogs-open-att-leave-types">
+                <Link to={attLeaveTypesSettingsHref}>Mở tab Loại phép ATT</Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4 py-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="ext-code" className="text-xs font-semibold text-slate-700">
+                  {t("settings.catalogs.colCode")} <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="ext-code"
+                  value={addCode}
+                  onChange={(e) => setAddCode(e.target.value)}
+                  placeholder="VD: HN, HDLD_12, KHO_01"
+                  autoComplete="off"
+                  className="font-mono uppercase text-xs"
+                />
+                <p className="text-[11px] text-slate-400">Mã danh mục duy nhất trong hệ thống (viết hoa, không dấu).</p>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="ext-label" className="text-xs font-semibold text-slate-700">
+                  {t("settings.catalogs.colLabel")} <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="ext-label"
+                  value={addLabel}
+                  onChange={(e) => setAddLabel(e.target.value)}
+                  placeholder="VD: Chi nhánh Hà Nội, Hợp đồng thử việc"
+                  autoComplete="off"
+                  className="text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="ext-status" className="text-xs font-semibold text-slate-700">
+                  Trạng thái áp dụng
+                </Label>
+                <Select
+                  value={addStatus}
+                  onValueChange={(val: "active" | "draft") => setAddStatus(val)}
+                >
+                  <SelectTrigger id="ext-status" className="h-9 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Đang dùng (Active)</SelectItem>
+                    <SelectItem value="draft">Nháp (Draft)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           )}
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("settings.catalogs.addTitle")}</CardTitle>
-          <CardDescription>{t("settings.catalogs.addDesc")}</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="ext-catalog-key">{t("settings.catalogs.catalogKeyField")}</Label>
-            <Select
-              value={catalogKeyInput || undefined}
-              onValueChange={setCatalogKeyInput}
-              disabled={catalogs.length === 0}
-            >
-              <SelectTrigger id="ext-catalog-key">
-                <SelectValue placeholder={t("settings.catalogs.catalogKeyPlaceholder")} />
-              </SelectTrigger>
-              <SelectContent>
-                {catalogs.map((c) => (
-                  <SelectItem key={c.catalogKey} value={c.catalogKey}>
-                    {resolveCatalogKeyDisplayLabel(c.catalogKey, c.name)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">{t("settings.catalogs.catalogKeyHint")}</p>
-            {selectedLeaveTypesRefOnly ? (
-              <div
-                className="rounded-md border border-amber-200 bg-amber-50/80 p-3 space-y-2"
-                data-testid="settings-catalogs-leave-types-ref-readonly"
-              >
-                <p className="text-sm text-foreground">{LEAVE_TYPES_REF_READONLY_MD_COPY}</p>
-                <Button asChild variant="outline" size="sm" data-testid="settings-catalogs-open-att-leave-types">
-                  <Link to={attLeaveTypesSettingsHref}>Mở tab Loại phép ATT</Link>
-                </Button>
-              </div>
-            ) : null}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="ext-code">{t("settings.catalogs.colCode")}</Label>
-            <Input
-              id="ext-code"
-              value={newCode}
-              onChange={(e) => setNewCode(e.target.value)}
-              autoComplete="off"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="ext-label">{t("settings.catalogs.colLabel")}</Label>
-            <Input
-              id="ext-label"
-              value={newLabel}
-              onChange={(e) => setNewLabel(e.target.value)}
-              autoComplete="off"
-            />
-          </div>
-          <div className="flex items-end sm:col-span-2 lg:col-span-4">
+          <DialogFooter className="gap-2 sm:gap-0 pt-2 border-t border-slate-100">
             <Button
               type="button"
-              disabled={
-                appendMutation.isPending ||
-                selectedLeaveTypesRefOnly ||
-                !catalogKeyInput.trim() ||
-                !newCode.trim() ||
-                !newLabel.trim()
-              }
-              onClick={() => appendMutation.mutate()}
+              variant="outline"
+              size="sm"
+              onClick={() => setIsAddDialogOpen(false)}
             >
-              <Plus className="mr-2 h-4 w-4" />
-              {t("settings.catalogs.addButton")}
+              Hủy
             </Button>
-          </div>
-        </CardContent>
-      </Card>
+            {!activeLeaveTypesRefOnly && (
+              <Button
+                type="button"
+                size="sm"
+                className="bg-primary hover:bg-primary/90 text-white font-medium"
+                disabled={
+                  appendMutation.isPending ||
+                  !activeCatalogKey ||
+                  !addCode.trim() ||
+                  !addLabel.trim()
+                }
+                onClick={handleSaveItem}
+              >
+                {appendMutation.isPending ? (
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Plus className="mr-2 h-4 w-4" />
+                )}
+                Lưu mục danh mục
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

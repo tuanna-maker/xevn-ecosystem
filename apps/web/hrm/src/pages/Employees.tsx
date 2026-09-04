@@ -149,7 +149,7 @@ export default function Employees() {
   const [deleteConfirm, setDeleteConfirm] = useState<Employee | null>(null);
   const [deleteReason, setDeleteReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
+  const [departments, setDepartments] = useState<{ id: string; code: string; name: string }[]>([]);
 
   const {
     nestOptions: nestStatusOptions,
@@ -187,6 +187,7 @@ export default function Employees() {
     pageSize: HRM_EMPLOYEES_TABLE_PAGE_SIZE,
     keyword: debouncedSearch,
     status: statusFilter,
+    department: departmentFilter,
   });
 
   const { data: employeeSummary } = useEmployeesSummary({
@@ -263,7 +264,7 @@ export default function Employees() {
       if (companyIds.length === 0) return;
 
       const rows = await listDepartmentsFromSettingsCatalog(companyIds[0]);
-      setDepartments(rows.map((d) => ({ id: d.id, name: d.name })));
+      setDepartments(rows.map((d) => ({ id: d.id, code: d.code || d.id, name: d.name })));
     };
 
     void fetchDepartments();
@@ -290,11 +291,25 @@ export default function Employees() {
     );
   };
 
-  /** Department is not in list API filters — apply on current server page only. */
+  /** Department is not in list API filters — apply on current server page matching code/id/name. */
   const filteredEmployees = useMemo(() => {
     if (departmentFilter === 'all') return employees;
-    return employees.filter((emp) => emp.department === departmentFilter);
-  }, [employees, departmentFilter]);
+    const selectedDept = departments.find(
+      (d) => d.code === departmentFilter || d.id === departmentFilter || d.name === departmentFilter,
+    );
+    const filterCode = selectedDept?.code || selectedDept?.id || departmentFilter;
+    const filterName = selectedDept?.name || departmentFilter;
+
+    return employees.filter((emp) => {
+      const empDept = emp.department || (emp.custom_fields as any)?.department || '';
+      return (
+        empDept === filterCode ||
+        empDept === filterName ||
+        empDept === selectedDept?.id ||
+        empDept.toLowerCase() === filterCode.toLowerCase()
+      );
+    });
+  }, [employees, departmentFilter, departments]);
 
   const handleAddEmployee = async (data: EmployeeFormData & { company_id?: string }) => {
     setIsSubmitting(true);
@@ -367,6 +382,17 @@ export default function Employees() {
       key: 'department',
       header: t('employees.department'),
       hideOnMobile: true,
+      render: (emp: Employee) => {
+        const deptVal = emp.department || (emp.custom_fields as any)?.department || '';
+        const matched = departments.find(
+          (d) => d.code === deptVal || d.id === deptVal || d.name === deptVal,
+        );
+        return (
+          <span className="text-sm text-xevn-text">
+            {matched ? matched.name : deptVal || '-'}
+          </span>
+        );
+      },
     },
     {
       key: 'position',
@@ -522,7 +548,7 @@ export default function Employees() {
 
       <Card className="border-xevn-border bg-xevn-surface p-3 md:p-4">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-          <div className="relative flex-1 min-w-0">
+          <div className="relative w-full sm:w-[220px] md:w-[280px] shrink-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-xevn-textMuted" />
             <Input
               placeholder={t('common.search')}
@@ -531,15 +557,15 @@ export default function Employees() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
             <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
-              <SelectTrigger className="w-[140px] md:w-[180px]">
+              <SelectTrigger className="w-full sm:w-[240px] md:w-[280px]">
                 <SelectValue placeholder={t('employees.department')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('common.all')}</SelectItem>
                 {departments.map((dept) => (
-                  <SelectItem key={dept.id} value={dept.name}>
+                  <SelectItem key={dept.id} value={dept.code}>
                     {dept.name}
                   </SelectItem>
                 ))}

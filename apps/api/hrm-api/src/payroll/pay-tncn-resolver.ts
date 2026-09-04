@@ -73,8 +73,8 @@ export async function loadPayTaxProcessContext(
     );
 
     const flatPolicy = activePolicies.rows.find(r => r.component_type === 'tax_flat');
-    if (flatPolicy && flatPolicy.params && flatPolicy.params.calculation_rules) {
-      const rules = flatPolicy.params.calculation_rules;
+    if (flatPolicy && flatPolicy.params && (flatPolicy.params as any).calculation_rules) {
+      const rules = (flatPolicy.params as any).calculation_rules;
       flatRatePct = rules.rate != null ? Number(rules.rate) : 10;
       flatMinTaxableIncomeVnd = rules.min_taxable_income != null ? Number(rules.min_taxable_income) : 2000000;
     }

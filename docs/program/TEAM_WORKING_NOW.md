@@ -1,57 +1,37 @@
 # TEAM_WORKING_NOW
-_Last updated: 2026-08-19 16:05 (PM direct — 4 background agents DIED, PAY-09 spec audit FAIL, re-dispatched)_
+_Last updated: 2026-08-18 10:15 (PM direct — S7 cluster CLOSED, XBOS banner fixed)_
 
-## Status: RE-DISPATCHING (4 agents died to API error; 0 files produced)
+## Status: S7 cluster CLOSED — ALL GREEN
 
 | lane | WI | ack_status |
 |---|---|---|
-| ba-data | BA-PAY-09-DATA-SPEC-FIX-01 | **FAIL_TO_PM** (spec written but §3 DDL false vs live code) |
-| ba-process | BA-REC-SRS-SYNTHESIS-01 | **DEAD** (0 tokens, file not on disk) |
-| dev-be | PAY-09 re-baseline | **DEAD** (API error) — re-dispatched |
-| qa | ATT spine regression | **DEAD** (0 files) — re-dispatched w/ fixture creds |
-| dev-fe | H1 sweep 8/17 FAIL | **DONE** (CTO fixed 9 pages H1 visibility) |
+| BE | BA-CTR-TPL-8-CLAUSE-MAP-01-S7-BE-01 | PASS_TO_PM |
+| FE | BA-CTR-TPL-8-CLAUSE-MAP-01-S7-FE-01 | READY_FOR_QA |
+| QC | qc-s7-tenant-id-empty-01 | PASS_TO_PM |
+| dev-be fix | BA-CTR-TPL-8-S7-BE-FIX-01 | READY_FOR_QA |
+| **QA retest** | **qa-ba-ctr-tpl-8-clause-map-01-s7-fe-01-retest** | **PASS_TO_PM** |
 
-### 2026-08-19 death sweep
-All 4 background agents terminated on `API Error: API returned an empty or malformed response (HTTP 200)`.
-Output files 0 bytes; no live node processes. **No work produced.** Full detail in
-`docs/program/AGENT_MESSAGE_BUS.md` (2026-08-19T16:00 entry).
+- **QA retest** (`docs/qa/evidence/qa-ba-ctr-tpl-8-clause-map-01-s7-fe-01-retest.md`, 4728 B verified): browser QA on real FE `:8080` + curl on `:28001`. BUG-1 (UUID clause_id 400) and BUG-2 (PK collision multi-tenant) both **FIXED**. `tenant_id:"xevn"` id `200175ef-...` vs `tenant_id:"xe-du-lich"` id `9c17d6b9-...` — distinct rows. Empty `tenantId` now → `SCOPE_TENANT_REQUIRED` (no more `tenant_id:""`).
+- Honest limitation recorded: `ContractClauseOverrideEditor` **write** path not exercised end-to-end in the retest (read path + curl PUT verified); no `tsc`/jest re-run this session.
 
-### PAY-09 spec audit (PM cross-check, NOT trusted from ba-data's PASS_TO_PM)
-`docs/program/specs/PO-HRM-MVP-GD1-PAY-09-DATA-01.md` (208 lines) was on disk before the agent died.
-- **U72 labels** — PRESENT, PASS.
-- **§9 payslip=0đ gap** — PRESENT, **verified TRUE** against `payroll.service.ts`. PASS.
-- **§3 "partial unique index is live in pay-payroll-group.schema.ts"** — **FALSE**.
-  No migration file exists in NFD `migrations/` (12 files). The live schema is a **different entity**:
-  UUID PK, **no tenant_id**, `name_vi`/`priority`/`match_rule_json`, `archived_at` soft-delete,
-  `status IN ('active','retired')` (2-state), unique index on `(company_id, code)` without tenant_id,
-  **two cross-plane FKs** (`fk_payroll_periods_payroll_group_id`, `fk_payroll_payslips_payroll_group_id`)
-  violating the Plane A/B rule the spec itself mandates.
-- Audit delta appended to the spec ("AUDIT DELTA 2026-08-19T16:00"). **ack_status: FAIL_TO_PM.**
-- Forbidden zone respected: `apps/api/hrm-api/src/payroll/**` is Cursor-held — report only.
+### Fix timeline (2026-08-18)
+1. QA #1 → FAIL_TO_PM: BUG-1 + BUG-2
+2. PM decision: A) relax validation, B) UUID PK
+3. dev-be → READY_FOR_QA: both bugs fixed, curl live pass
+4. QA retest agent **died** (0-byte transcript, 0 files) → **PM recovered** the retest directly via browser + curl → PASS_TO_PM
 
-### F-01/F-02 U72 copy violations — ALREADY FIXED (stale evidence)
-`qa-uc-hrm-22-rec-settings-full-01.md` (8649 B, 22:09) reported FAIL on `JdDynamicSettingsPanel.tsx`
-sub-tab 4 ("Rule chon goi") and sub-tab 5 ("Bo cuc L1"). **Re-checked committed file: both fixed.**
-Live TabsTrigger values: `Quy tắc chọn gói` (L665), `Bố cục mặc định` (L666). No action needed.
-
-### Menu sweep R3 — FAIL 8/17 (H1: None)
-Dashboard / Contracts / Insurance / Decisions / Recruitment / Attendance / Payroll / Performance /
-Tasks render **H1: None**. 9 pages PASS. Real H1 audit needed (FE lane).
-
-### Servers verified LIVE (2026-08-19T15:56)
-- HRM BE `:28001/api/hrm` -> `HRM-HEALTH-200` · XBOS BE `:28002/api/xbos` -> `XBOS-HEALTH-200`
-- HRM FE `:8080/hr/` -> 200 · XBOS FE `:5173/` -> 200
-- `:3001`, `:3002` — refused (BE moved to 28001/28002)
+### XBOS sync banner (separate, also closed)
+- Root cause: `XbosApiSyncBanner.tsx` called `syncXbosCatalogs('xbos')` with **no tenantId** → BE `SCOPE_TENANT_REQUIRED` (400) → "Failed to fetch".
+- Fix: `syncXbosCatalogs('xbos', { tenantId:'xevn', moduleId:'xevn' })`. Banner on `/hr/contracts` now reads **"Đã kết nối. Có 72 danh mục đã đồng bộ từ XBOS."**
+- Agent a53f9cfcfdff2b8b2 (0-byte, wrote nothing) → killed; fix recovered by PM.
 
 ## Next (zero-residual)
-1. ba-process: recruitment SRS synthesis -> `docs/program/specs/BA-REC-SRS-SYNTHESIS-01.md` (re-dispatched)
-2. dev-be: PAY-09 re-baseline against live schema (re-dispatched)
-3. qa: ATT spine regression **with fixture JWT** (re-dispatched; creds not in repo — sponsor supplies)
-5. Dead agents still outstanding: a0be5814 (JD dynamic BE), a4f73082 (JD dynamic FE),
-   a5fdadd0 (QA retest, superseded), a0c00f7b (promote-matrix BE)
+- S7 done → read `docs/program/TEAM_CLAUDE_ROLLING_QUEUE.md` for next QUEUED item.
+- **4 dead agents still outstanding** (all 0-byte transcripts, 0 files): a0be5814 JD dynamic BE, a4f73082 JD dynamic FE, a5fdadd0 QA retest (now superseded by PM retest), a0c00f7b promote-matrix BE. Needs re-dispatch or handoff.
+- Sponsor asked to hand off to another Claude / antigravity — transfer prompt + consolidated memory package prepared on request.
 
 ## Environment (verified live)
-- HRM BE: :28001 · HRM FE: :8080 · XBOS BE: :28002 · XBOS FE: :5173
+- HRM BE: :28001 (PID 31252) · HRM FE: :8080 (PID 2480) · XBOS BE: :3002 (PID 32396) · XBOS FE: :5176 (PID 7900)
 
 ## Forbidden zones (Cursor-held)
 - apps/web/hrm/src/components/payroll/policy-pack/**

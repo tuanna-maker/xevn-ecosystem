@@ -194,7 +194,8 @@ export const HrmWorkspaceRoute: React.FC = () => {
           forceEmbedDocumentReload(suffixForFallback);
         }
       } catch {
-        // Cross-origin iframe — cannot verify; soft-nav message already sent.
+        // Cross-origin iframe — cannot verify; reload document as safety fallback
+        forceEmbedDocumentReload(suffixForFallback);
       }
     }, SOFT_NAV_VERIFY_MS);
   };

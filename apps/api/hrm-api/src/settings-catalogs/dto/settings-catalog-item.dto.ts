@@ -1,26 +1,70 @@
 import { IsIn, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class SettingsCatalogItemMutationDto {
+  @IsOptional()
   @IsString()
   @MaxLength(64)
-  company_id!: string;
+  company_id?: string;
 
+  @IsOptional()
   @IsString()
   @MaxLength(64)
-  category_key!: string;
+  companyId?: string;
 
+  @IsOptional()
   @IsString()
   @MaxLength(64)
-  item_key!: string;
+  category_key?: string;
 
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  categoryKey?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  catalogKey?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  item_key?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  itemKey?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  code?: string;
+
+  @IsOptional()
   @IsString()
   @MaxLength(256)
-  item_name!: string;
+  item_name?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(256)
+  itemName?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(256)
+  label?: string;
 
   @IsOptional()
   @IsString()
   @MaxLength(128)
   item_value?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  itemValue?: string;
 
   /** active = in picker; draft = deactivated (AC-SC-POS soft stop). */
   @IsOptional()

@@ -69,7 +69,7 @@ export class PayrollConfigService {
     // Display-Ready Format
     const settingsMap: Record<string, string> = {};
     for (const row of result.rows) {
-      settingsMap[row.setting_key] = row.setting_value;
+      settingsMap[row.setting_key as string] = row.setting_value as string;
     }
     return settingsMap;
   }

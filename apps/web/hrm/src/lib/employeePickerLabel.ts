@@ -88,6 +88,15 @@ export function resolveEmployeePositionLabel(
   source: EmployeePickerLabelSource,
   catalogOptions?: readonly CatalogPickerOption[],
 ): string | null {
+  const key = trimOrNull(source.job_title_key);
+
+  if (key && catalogOptions && catalogOptions.length > 0) {
+    const fromCatalog = resolveCatalogPickerSelection(catalogOptions, key);
+    if (fromCatalog?.label?.trim()) {
+      return fromCatalog.label.trim();
+    }
+  }
+
   const preferredCandidates = [
     trimOrNull(source.job_title_label),
     trimOrNull(source.custom_fields?.job_title_label),
@@ -106,7 +115,6 @@ export function resolveEmployeePositionLabel(
     }
   }
 
-  const key = trimOrNull(source.job_title_key);
   if (key) {
     const fromCatalog = resolveCatalogPickerSelection(catalogOptions ?? [], key);
     if (fromCatalog?.label?.trim()) {

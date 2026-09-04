@@ -199,9 +199,11 @@ export const XEVN_MATRIX_CATALOG: readonly XevnMatrixRow[] = [
 
 export const CONTRACT_SETTING_ORG_SUFFIX = 'contract_number_org_suffix';
 export const CONTRACT_SETTING_NUMBER_PATTERN = 'contract_number_pattern';
+export const CONTRACT_SETTING_CLAUSE_CUSTOM_GROUPS = 'contract_clause_custom_groups';
 export const CONTRACT_SETTING_KEYS = [
   CONTRACT_SETTING_ORG_SUFFIX,
   CONTRACT_SETTING_NUMBER_PATTERN,
+  CONTRACT_SETTING_CLAUSE_CUSTOM_GROUPS,
 ] as const;
 export type ContractSettingKey = (typeof CONTRACT_SETTING_KEYS)[number];
 

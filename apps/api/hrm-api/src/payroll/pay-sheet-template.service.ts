@@ -68,6 +68,15 @@ import {
   resolveHrmPersistCompanyIdText,
 } from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
+
+function cleanUuidNull(val: unknown): string | null {
+  if (!val) return null;
+  const s = String(val).trim();
+  if (!s) return null;
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+  return isUuid ? s : null;
+}
+
 import {
   HRM_PAY_TPL_400_PROVINCE_SCOPE,
   HRM_PAY_TPL_404,
@@ -1084,7 +1093,7 @@ export class PaySheetTemplateService {
         `
           UPDATE public.pay_sheet_templates
           SET ${fields.join(', ')}
-          WHERE id = ${values.length}::uuid;
+          WHERE id = $${values.length}::uuid;
         `,
         values,
       );
@@ -1296,6 +1305,9 @@ export class PaySheetTemplateService {
         line.formulaOverrideJson == null
           ? null
           : JSON.stringify(line.formulaOverrideJson);
+      const formulaOverrideDefId = cleanUuidNull(line.formulaOverrideDefinitionId);
+      const systemDataMapId = cleanUuidNull(line.systemDataMappingId);
+
       if (existingId) {
         await this.db.query(
           `
@@ -1323,10 +1335,10 @@ export class PaySheetTemplateService {
             line.groupKey?.trim() || null,
             line.isVisible !== false,
             Boolean(line.isIdentityOrTotal),
-            line.formulaOverrideDefinitionId ?? null,
+            formulaOverrideDefId,
             overrideJson,
             line.inputMethod ?? 'FORMULA',
-            line.systemDataMappingId ?? null,
+            systemDataMapId,
           ],
         );
       } else {
@@ -1353,10 +1365,10 @@ export class PaySheetTemplateService {
             line.groupKey?.trim() || null,
             line.isVisible !== false,
             Boolean(line.isIdentityOrTotal),
-            line.formulaOverrideDefinitionId ?? null,
+            formulaOverrideDefId,
             overrideJson,
             line.inputMethod ?? 'FORMULA',
-            line.systemDataMappingId ?? null,
+            systemDataMapId,
           ],
         );
       }

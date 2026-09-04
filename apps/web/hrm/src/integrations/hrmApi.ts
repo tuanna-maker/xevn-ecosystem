@@ -7777,6 +7777,10 @@ export async function submitAttendanceSheetForSign(sheetId: string, companyId: s
   );
 }
 
+export const closeAttendanceSheetApi = closeAttendanceSheet;
+export const reopenAttendanceSheetApi = reopenAttendanceSheet;
+export const submitAttendanceSheetApi = submitAttendanceSheetForSign;
+
 export async function updateJobPosting(
   jobPostingId: string,
   companyId: string,
@@ -10688,6 +10692,7 @@ export type HrmJobTitleRecord = {
   code: string;
   label: string;
   unit: string | null;
+  grade_code?: string | null;
   status: "active" | "draft";
   origin: "xbos" | "hrm";
 };
@@ -10708,29 +10713,44 @@ export async function listJobTitles(params: {
     `/api/hrm/settings-catalogs/job_titles/items?${search.toString()}`,
     { method: "GET" },
   );
-  return res.data ?? [];
+  return (res.data ?? []).map((r) => ({
+    ...r,
+    grade_code: r.grade_code || r.unit || null,
+  }));
 }
 
 export type UpsertJobTitlePayload = {
   companyId: string;
   code: string;
   label: string;
+  gradeCode?: string;
   itemValue?: string;
   status?: "active" | "draft";
 };
 
 export async function upsertJobTitle(payload: UpsertJobTitlePayload) {
   const scope = inferRuntimeScope();
+  const itemVal = payload.gradeCode ?? payload.itemValue ?? null;
+  const companyId = normalizeHrmApiListCompanyId(payload.companyId);
+  const code = payload.code.trim();
+  const label = payload.label.trim();
+  const status = payload.status ?? "active";
+
   const res = await fetch(`${HRM_API_ORIGIN}/api/hrm/settings-catalogs/items`, {
     method: "POST",
     headers: await headers({ scope }),
     body: JSON.stringify({
-      companyId: normalizeHrmApiListCompanyId(payload.companyId),
+      company_id: companyId,
+      companyId: companyId,
+      category_key: "job_titles",
       catalogKey: "job_titles",
-      code: payload.code.trim(),
-      label: payload.label.trim(),
-      itemValue: payload.itemValue ?? null,
-      status: payload.status ?? "active",
+      item_key: code,
+      code: code,
+      item_name: label,
+      label: label,
+      item_value: itemVal,
+      itemValue: itemVal,
+      status: status,
     }),
   });
   const json = await res.json();
@@ -10746,13 +10766,20 @@ export async function upsertJobTitle(payload: UpsertJobTitlePayload) {
 
 export async function retireJobTitle(code: string, companyId: string) {
   const scope = inferRuntimeScope();
+  const companyIdNorm = normalizeHrmApiListCompanyId(companyId);
+  const itemCode = code.trim();
   const res = await fetch(`${HRM_API_ORIGIN}/api/hrm/settings-catalogs/items`, {
     method: "PATCH",
     headers: await headers({ scope }),
     body: JSON.stringify({
-      companyId: normalizeHrmApiListCompanyId(companyId),
+      company_id: companyIdNorm,
+      companyId: companyIdNorm,
+      category_key: "job_titles",
       catalogKey: "job_titles",
-      code: code.trim(),
+      item_key: itemCode,
+      code: itemCode,
+      item_name: itemCode,
+      label: itemCode,
       status: "draft",
     }),
   });

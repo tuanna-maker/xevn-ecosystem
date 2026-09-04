@@ -283,7 +283,7 @@ export class InsuranceRateService {
       [tenantId, companyId, regionCode, payPeriodStartDate],
     );
     const monthlyMinWage = minWage
-      ? parseFloat(minWage.monthly_min_wage)
+      ? parseFloat(String((minWage as any).monthly_min_wage))
       : 4680000;
     // Use BHXH rate's salary_cap_multiplier if available, else default 20
     const bhxhRate = rates.rows.find((r) => r.insurance_type === 'BHXH');

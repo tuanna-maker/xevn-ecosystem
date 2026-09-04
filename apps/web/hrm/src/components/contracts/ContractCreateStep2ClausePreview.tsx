@@ -11,7 +11,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { HrmDragDropContext } from '@/components/contracts/HrmDragDropContext';
-import { Eye, FileDown, GripVertical, Loader2, Plus, Save, X } from 'lucide-react';
+import { Eye, FileDown, FileText, GripVertical, Loader2, Plus, Save, X } from 'lucide-react';
 import {
   createContractPrintVersion,
   fetchContractPrintPdf,
@@ -51,12 +51,14 @@ import { toast } from '@/hooks/use-toast';
 import {
   previewContractCreatePrint,
   putContractPrintOverlay,
+  type ContractCreateContextSnapshot,
 } from '@/lib/contractCreateApi';
 import {
   clauseIdsFromLayout,
   clauseLayoutToLibraryRecords,
 } from '@/lib/contractWorkspaceLayoutBind';
 import { ContractClauseOverrideEditor } from '@/components/contracts/ContractClauseOverrideEditor';
+import { downloadContractAsDocx, type ContractExportDocxData } from '@/lib/contractExportDocx';
 
 export type ContractCreateStep2ClausePreviewProps = {
   companyId: string;
@@ -72,6 +74,7 @@ export type ContractCreateStep2ClausePreviewProps = {
   readOnly?: boolean;
   /** View mode — bind GET clause_layout (one round-trip; skip library list APIs). */
   initialClauseLayout?: HrmContractClauseLayoutItem[] | null;
+  contextSnapshot?: ContractCreateContextSnapshot | null;
 };
 
 export function ContractCreateStep2ClausePreview({
@@ -85,6 +88,7 @@ export function ContractCreateStep2ClausePreview({
   onCanvasChange,
   readOnly = false,
   initialClauseLayout = null,
+  contextSnapshot = null,
 }: ContractCreateStep2ClausePreviewProps) {
   const [templates, setTemplates] = useState<HrmContractTemplateRecord[]>([]);
   const [clauses, setClauses] = useState<HrmContractClauseRecord[]>([]);
@@ -278,7 +282,7 @@ export function ContractCreateStep2ClausePreview({
       toast({
         title: 'Đã tải bản xem trước',
         description: res.can_issue
-          ? 'Đủ điều kiện ban hành — có thể lưu phiên bản in.'
+          ? 'Đủ điều kiện ban hành — có thể lưu phiên bản in hoặc xuất Word/PDF.'
           : 'Bổ sung field/điều khoản thiếu bên dưới.',
       });
     } catch (err: unknown) {
@@ -336,12 +340,64 @@ export function ContractCreateStep2ClausePreview({
     } catch (err: unknown) {
       toast({
         title: 'Không tải PDF',
-        description: toErrorMessage(err, 'PDF chỉ từ phiên bản đã ban hành.'),
+        description: toErrorMessage(err, 'PDF chỉ từ phiên bản đã ban hành. Bấm Xem trước hoặc xuất Word.'),
         variant: 'destructive',
       });
     } finally {
       setBusy(false);
     }
+  };
+
+  const handleDownloadDocx = () => {
+    const emp = contextSnapshot?.employee_party_b;
+    const employer = contextSnapshot?.employer_party_a;
+    const signer = contextSnapshot?.suggested_signatory;
+    const cb = contextSnapshot?.compensation_snapshot;
+
+    const fmtDate = (val?: string | null) => {
+      if (!val) return '……/……/……';
+      try {
+        const d = new Date(val);
+        if (isNaN(d.getTime())) return val;
+        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+      } catch {
+        return val;
+      }
+    };
+
+    const docxData: ContractExportDocxData = {
+      contractCode: preview?.contract_code || '……/2026/HĐTV-X.E',
+      contractName: preview?.contract_name || 'HỢP ĐỒNG THỬ VIỆC',
+      contractTypeLabel: preview?.contract_type_label || 'Hợp đồng thử việc',
+      effectiveDateDisplay: fmtDate(preview?.effective_date),
+      expiryDateDisplay: fmtDate(preview?.expiry_date),
+
+      // Party A
+      employerName: employer?.legal_name || 'CÔNG TY TNHH X.E VIỆT NAM',
+      employerSignerName: signer?.signer_name || 'Nguyễn Trọng Khánh',
+      employerSignerPosition: signer?.signer_position || 'Giám đốc',
+      employerAddress: employer?.address || 'Số 4 đường Văn Chỉ, thôn Tam Đa, xã Tam Hưng, TP. Hà Nội',
+      employerPhone: employer?.phone || '024.3681.5722',
+
+      // Party B
+      employeeCode: emp?.employee_code || '',
+      employeeName: emp?.full_name || '',
+      employeeDobDisplay: fmtDate(emp?.birth_date),
+      employeeIdNumber: emp?.id_number || '',
+      employeeIdIssueDate: fmtDate(emp?.id_issue_date),
+      employeeIdIssuePlace: emp?.id_issue_place || '',
+      employeeAddress: emp?.permanent_address || '',
+      employeeDepartment: emp?.department_name || '',
+      employeePosition: emp?.job_title || emp?.position || '',
+      workLocation: workLocation || 'Theo sự phân công của Công ty',
+      workArrangement: 'Toàn thời gian',
+
+      // Financial
+      baseSalaryDisplay: cb?.base_salary ? new Intl.NumberFormat('vi-VN').format(cb.base_salary) : '',
+      salaryRatioPercent: 100,
+    };
+
+    downloadContractAsDocx(docxData);
   };
 
   return (
@@ -510,89 +566,100 @@ export function ContractCreateStep2ClausePreview({
       )}
 
       {!readOnly ? (
-      <div className="flex flex-wrap gap-2 text-base shrink-0 sticky bottom-0 bg-background/95 py-1 backdrop-blur-sm border-t border-border/60 -mx-1 px-1">
-        <Button type="button" variant="outline" disabled={busy} onClick={() => persistOverlay()}>
-          Đồng bộ thứ tự (overlay)
-        </Button>
-        <Button type="button" size="sm" disabled={busy} onClick={runPreview} data-testid="ctr-create-preview-btn">
-          <Eye className="h-4 w-4 mr-1" />
-          Xem trước
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant="secondary"
-          disabled={busy || !preview?.can_issue}
-          onClick={saveVersion}
-        >
-          <Save className="h-4 w-4 mr-1" />
-          Lưu phiên bản in
-        </Button>
-        <Button type="button" size="sm" variant="outline" disabled={busy} onClick={downloadPdf}>
-          <FileDown className="h-4 w-4 mr-1" />
-          Tải PDF
-        </Button>
-      </div>
+        <div className="flex flex-wrap gap-2 text-base shrink-0 sticky bottom-0 bg-background/95 py-1 backdrop-blur-sm border-t border-border/60 -mx-1 px-1">
+          <Button type="button" variant="outline" disabled={busy} onClick={() => persistOverlay()}>
+            Đồng bộ thứ tự (overlay)
+          </Button>
+          <Button type="button" size="sm" disabled={busy} onClick={runPreview} data-testid="ctr-create-preview-btn">
+            <Eye className="h-4 w-4 mr-1" />
+            Xem trước
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            disabled={busy || !preview?.can_issue}
+            onClick={saveVersion}
+          >
+            <Save className="h-4 w-4 mr-1" />
+            Lưu phiên bản in
+          </Button>
+          <Button type="button" size="sm" variant="outline" disabled={busy} onClick={downloadPdf}>
+            <FileDown className="h-4 w-4 mr-1" />
+            Tải PDF
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            disabled={busy}
+            onClick={handleDownloadDocx}
+            data-testid="ctr-export-docx-btn"
+          >
+            <FileText className="h-4 w-4 mr-1 text-blue-600" />
+            Xuất Word (.docx)
+          </Button>
+        </div>
       ) : null}
 
       {!readOnly ? (
-      <div
-        className="rounded-card border p-4 space-y-3"
-        data-testid="ctr-create-preview-panel"
-      >
-        <p className="text-sm font-medium">Preview</p>
-        {previewError ? <p className="text-sm text-destructive">{previewError}</p> : null}
-        {preview ? (
-          <>
-            {previewSummaryRows.length > 0 ? (
-              <ul className="text-xs space-y-1">
-                {previewSummaryRows.map((row) => (
-                  <li key={row.key}>
-                    <span className="text-muted-foreground">{row.label}:</span> {row.value}
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-            {preview.sections && preview.sections.length > 0 ? (
-              <div className="space-y-2 text-sm border rounded-md p-3 bg-white">
-                {preview.sections.map((sec, i) => (
-                  <div key={i}>
-                    {sec.title ? <p className="font-medium">{sec.title}</p> : null}
-                    {sec.body ? <p className="text-muted-foreground whitespace-pre-wrap">{sec.body}</p> : null}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">Chưa có body preview.</p>
-            )}
-            {missingFieldItems.length > 0 ? (
-              <div data-testid="ctr-print-missing-fields">
-                <p className="text-xs font-medium">Field thiếu:</p>
-                <ul className="text-xs list-disc pl-4">
-                  {missingFieldItems.map((m) => (
-                    <li key={m.key}>{m.label_vi ?? m.key}</li>
+        <div
+          className="rounded-card border p-4 space-y-3"
+          data-testid="ctr-create-preview-panel"
+        >
+          <p className="text-sm font-medium">Preview hợp đồng</p>
+          {previewError ? <p className="text-sm text-destructive">{previewError}</p> : null}
+          {preview ? (
+            <>
+              {previewSummaryRows.length > 0 ? (
+                <ul className="text-xs space-y-1">
+                  {previewSummaryRows.map((row) => (
+                    <li key={row.key}>
+                      <span className="text-muted-foreground">{row.label}:</span> {row.value}
+                    </li>
                   ))}
                 </ul>
-              </div>
-            ) : null}
-            {missingClauseItems.length > 0 ? (
-              <ul className="text-xs list-disc pl-4">
-                {missingClauseItems.map((label, i) => (
-                  <li key={`missing-clause-${i}-${label}`}>{label}</li>
-                ))}
-              </ul>
-            ) : null}
-            {shouldShowDriverPreviewBlock({
-              packCode: preview.pack_code || packCode,
-              showDriverLicenseBlock: preview.show_driver_license_block,
-            }) ? (
-              <p className="text-xs text-muted-foreground">Yêu cầu GPLX cho gói Lái xe.</p>
-            ) : null}
-          </>
-        ) : (
-          <p className="text-sm text-muted-foreground">Bấm «Xem trước» sau khi gán điều khoản.</p>
-        )}
-      </div>
+              ) : null}
+              {preview.sections && preview.sections.length > 0 ? (
+                <div className="space-y-2 text-sm border rounded-md p-3 bg-white">
+                  {preview.sections.map((sec, i) => (
+                    <div key={i}>
+                      {sec.title ? <p className="font-medium">{sec.title}</p> : null}
+                      {sec.body ? <p className="text-muted-foreground whitespace-pre-wrap">{sec.body}</p> : null}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Chưa có body preview.</p>
+              )}
+              {missingFieldItems.length > 0 ? (
+                <div data-testid="ctr-print-missing-fields">
+                  <p className="text-xs font-medium">Field thiếu:</p>
+                  <ul className="text-xs list-disc pl-4">
+                    {missingFieldItems.map((m) => (
+                      <li key={m.key}>{m.label_vi ?? m.key}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              {missingClauseItems.length > 0 ? (
+                <ul className="text-xs list-disc pl-4">
+                  {missingClauseItems.map((label, i) => (
+                    <li key={`missing-clause-${i}-${label}`}>{label}</li>
+                  ))}
+                </ul>
+              ) : null}
+              {shouldShowDriverPreviewBlock({
+                packCode: preview.pack_code || packCode,
+                showDriverLicenseBlock: preview.show_driver_license_block,
+              }) ? (
+                <p className="text-xs text-muted-foreground">Yêu cầu GPLX cho gói Lái xe.</p>
+              ) : null}
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">Bấm «Xem trước» sau khi gán điều khoản.</p>
+          )}
+        </div>
       ) : null}
     </div>
   );

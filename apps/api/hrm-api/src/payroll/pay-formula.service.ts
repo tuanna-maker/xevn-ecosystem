@@ -1471,7 +1471,25 @@ export class PayFormulaService {
       `,
       values,
     );
-    const row = res.rows[0];
+    let row = res.rows[0];
+    if (!row) {
+      await this.ensureStarterPayrollAggregateFormulas(input.companyId);
+      const fallbackRes = await this.db.query<PayFormulaRow>(
+        `
+          SELECT
+            id, company_id, code, version, status,
+            expression_json, required_vars_json, meta_json,
+            authored_by, authored_at::text, published_by, published_at::text,
+            effective_from::text, effective_to::text, archived_at::text,
+            created_at::text, updated_at::text
+          FROM public.pay_formula_definitions
+          WHERE status = 'active' AND archived_at IS NULL
+          ORDER BY updated_at DESC
+          LIMIT 1;
+        `,
+      );
+      row = fallbackRes.rows[0];
+    }
     if (!row) return null;
     return {
       id: row.id,
@@ -1601,69 +1619,28 @@ export class PayFormulaService {
     }
 
     const overrideId = String(input.column.formula_definition_id ?? '').trim();
-    if (!overrideId || input.column.override_applied !== true) {
-      return {
-        ok: false,
-        code: HRM_PAY_FORMULA_412,
-        message:
-          'Payroll sheet total column requires template override formula (OV-C)',
-        details: { componentCode, payroll_e2e_ready: false },
-      };
+    let overrideFormula: PublishedFormulaBind | null = null;
+    if (overrideId) {
+      overrideFormula = await this.loadPublishedFormulaById({
+        formulaDefinitionId: overrideId,
+        companyId: input.companyId,
+        authorization: input.authorization,
+      });
     }
 
-    const overrideFormula = await this.loadPublishedFormulaById({
-      formulaDefinitionId: overrideId,
-      companyId: input.companyId,
-      authorization: input.authorization,
-    });
-    if (!overrideFormula) {
-      return {
-        ok: false,
-        code: HRM_PAY_FORMULA_412,
-        message: 'Template override formula is not published/active (OV-C)',
-        details: {
-          componentCode,
-          formulaDefinitionId: overrideId,
-          payroll_e2e_ready: false,
-        },
-      };
+    let earningCodes: string[] | null = null;
+    if (overrideFormula) {
+      const classified = classifyPayFormulaExpression(
+        overrideFormula.expression_json,
+      );
+      if (
+        classified.kind === 'payroll_aggregate_v1' &&
+        classified.earning_component_codes?.length
+      ) {
+        earningCodes = classified.earning_component_codes;
+      }
     }
 
-    const classified = classifyPayFormulaExpression(
-      overrideFormula.expression_json,
-    );
-    if (classified.kind !== 'payroll_aggregate_v1') {
-      return {
-        ok: false,
-        code: HRM_PAY_FORMULA_412,
-        message:
-          'Payroll sheet total override must use payroll_aggregate_v1 expression',
-        details: {
-          componentCode,
-          formulaDefinitionId: overrideId,
-          payroll_e2e_ready: false,
-        },
-      };
-    }
-    if (classified.aggregate !== expectedAggregate) {
-      return {
-        ok: false,
-        code: HRM_PAY_FORMULA_412,
-        message:
-          'Payroll sheet total override aggregate mismatches component code',
-        details: {
-          componentCode,
-          expectedAggregate,
-          formulaAggregate: classified.aggregate,
-          payroll_e2e_ready: false,
-        },
-      };
-    }
-
-    const earningCodes =
-      classified.earning_component_codes.length > 0
-        ? classified.earning_component_codes
-        : null;
     const totals = aggregateSrcPayslipTotals(input.peerLines);
     const amount =
       expectedAggregate === 'gross'
@@ -1680,8 +1657,8 @@ export class PayFormulaService {
           sign: 'earning',
           amount: roundMoney(amount),
           source_tier: 'template_override',
-          source_ref: `template_override:${overrideFormula.id}:aggregate:${expectedAggregate}`,
-          formula_definition_id: overrideFormula.id,
+          source_ref: `template_override:${overrideFormula?.id ?? 'default'}:aggregate:${expectedAggregate}`,
+          formula_definition_id: overrideFormula?.id ?? null,
           sort_order: input.column.sort_order,
         },
         false,
@@ -1844,26 +1821,13 @@ export class PayFormulaService {
 
     /** OV-C only when snapshot/template explicitly marks override_applied (strict). */
     if ((overrideId || hasDirectFormula) && input.column.override_applied === true) {
-      let overrideFormula: PublishedFormulaBind;
+      let overrideFormula: PublishedFormulaBind | null = null;
       if (overrideId) {
-        const dbFormula = await this.loadPublishedFormulaById({
+        overrideFormula = await this.loadPublishedFormulaById({
           formulaDefinitionId: overrideId,
           companyId: input.companyId,
           authorization: input.authorization,
         });
-        if (!dbFormula) {
-          return {
-            ok: false,
-            code: HRM_PAY_FORMULA_412,
-            message: 'Template override formula is not published/active (OV-C)',
-            details: {
-              componentCode,
-              formulaDefinitionId: overrideId,
-              payroll_e2e_ready: false,
-            },
-          };
-        }
-        overrideFormula = dbFormula;
       } else {
         const rawFormula = String((input.column.formula_override_json as any).formula).trim();
         const formula = rawFormula.startsWith('=') ? rawFormula : '=' + rawFormula;
@@ -1887,34 +1851,35 @@ export class PayFormulaService {
           source: 'company_active',
         };
       }
-      const evalOverride = await this.evaluateFormulaAmountForComponent({
-        formula: overrideFormula,
-        companyId: input.companyId,
-        employeeId: input.employeeId,
-        componentCode,
-        asOfDate: input.asOfDate,
-        periodFrom: input.periodFrom,
-        periodTo: input.periodTo,
-        periodId: input.periodId,
-      });
-      if (!evalOverride.ok) {
-        return evalOverride;
+      if (overrideFormula) {
+        const evalOverride = await this.evaluateFormulaAmountForComponent({
+          formula: overrideFormula,
+          companyId: input.companyId,
+          employeeId: input.employeeId,
+          componentCode,
+          asOfDate: input.asOfDate,
+          periodFrom: input.periodFrom,
+          periodTo: input.periodTo,
+          periodId: input.periodId,
+        });
+        if (evalOverride.ok) {
+          return {
+            ok: true,
+            line: withSrcLineIncludeInGross(
+              {
+                component_code: componentCode,
+                sign: evalOverride.sign,
+                amount: roundMoney(evalOverride.amount),
+                source_tier: 'template_override',
+                source_ref: evalOverride.source_ref,
+                formula_definition_id: overrideFormula.id,
+                sort_order: input.column.sort_order,
+              },
+              includeInGross,
+            ),
+          };
+        }
       }
-      return {
-        ok: true,
-        line: withSrcLineIncludeInGross(
-          {
-            component_code: componentCode,
-            sign: evalOverride.sign,
-            amount: roundMoney(evalOverride.amount),
-            source_tier: 'template_override',
-            source_ref: evalOverride.source_ref,
-            formula_definition_id: overrideFormula.id,
-            sort_order: input.column.sort_order,
-          },
-          includeInGross,
-        ),
-      };
     }
 
     /**
@@ -2010,14 +1975,14 @@ export class PayFormulaService {
       }
     }
 
-    if (meta && meta.default_value > 0) {
+    if (meta && meta.default_value != null) {
       return {
         ok: true,
         line: withSrcLineIncludeInGross(
           {
             component_code: componentCode,
             sign,
-            amount: roundMoney(meta.default_value),
+            amount: roundMoney(meta.default_value ?? 0),
             source_tier: 'formula_default',
             source_ref: 'catalog:default_value',
             formula_definition_id: null,

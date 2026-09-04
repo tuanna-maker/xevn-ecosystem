@@ -77,3 +77,29 @@ Trước khi thực hiện bất kỳ công đoạn nào, bạn phải đối ch
 1. **Sau khi xong mỗi Bước trong Pipeline:** Tự động ghi chú trạng thái hoàn thành vào `docs/program/AGENT_MESSAGE_BUS.md` (hoặc bus log dự án), tích `[x]` vào Task Checklist.
 2. **Khi hoàn thành Goal:** Tự đúc kết bài học/nguyên nhân lỗi thành 1-2 câu ngắn gọn và lưu vào bộ nhớ dự án.
 3. **Đầu mỗi phiên làm việc:** Đọc lại bối cảnh và nhật ký gần nhất để tiếp nối công việc chính xác, không lặp lại sai lầm cũ.
+
+---
+
+## 11. [STRICT IMPORT & RUNTIME VERIFICATION (Learned Rule 2026-09-03)]
+1. Mọi React Hook (`useQuery`, `useMutation`, `useState`, `useEffect`, `useCallback`), utility, hoặc type khi được đưa vào component/file BẮT BUỘC phải được import khai báo trực tiếp ở phần `import` đầu file.
+2. Không bao giờ tin tưởng tuyệt đối vào output của `vite build` đơn thuần khi thêm hook mới; phải verify symbol imports và kiểm tra trực tiếp AST/TypeScript compilation để tránh lỗi `Uncaught ReferenceError` ở runtime.
+
+
+12. [MANDATORY FE & BE BUILD VERIFICATION AFTER EVERY EDIT (Learned Rule 2026-09-03)]
+1. Sau MỌI THAY ĐỔI CODE (FE hoặc BE), BẮT BUỘC phải thực thi tự động build kiểm thử cho CẢ HAI surface:
+   - Frontend: `npx vite build` (trong `apps/web/hrm`)
+   - Backend: `npm run build` (trong `apps/api/hrm-api`)
+2. TUYỆT ĐỐI KHÔNG tuyên bố đã fix/xong task khi chưa nhận được log `Exit code: 0` từ cả FE và BE build.
+3. Luôn đảm bảo `HRM_API` base URL trên FE gọi qua `/api/hrm` (relative proxy qua Vite `:28001`), không hardcode sai port `3001` làm đứt kết nối API động.
+
+13. [MANDATORY FULL-STACK SPECIFICATION ALIGNMENT (SRS -> TechSpec -> API Contract -> UI/UX Spec)]
+1. Trước khi thực hiện BẤT KỲ thay đổi code nào (dù là tạo mới feature, fix bug, hay mở rộng tính năng), BẮT BUỘC phải thực hiện đối chiếu dứt điểm theo đúng chuỗi tài liệu:
+   SRS -> TechSpec -> API Contract -> UI/UX Spec.
+2. TUYỆT ĐỐI KHÔNG nhảy vào sửa code/type/UI bừa bãi khi chưa xác minh đối chiếu toàn bộ các file spec liên quan trong `docs/program/` hoặc `_vibe-team-os/`.
+3. Mọi sự thay đổi về giao diện hoặc API phải tuân thủ 100% tài liệu chuẩn mực `29-UIUX-STANDARDS.md` và `30-TASK-CREATION-STANDARDS.md`.
+
+14. [COMMAND CENTER SOLID FE DIALOG PORTAL RULE (Learned 2026-09-03)]
+1. Mọi Popup Modal/Dialog trong các ứng dụng web HRM khi chạy Embed trong Command Center BẮT BUỘC phải dùng primitive `@/components/ui/dialog` (`Dialog` + `DialogContent`).
+2. TUYỆT ĐỐI CẤM bọc popup bằng thẻ `<div className="fixed inset-0">` tự chế vì sẽ bị gò bó bởi khung iframe làm cho nội dung bị lọt thỏm. Radix `DialogPortal` sẽ tự động mount ra `document.body` toàn màn hình.
+3. Màn hình Cấu hình Chính sách lương (`PolicyBuilderScreen`) BẮT BUỘC giữ nguyên cấu trúc 3 Cột song song (`Định nghĩa`, `Quy tắc & Điều kiện`, `Cấu hình Bảng giá trị Tariff Matrix`) khớp 100% giao diện đã thống nhất.
+
